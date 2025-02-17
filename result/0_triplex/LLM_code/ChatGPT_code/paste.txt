@@ -1,0 +1,83 @@
+task_num	requirement_description	GROUND Truth	Requirement ID
+0	In the no-fail state, a mis-compare, which shall be characterized by one branch differing with the other two branches by a unique trip level that lasts for more than the persistence limit, shall be reported to failure management as a failure.	Valid	TSM-001
+0	In the no-fail state, the mid-value shall be the selected value.  Note: a first failure in progress will not affect the method for determining the selected value.	Falsifiable	TSM-002
+0	In the single fail state, a good channel average of the remaining two good branches shall be used to determine the selected value.	Valid	TSM-003
+0	If a second failure is in progress, the selected value shall remain unchanged from the previous selected value.	Falsifiable	TSM-004
+1	Exceeding sensor limits shall latch an autopilot pullup when the pilot is not in control (not standby) and the system is supported without failures (not apfail). 	Falsifiable	FSM-001
+1	The autopilot shall change states from TRANSITION to STANDBY when the pilot is in control (standby).	Valid	FSM-002
+1	The autopilot shall change states from TRANSITION to NOMINAL when the system is supported and sensor data is good.	Falsifiable	FSM-003
+1	The autopilot shall change states from NOMINAL to MANEUVER when the sensor data is not good.	Falsifiable	FSM-004
+1	The autopilot shall change states from NOMINAL to STANDBY when the pilot is in control (standby).	Valid	FSM-005
+1	The autopilot shall change states from MANEUVER to STANDBY when the pilot is in control (standby) and sensor data is good.	Valid	FSM-006
+1	The autopilot shall change states from PULLUP to TRANSITION when the system is supported and sensor data is good.	Falsifiable	FSM-007
+1	The autopilot shall change states from STANDBY to TRANSITION when the pilot is not in control (not standby).	Falsifiable	FSM-008v1
+1	The autopilot shall change states from STANDBY to MANEUVER when a failure occurs (apfail).	Valid	FSM-009
+1	The sensor shall change states from NOMINAL to FAULT when limits are exceeded.	Valid	FSM-010
+1	The sensor shall change states from NOMINAL to TRANSITION when the autopilot is not requesting support (not request).	Falsifiable	FSM-011v1
+1	The sensor shall change states from FAULT to TRANSITION when the autopilot is not requesting support (not request) and limits are not exceeded (not limits).	Valid	FSM-012
+1	The sensor shall change states from TRANSITION to NOMINAL when the autopilot is requesting support (request) and the autopilot reports the correct active mode (mode).	Valid	FSM-013
+2	When Reset is Valid and the Initial Condition (ic) is bounded by the provided Top and Bottom Limits (BL <= ic <= TL), the Output (yout) shall equal the Initial Condition (ic).	Valid	TUI-001
+2	The Output (yout) shall be bounded by the provided Top and Bottom limits (TL and BL)	Falsifiable	TUI-002
+2	When in normal operation, the output shall be the result of the equation, yout = T*0.5*(xin + xinpv)+ ypv 	Falsifiable	TUI-003v1
+2	"The Output of this function shall approximate the integration of the value of the input signal over time within a specified tolerance, defined in subtests below:
+        a. After 10 seconds of Computation at an execution frequency of 10 hz, the Output should equal 10 within a +/- 0.1 tolerance, for a Constant Input (xin = 1.0), and the sample delta time T = 0.1 seconds when in normal mode of operation."	UNKNOWN	TUI-004a
+2	"The Output of this function shall approximate the integration of the value of the input signal over time within a specified tolerance, defined in subtests below:
+      b. Over a 10 second computational duration at an execution frequency of 10 hz, the Output should equal the sine of time t, sin(t), where time is defined as a vector from 0 to 10 by increments of 0.1 seconds within a +/- 0.1 tolerance for an input equal to the cosine of time t, cos(t), with the sample delta time T = 0.1 seconds when in normal mode of operation."	UNKNOWN	TUI-004b
+3	The Inner Loop Roll Regulator Shall not command angular roll accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).	UNKNOWN	REG-001
+3	The Inner Loop Pitch Regulator Shall not command angular pitch accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).	Falsifiable	REG-002
+3	The Inner Loop Yaw Regulator Shall not command angular yaw accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).	UNKNOWN	REG-003
+3	The Inner Loop Airspeed Regulator Shall not command translational axial accelerations greater than the capability of the system (32 ft/sec2) for durations exceeding 100 frames (1 second @ 100 hz).	UNKNOWN	REG-004
+3	The Inner Loop Height Regulator Shall not command translational height accelerations greater than the capability of the system (32 ft/sec2) for durations exceeding 100 frames (1 second @ 100 hz).	UNKNOWN	REG-005
+3	The Inner Loop Roll Regulator Shall not command transient changes in angular roll acceleration greater than 50 deg/sec2/sec.	UNKNOWN	REG-006
+3	The Inner Loop Pitch Regulator Shall not command transient changes in angular pitch acceleration greater than 50 deg/sec2/sec.	Falsifiable	REG-007
+3	The Inner Loop Yaw Regulator Shall not command transient changes in angular yaw acceleration greater than 50 deg/sec2/sec.	Falsifiable	REG-008
+3	The Inner Loop Airspeed Regulator Shall not command transient changes in translational axial acceleration greater than 32 ft/sec2/sec.	Falsifiable	REG-009
+3	The Inner Loop Height Regulator Shall not command transient changes in translational height acceleration greater than 32 ft/sec2/sec.	Falsifiable	REG-010
+4	NLGuidance shall always maintain the target on the port-side of the vehicle.	UNKNOWN	NLG-001
+4	NLGuidance shall compute the inertial position vector for aim point 1, defining the location at Standoff 1 with an offset from the target position, and oriented on a vector perpendicular to the tangent relative position vector from the vehicle to the corresponding aim point.	UNKNOWN	NLG-002
+4	NLGuidance shall compute the inertial position vector for aim point 2, defining the location at Standoff 2 with an offset from the target position, and oriented on a vector perpendicular to the tangent relative position vector from the vehicle to the corresponding aim point.	UNKNOWN	NLG-003
+4	NLGuidance shall always select an inertial position vector of aim point #1 or #2 which shall result in a counter clockwise loiter for the UAV. For example, the picture above with vehicle position, UAV, would return Tangent Aim Point #2.	UNKNOWN	NLG-004
+4	When the UAV relative position to the target is less than the minimum standoff distance, NLGuidance shall command the nearest inertial position in order to reestablish the minimum standoff distance while maintaining the target on the port-side of the vehicle.	UNKNOWN	NLG-005
+4	NLGuidance shall output consistent aim point with a static target without appreciable transient behavior in the command generation other than aim point switching where a transient is required to maintain a counter clockwise loiter (ref requirement 3). Appreciable transient behavior is defined as erratic changes in the aim point command, beyond the following specific tolerance:	UNKNOWN	NLG-006
+4	NLGuidance shall output the equivalent altitude of the vehicle for in-plane navigation. In-plane navigation is defined where the target and the vehicle altitude (3rd component in the input inertial position vectors) are equal.	UNKNOWN	NLG-007
+5	The maximum value of the NN output, z, shall always be less than or equal to 1.1, regardless of the input values. 	UNKNOWN	NN-001
+5	The minimum value of the NN output, z, shall always be greater than or equal to -0.2, regardless of the input values. 	UNKNOWN	NN-002
+5	Using a first order finite backward difference equation, the spatial derivatives of Δz/ Δxt = (z(n,1)-z(n-1))/(xt(n,1)-xt(n-1,1) and Δz/ Δyt = (z(n,1)-z(n-1))/(yt(n,1)-yt(n-1,1) shall never exceed a top bound of +10 or bottom bound of -35 (e.g. -35 <= Δz/ Δ(xt,yt) <= 10), where n denotes an index to the current values and n-1 denotes the prior values in the included truth data for xt and yt.    	UNKNOWN	NN-003
+5	The absolute error between the zt truth data and the output z shall never exceed a tolerance of 0.01, for the equivalent input of (xt, yt).	UNKNOWN	NN-004
+6	"When the determinant of B(inv(Wp’)B’ is <= 1e-12 as indicated by ridge_on set to Valid, the inversion of the B(inv(Wp’)B’ matrix should be accurate to 6 digits precision in that each element in the check output matrix is within a 1e-6 tolerance with respect to the elements of a 3x3 identity matrix.
+ "	UNKNOWN	EB-001
+6	When the determinant of B(inv(Wp’)B’ is > 1e-12 as indicated by ridge_on set to Falsifiable, the inversion of the B(inv(Wp’)B’ matrix should be accurate to 12 digits precision in that each element in the check output matrix is within a 1e-12 tolerance with respect to the elements of a 3x3 identity matrix.	UNKNOWN	EB-002
+6	The output u vector should be a 5x1 vector.	UNKNOWN	EB-003
+6	The 2-norm of the output Buminusd should be less than 0.01.	UNKNOWN	EB-004
+6	The output cost J shall be the minimum possible value given the set of input conditions. 	UNKNOWN	EB-005
+8	"    1. The SWIM Airspeed algorithm shall output the minimum AGCAS airspeed required to perform a 2g flyup as follows:
+
+Auto GCAS Minimum Vcas (knots) = 
+SQRT{[2*Load Factor*Gross Weight]/[Air Density at sea level * 
+                Coefficient of Lift Max*Wing Area]} / 1.6891 (ft/s/knots)
+where
+        Load Factor = 2 gs
+        Gross weight of the aircraft
+        Air Density at sea level = 0.0023769 slugs/ft^3
+        Coefficient of Lift Max = 1.24 (CAT I) and 1.10 (CAT III)
+        Wing Area of the F-16 = 300 ft^2
+Thus,
+IF CAT I, Auto GCAS Minimum Vcas (knots)  = 1.25921 * SQRT(Gross Weight)  + 10.0
+IF CAT III, Auto GCAS Minimum Vcas (knots)  = 1.33694 * SQRT(Gross Weight) + 10.0
+  "	Valid	SWIM-001a
+8	"    2. When a low speed warning is allowed, as computed by the SWIM Airspeed algorithm, a low speed warning shall be Valid when the vehicle air data impact pressure is less than the warning trigger for minimum impact pressure in which a safe AGCAS evasive maneuver can be accomplished where:
+
+The warning trigger for minimum impact pressure in which a safe AGCAS evasive maneuver can be accomplished is computed as
+
+SWIM_Qcmin_lbspft2 = [(-2.0906 + 0.020306*Auto GCAS Minimum Vcas) + 0.1] * (70.7184 (lbspft2/in Hg))
+
+
+"	Falsifiable	SWIM-001b
+9	The Rotation Matrix Output, DCM321, of this Function Shall Equal a 3x3 Matrix Product of a 3x3 Euler 3 (Roll) Rotation Matrix times a 3x3 Euler 2 (Pitch) Rotation Matrix times a 3x3 Euler 1 (Heading) Rotation Matrix.	Falsifiable	SWIM-002
+9	The Body Vector Output, Vb, of this Function Shall Equal a 3x1 Vector Product of the 3x3 Rotation Matrix Output, DCM321, times the Input Inertial Vector, Vi.	UNKNOWN	EUL-001
+9	The magnitude of the Body Vector Output, Vb, shall equal the magnitude of the Input Inertial Vector, Vi.	Falsifiable	EUL-002.1
+9	The Rotation Matrix, DCM321, shall be invertible with the exception of the case where theta = +/- pi/2 radians.	Falsifiable	EUL-003
+9	The Rotation Matrix, DCM321, shall provide a distinct mapping from the input vector, Vi, to the output vector, Vb, for each pitch angle, theta. Note: the DCM321 is not distinct for all phi and psi inputs.	UNKNOWN	EUL-004
+9	The rows and columns of the Rotation Matrix, DCM321, shall be orthonormal. For instance, denoting r1 as row 1 and r2 as row 2 of DCM321, <r1, r2> = r1 r2T = 0 and <r1, r1> = r1 r1T = 1. Likewise, with c1 as column 1 and c2 as column 2 of DCM321, <c1, c2> = c1 c2T = 0 and <c1, c1> = c1 c1T = 1.	Falsifiable	EUL-006
+9	The Rotation Matrix, DCM321, multiplied by the transpose of the Rotation Matrix, DCM321T shall be the Identity (3x3) Matrix.	Falsifiable	EUL-007
+9	The determinant of the Rotation Matrix, |DCM321|, shall be equal to 1.0.	Falsifiable	EUL-008

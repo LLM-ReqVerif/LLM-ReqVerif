@@ -1,0 +1,171 @@
+==============================
+nn_12B_Code_Analysis.txt
+==============================
+
+1) STATE VARIABLE MAPPING
+-------------------------
+According to the provided C code (`nn_12B.c` and `nn_12B_data.c`), there are NO persistent/discrete state variables that carry values across calls to `nn_12B_step()`. There is no structure like `rtDW` or any `UnitDelay` usage, and no variables are retained from one execution cycle to the next. The code is purely a feed-forward neural network calculation. All intermediate arrays (`rtb_Sum[]`, `rtb_Merge_0[]`, `rtb_Product2_0[]`) are local to each step call and do not persist after the function returns.
+
+Hence, there are NO true "internal states" that get updated each cycle.  
+**IMPORTANT**: There is NO UnitDelay in this code. Therefore, there is no update after `nn_12B_step()` for any persistent variable.
+
+**External / Global Variables**  
+- `ExternalInputs rtU`:  
+  - `rtU.x` (Double) — First Input Signal  
+  - `rtU.y` (Double) — Second Input Signal  
+
+- `ExternalOutputs rtY`:  
+  - `rtY.z` (Double) — Dependent Variable Output Signal  
+
+**Local/Temporary Variables** (within `nn_12B_step()` only, recalculated each cycle):  
+- `rtb_Sum[10]`, `rtb_Merge_0[10]`, `rtb_Product2_0[10]`, `tmp`, `tmp_0`, `i`, `i_0`.  
+
+These local variables exist only during the function call of `nn_12B_step()` and are destroyed once the function returns.  
+
+Since there are no persistent states, there are no enumerated values or transitions for them. They simply hold intermediate calculations for each single call (cycle).
+
+2) REQUIREMENTS ANALYSIS
+-------------------------
+Below, each requirement from the specification is addressed **separately**.  
+For each requirement, we identify:
+- Relevant variables in the code  
+- Conditions or triggers in the code (if any)  
+- Expected changes of states or outputs (if any)  
+- Required verification timing (in cycles)  
+
+As there are no internal states or discrete updates in `nn_12B_step()`, the “state transitions” concept is effectively **not applicable** to any internal feedback or memory. Verification must thus be performed at the end of each cycle, by checking the final output `rtY.z` against the requirement.  
+
+----------
+Requirement 1
+----------
+**Text**: "The maximum value of the NN output, `z`, shall always be less than or equal to 1.1, regardless of the input values."
+
+- **Relevant State Variables**:  
+  None (no persistent states).  
+  - **Relevant Code Variables**:  
+    - Input: `rtU.x`, `rtU.y`  
+    - Output: `rtY.z`  
+
+- **Trigger Conditions**:  
+  - Each execution of `nn_12B_step()` uses `rtU.x` and `rtU.y` as inputs and generates `rtY.z`.  
+  - This requirement implies we check `rtY.z` at the end of each cycle.
+
+- **Expected State Transitions**:  
+  - Not applicable (no stored states). The code does a direct feed-forward calculation.
+
+- **Output Verification**:  
+  - After `nn_12B_step()` finishes, verify:  
+    ```
+    if (rtY.z <= 1.1)  // requirement satisfied
+    else              // requirement violated
+    ```
+  - This check is done every cycle, at the end of `nn_12B_step()`.
+
+- **Timing Requirements** (in cycles):  
+  - Perform the check immediately after each `nn_12B_step()` call (i.e. once per cycle).
+
+----------
+Requirement 2
+----------
+**Text**: "The minimum value of the NN output, `z`, shall always be greater than or equal to -0.2, regardless of the input values."
+
+- **Relevant State Variables**:  
+  None (no persistent states).
+  - **Relevant Code Variables**:  
+    - Input: `rtU.x`, `rtU.y`
+    - Output: `rtY.z`
+
+- **Trigger Conditions**:  
+  - Each call to `nn_12B_step()`.
+
+- **Expected State Transitions**:  
+  - Not applicable. The code simply computes one feed-forward output each cycle.
+
+- **Output Verification**:  
+  - After `nn_12B_step()` finishes, verify:
+    ```
+    if (rtY.z >= -0.2)  // requirement satisfied
+    else               // requirement violated
+    ```
+  - Again, one check per cycle at the end of `nn_12B_step()`.
+
+- **Timing Requirements**:  
+  - Verify once per cycle, after `nn_12B_step()`.
+
+----------
+Requirement 3
+----------
+**Text**: "Using a first-order finite backward difference equation, the spatial derivatives of Δz/Δxt and Δz/Δyt shall never exceed +10 or be below -35, i.e. -35 <= Δz/Δ(xt, yt) <= +10 for consecutive indices in the included truth data."
+
+- **Relevant State Variables**:  
+  None in code. There is no code-based memory to store previous `rtY.z` or `rtU.x` or `rtU.y`.  
+
+  However, the requirement implies comparing consecutive data points `(xt(n), z(n))` vs `(xt(n-1), z(n-1))`. This is not directly implemented in `nn_12B.c`. The code does not keep a "previous" value from cycle to cycle.  
+
+- **Trigger Conditions**:  
+  - Potentially each new input `(rtU.x, rtU.y)` that arrives in consecutive cycles.
+  - The code itself does not measure or store these derivatives; it simply computes `rtY.z` at each cycle.
+
+- **Expected State Transitions**:  
+  - Not applicable. No updates or memory of previous values in the code.
+
+- **Output Verification**:  
+  - Must be done externally. After each cycle, the external harness/test must compare the new `(x, z)` with the previously stored `(x_prev, z_prev)`.  
+  - Then compute:
+    \[
+      \Delta z / \Delta x = (z(n) - z(n-1)) / (x(n) - x(n-1)),
+      \quad
+      \Delta z / \Delta y = (z(n) - z(n-1)) / (y(n) - y(n-1))
+    \]
+    Verify that each partial derivative stays within \([-35, +10]\).
+
+- **Timing Requirements**:  
+  - Since the code does not store previous steps, an external test harness must store the previous cycle’s `x, y, z` and compare at the **end** of the new cycle.  
+  - This occurs once per cycle after `nn_12B_step()` completes.  
+  - **No internal code update** (because no persistent memory is in the code).
+
+----------
+Requirement 4
+----------
+**Text**: "The absolute error between the zt truth data and the output z shall never exceed a tolerance of 0.01 for the equivalent input of (xt, yt)."
+
+- **Relevant State Variables**:  
+  None (no persistent states).
+
+- **Trigger Conditions**:  
+  - Each call to `nn_12B_step()` with a known ground-truth value `zt` for `(rtU.x, rtU.y)`.
+
+- **Expected State Transitions**:  
+  - Not applicable. The code only computes an immediate feed-forward output.
+
+- **Output Verification**:  
+  - Externally compare the code’s output `rtY.z` with the truth data `zt`.  
+  - Check:
+    ```
+    if (fabs(rtY.z - zt) <= 0.01)  // requirement satisfied
+    else                          // requirement violated
+    ```
+  - Done once per cycle, after the function call.
+
+- **Timing Requirements**:  
+  - One check per cycle after `nn_12B_step()`, for each test input `(x, y, zt)`.
+
+3) TIMING CONSIDERATIONS
+------------------------
+- **Update Sequences**:  
+  In `nn_12B_step()`, the code calculates `rtY.z` from `rtU.x` and `rtU.y` with a purely feed-forward approach. No memory or state is updated. Hence, there is no concept of “internal state progression” across cycles in this implementation.
+
+- **Critical Dependencies**:  
+  All checks (Requirements #1, #2, #3, #4) rely on the final value `rtY.z` from the end of each call to `nn_12B_step()` and possibly the input or output from the previous cycle (requirement #3). Since the code does not store the previous cycle’s data, an external mechanism must track previous `(x, y, z)` for derivative checks.
+
+- **Cycle Requirements**:  
+  Each call to `nn_12B_step()` is one cycle. Verification should be done after the function returns in every cycle.
+
+----------------------------------------------
+VERY IMPORTANT NOTE ON “UnitDelay” OR “DW”:
+----------------------------------------------
+**There is NO “UnitDelay” usage or `rtDW` structure** in this code. Therefore, there is no variable that gets updated at the end of `nn_12B_step()`. All local arrays and variables are temporary and destroyed once the function returns. No persistent or feedback states exist in this implementation.
+
+==============================
+END OF FILE
+==============================

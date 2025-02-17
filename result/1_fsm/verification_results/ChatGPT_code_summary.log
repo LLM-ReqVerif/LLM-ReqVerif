@@ -1,0 +1,57 @@
+Verification Summary - 2025-01-13 17:52:15.848830
+Directory: ./1_fsm/LLM_code/ChatGPT_code
+Source file: ert_main.c
+==================================================
+
+Property 1
+--------------------
+Status: FAILED
+
+Property 2
+--------------------
+Status: SUCCESSFUL
+
+Property 3
+--------------------
+Status: FAILED
+
+Property 4
+--------------------
+Status: FAILED
+
+Property 5
+--------------------
+Status: SUCCESSFUL
+
+Property 6
+--------------------
+Status: SUCCESSFUL
+
+Property 7
+--------------------
+Status: FAILED
+
+Property 8
+--------------------
+Status: FAILED
+
+Property 9
+--------------------
+Status: SUCCESSFUL
+
+Property 10
+--------------------
+Status: SUCCESSFUL
+
+Property 11
+--------------------
+Status: FAILED
+
+Property 12
+--------------------
+Status: SUCCESSFUL
+
+Property 13
+--------------------
+Status: SUCCESSFUL
+

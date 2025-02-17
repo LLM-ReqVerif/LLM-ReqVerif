@@ -1,0 +1,155 @@
+# Neural Network Requirements Analysis
+
+## 1. State Variable Mapping
+
+### Global Inputs
+- rtU.x: First input signal (double)
+- rtU.y: Second input signal (double)
+
+### Global Outputs  
+- rtY.z: Dependent variable output signal (double)
+
+### Internal States
+- rtb_Merge_0[10]: First layer activation outputs
+- rtb_Product2_0[10]: Second layer activation outputs 
+- rtb_Sum[10]: Layer sum results before activation
+
+### Key Constants
+- WeightstoLayer1_Value[20]: First layer weights
+- WeightstoLayer2_Value[100]: Second layer weights  
+- WeightstoOutputLayer_Value[10]: Output layer weights
+- b1_Value[10]: First layer biases
+- b2_Value[10]: Second layer biases
+
+## 2. Requirements Analysis
+
+### Requirement 1: Maximum Output Value
+- Description: z shall always be <= 1.1
+- Variables to Monitor:
+  - rtY.z (output)
+- Verification Check Points:
+  - After each nn_12B_step() call
+- Property:
+```
+property Req1_MaxOutput {
+    always {
+        call(nn_12B_step()) -> next(rtY.z <= 1.1)  
+    }
+}
+```
+
+### Requirement 2: Minimum Output Value  
+- Description: z shall always be >= -0.2
+- Variables to Monitor:
+  - rtY.z (output)  
+- Verification Check Points:
+  - After each nn_12B_step() call
+- Property:
+```
+property Req2_MinOutput {
+    always {
+        call(nn_12B_step()) -> next(rtY.z >= -0.2)
+    }
+}
+```
+
+### Requirement 3: Spatial Derivatives Bounds
+- Description: Spatial derivatives must be within [-35, 10]
+- Variables to Monitor:
+  - rtU.x (current x input)
+  - rtU.y (current y input)
+  - rtY.z (current z output)
+  - prev_x (previous x input) 
+  - prev_y (previous y input)
+  - prev_z (previous z output)
+- State Updates:
+  - prev_x, prev_y, prev_z updated after each nn_12B_step()
+- Property:
+```
+property Req3_Derivatives {
+    var prev_x, prev_y, prev_z;
+    var dx, dy, dz_dx, dz_dy;
+    
+    always {
+        call(nn_12B_step()) -> {
+            // Calculate derivatives
+            dx = rtU.x - prev_x;
+            dy = rtU.y - prev_y; 
+            
+            // Only check when denominators non-zero
+            (dx != 0) -> {
+                dz_dx = (rtY.z - prev_z) / dx;
+                (-35 <= dz_dx && dz_dx <= 10)
+            };
+            
+            (dy != 0) -> {
+                dz_dy = (rtY.z - prev_z) / dy;
+                (-35 <= dz_dy && dz_dy <= 10)  
+            };
+            
+            // Update previous values
+            next(prev_x) = rtU.x;
+            next(prev_y) = rtU.y;
+            next(prev_z) = rtY.z;
+        }
+    }
+}
+```
+
+### Requirement 4: Truth Data Matching
+- Description: Output must match truth data within 0.01 tolerance
+- Variables to Monitor:
+  - rtU.x (input)
+  - rtU.y (input) 
+  - rtY.z (output)
+  - truth_data[200][3] (truth table)
+- Property:
+```
+property Req4_Accuracy {
+    var truth_idx;
+    
+    always {
+        // Find matching input in truth data
+        truth_idx = find_truth_idx(rtU.x, rtU.y);
+        
+        call(nn_12B_step()) -> {
+            // Compare with tolerance
+            abs(rtY.z - truth_data[truth_idx][2]) <= 0.01
+        }
+    }
+}
+```
+
+## 3. Timing and Sequencing
+
+### Update Sequence
+1. Input Processing
+   - Saturation of rtU.x and rtU.y
+   - Input normalization via Gain blocks
+
+2. First Hidden Layer
+   - Matrix multiply with WeightstoLayer1_Value
+   - Add b1_Value biases
+   - Apply activation functions through If blocks
+   - Store in rtb_Merge_0
+
+3. Second Hidden Layer  
+   - Matrix multiply with WeightstoLayer2_Value
+   - Add b2_Value biases
+   - Apply activation functions through If blocks
+   - Store in rtb_Product2_0
+
+4. Output Layer
+   - Matrix multiply with WeightstoOutputLayer_Value
+   - Final scaling and offset
+   - Store in rtY.z
+
+### Critical Dependencies
+- All state variables updated within single nn_12B_step() call
+- No state retention between calls (stateless design)
+- Previous values for derivatives must be maintained externally
+
+### Timing Requirements
+- All checks performed after nn_12B_step() completes
+- No multi-cycle dependencies within single step
+- Previous value updates must complete before next step begins

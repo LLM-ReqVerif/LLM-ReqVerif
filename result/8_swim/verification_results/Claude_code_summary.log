@@ -1,0 +1,13 @@
+Verification Summary - 2025-01-13 14:19:41.021792
+Directory: ./8_swim/LLM_code/Claude_code
+Source file: ert_main.c
+==================================================
+
+Property 1
+--------------------
+Status: FAILED
+
+Property 2
+--------------------
+Status: FAILED
+

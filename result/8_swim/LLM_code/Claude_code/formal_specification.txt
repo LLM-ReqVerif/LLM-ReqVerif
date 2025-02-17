@@ -1,0 +1,107 @@
+# SWIM Airspeed Analysis
+
+## 1. State Variable Mapping
+
+### State Variables (UnitDelay)
+- rtDW.UnitDelay_DSTATE
+  - Type: real_T 
+  - Values: {0.0, 1.0}
+  - Meaning: Previous cycle's SWIM_ASWarningAllowed state
+  - Updated after global_step() with value of rtb_Merge1
+
+- rtDW.UnitDelay_DSTATE_d
+  - Type: real_T
+  - Values: {0, 1}
+  - Meaning: Previous cycle's swimGet_AgcasLowSpeedWarn state
+  - Updated after global_step() with value of rtb_Sum_p
+
+### Key Intermediate Variables
+- rtb_Merge_d
+  - Type: real_T
+  - Meaning: Auto GCAS Minimum Vcas (knots)
+  - Computation based on CAT switch position
+
+- rtb_Gain1
+  - Type: real_T
+  - Meaning: Warning trigger minimum impact pressure (SWIM_Qcmin_lbspft2)
+  - Derived from rtb_Merge_d
+
+## 2. Requirements Analysis
+
+### Requirement 1: Auto GCAS Minimum Vcas Calculation
+
+Initial Conditions:
+- None specified
+
+Input Triggers:
+- rtU.diGet_S_CatSwitchPosition (Integer)
+- rtU.muxGet_T_Mux_AircraftGrossWeigh (Double)
+
+State Transitions:
+- If CAT I (diGet_S_CatSwitchPosition == 0):
+  rtb_Merge_d = 1.25921 * sqrt(muxGet_T_Mux_AircraftGrossWeigh) + 10.0
+- If CAT III (diGet_S_CatSwitchPosition != 0):
+  rtb_Merge_d = 1.33694 * sqrt(muxGet_T_Mux_AircraftGrossWeigh) + 10.0
+
+Output Verification:
+- SWIM_CalAirspeedmin_kts = rtb_Merge_d
+
+Timing Requirements:
+- Computed every cycle
+- No delay states involved
+
+### Requirement 2: Low Speed Warning Detection
+
+Initial Conditions:
+- rtDW.UnitDelay_DSTATE (previous SWIM_ASWarningAllowed)
+- rtDW.UnitDelay_DSTATE_d (previous swimGet_AgcasLowSpeedWarn)
+
+Input Triggers:
+- rtU.diGet_S_LandingGearAltFlap (Boolean)
+- rtU.E_AI_IMPACT_PRESSURE (Double)
+- rtU.muxGet_T_Mux_AirspeedMonitorEnable (Boolean)
+- rtU.cvGet_V_AgcasLowSpeedWarn (Boolean)
+- rtU.olcGet_AgcasInterlocks (Boolean)
+
+State Transitions:
+1. SWIM_ASWarningAllowed (rtb_Merge1):
+   - If !diGet_S_LandingGearAltFlap: set to 0.0
+   - If diGet_S_LandingGearAltFlap && (E_AI_IMPACT_PRESSURE > rtb_Gain1): set to 1.0
+   - Otherwise: maintain previous state (UnitDelay_DSTATE)
+
+2. swimGet_AgcasLowSpeedWarn (rtb_Sum_p):
+   - If (muxGet_T_Mux_AirspeedMonitorEnable || cvGet_V_AgcasLowSpeedWarn) && 
+     (!olcGet_AgcasInterlocks) && (rtb_Merge1 == 1.0):
+     - Set based on (E_AI_IMPACT_PRESSURE < rtb_Gain1 - 28.72)
+   - Otherwise: maintain previous state (UnitDelay_DSTATE_d)
+
+Output Verification:
+- SWIM_Qcmin_lbspft2 = rtb_Gain1
+- swimGet_QcMinDisable_lbspft2 = rtb_Gain1 - 28.72
+- SWIM_ASWarningAllowed = rtb_Merge1
+- swimGet_AgcasLowSpeedWarn = rtb_Sum_p
+
+## 3. Timing Considerations
+
+### Update Sequence
+1. Calculate rtb_Merge_d (Auto GCAS Minimum Vcas)
+2. Calculate rtb_Gain1 (Warning trigger minimum impact pressure)
+3. Calculate rtb_Merge1 (SWIM_ASWarningAllowed)
+4. Calculate rtb_Sum_p (swimGet_AgcasLowSpeedWarn)
+5. Update outputs
+6. Update delay states:
+   - UnitDelay_DSTATE = rtb_Merge1
+   - UnitDelay_DSTATE_d = rtb_Sum_p
+
+### Critical Dependencies
+- rtb_Merge1 depends on rtb_Gain1
+- rtb_Sum_p depends on rtb_Merge1 and rtb_Gain1
+- Next cycle's UnitDelay states depend on current cycle's rtb_Merge1 and rtb_Sum_p
+
+### Cycle Requirements
+- All calculations complete within single step function
+- State updates occur at end of cycle
+- Verification points should be checked after global_step() call
+- UnitDelay values updated after global_step() with:
+  - UnitDelay_DSTATE = value of rtb_Merge1
+  - UnitDelay_DSTATE_d = value of rtb_Sum_p

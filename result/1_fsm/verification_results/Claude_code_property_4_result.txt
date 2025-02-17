@@ -1,0 +1,324 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing fsm_12B_global.c
+Parsing ert_main.c
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.107s
+GOTO program processing time: 0.002s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 4 iteration 1   file ert_main.c line 22 column 5 function main
+Symex completed in: 0.005s (155 assignments)
+Slicing time: 0.000s (removed 32 assignments)
+Generated 5 VCC(s), 3 remaining after simplification (123 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.002s
+BMC program time: 0.007s
+No bug has been found in the base case
+Checking forward condition, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 4 iteration 1   file ert_main.c line 22 column 5 function main
+Symex completed in: 0.005s (152 assignments)
+Slicing time: 0.000s (removed 148 assignments)
+Generated 3 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.000s
+The forward condition is unable to prove the property
+Checking base case, k = 2
+Starting Bounded Model Checking
+Unwinding loop 4 iteration 1   file ert_main.c line 22 column 5 function main
+Not unwinding loop 4 iteration 2   file ert_main.c line 22 column 5 function main
+Symex completed in: 0.011s (284 assignments)
+Slicing time: 0.000s (removed 38 assignments)
+Generated 11 VCC(s), 7 remaining after simplification (246 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.003s
+BMC program time: 0.015s
+No bug has been found in the base case
+Checking forward condition, k = 2
+Starting Bounded Model Checking
+Unwinding loop 4 iteration 1   file ert_main.c line 22 column 5 function main
+Not unwinding loop 4 iteration 2   file ert_main.c line 22 column 5 function main
+Symex completed in: 0.011s (277 assignments)
+Slicing time: 0.000s (removed 273 assignments)
+Generated 5 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.000s
+The forward condition is unable to prove the property
+Checking inductive step, k = 2
+Starting Bounded Model Checking
+Unwinding loop 4 iteration 1   file ert_main.c line 22 column 5 function main
+Not unwinding loop 4 iteration 2   file ert_main.c line 22 column 5 function main
+Symex completed in: 0.015s (310 assignments)
+Slicing time: 0.002s (removed 54 assignments)
+Generated 8 VCC(s), 4 remaining after simplification (256 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.060s
+The inductive step is unable to prove the property
+Checking base case, k = 3
+Starting Bounded Model Checking
+Unwinding loop 4 iteration 1   file ert_main.c line 22 column 5 function main
+Unwinding loop 4 iteration 2   file ert_main.c line 22 column 5 function main
+Not unwinding loop 4 iteration 3   file ert_main.c line 22 column 5 function main
+Symex completed in: 0.020s (413 assignments)
+Slicing time: 0.002s (removed 44 assignments)
+Generated 17 VCC(s), 11 remaining after simplification (369 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.009s
+Building error trace
+
+[Counterexample]
+
+
+State 3 file ert_main.c line 29 column 9 function main thread 0
+----------------------------------------------------
+  rtU.limits = { .standby=0, .apfail=0, .supported=0, .limits=(unsigned char)main::$tmp::return_value$_nondet_bool$1?1!0&0#1 }
+
+State 4 file ert_main.c line 30 column 9 function main thread 0
+----------------------------------------------------
+  rtU.standby = 0 (00000000)
+
+State 5 file ert_main.c line 31 column 9 function main thread 0
+----------------------------------------------------
+  rtU.supported = 0 (00000000)
+
+State 6 file ert_main.c line 32 column 9 function main thread 0
+----------------------------------------------------
+  rtU.apfail = 0 (00000000)
+
+State 7 file ert_main.c line 33 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[0] = { .Merge=0.000000, .Merge_g=0.000000, .UnitDelay_DSTATE=0.000000, .UnitDelay1_DSTATE=0.000000,
+    .Merge_p={ 0 } WITH [0:=(unsigned char)main::$tmp::return_value$_nondet_bool$5?1!0&0#1], .UnitDelay2_DSTATE=0,
+    .anon_pad$6=0 }
+
+State 8 file ert_main.c line 34 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[1] = 0 (00000000)
+
+State 9 file ert_main.c line 35 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[2] = 0 (00000000)
+
+State 10 file fsm_12B_global.c line 44 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtb_UnitDelay = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 11 file fsm_12B_global.c line 73 column 7 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 12 file fsm_12B_global.c line 175 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtb_UnitDelay = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 13 file fsm_12B_global.c line 196 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[0] = 0 (00000000)
+
+State 14 file fsm_12B_global.c line 197 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[1] = 1 (00000001)
+
+State 15 file fsm_12B_global.c line 198 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[2] = 0 (00000000)
+
+State 16 file fsm_12B_global.c line 257 column 7 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_g = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 17 file fsm_12B_global.c line 323 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay_DSTATE = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 18 file fsm_12B_global.c line 329 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay2_DSTATE = 1 (00000001)
+
+State 19 file fsm_12B_global.c line 332 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay1_DSTATE = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 23 file ert_main.c line 24 column 9 function main thread 0
+----------------------------------------------------
+  prev_UnitDelay_DSTATE = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 24 file ert_main.c line 26 column 9 function main thread 0
+----------------------------------------------------
+  prev_UnitDelay2_DSTATE = 1
+
+State 25 file ert_main.c line 29 column 9 function main thread 0
+----------------------------------------------------
+  rtU.limits = 1 (00000001)
+
+State 26 file ert_main.c line 30 column 9 function main thread 0
+----------------------------------------------------
+  rtU.standby = 0 (00000000)
+
+State 27 file ert_main.c line 31 column 9 function main thread 0
+----------------------------------------------------
+  rtU.supported = 1 (00000001)
+
+State 28 file ert_main.c line 32 column 9 function main thread 0
+----------------------------------------------------
+  rtU.apfail = 0 (00000000)
+
+State 29 file ert_main.c line 33 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[0] = 0 (00000000)
+
+State 30 file ert_main.c line 34 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[1] = 0 (00000000)
+
+State 31 file ert_main.c line 35 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[2] = 0 (00000000)
+
+State 32 file fsm_12B_global.c line 44 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtb_UnitDelay = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 33 file fsm_12B_global.c line 68 column 7 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge = 1.000000 (00111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 34 file fsm_12B_global.c line 175 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtb_UnitDelay = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 35 file fsm_12B_global.c line 205 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[0] = 1 (00000001)
+
+State 36 file fsm_12B_global.c line 206 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[1] = 1 (00000001)
+
+State 37 file fsm_12B_global.c line 207 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[2] = 0 (00000000)
+
+State 38 file fsm_12B_global.c line 246 column 7 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_g = 2.000000 (01000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 39 file fsm_12B_global.c line 323 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay_DSTATE = 1.000000 (00111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 40 file fsm_12B_global.c line 329 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay2_DSTATE = 0 (00000000)
+
+State 41 file fsm_12B_global.c line 332 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay1_DSTATE = 2.000000 (01000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 45 file ert_main.c line 24 column 9 function main thread 0
+----------------------------------------------------
+  prev_UnitDelay_DSTATE = 1.000000 (00111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 46 file ert_main.c line 26 column 9 function main thread 0
+----------------------------------------------------
+  prev_UnitDelay2_DSTATE = 0
+
+State 47 file ert_main.c line 29 column 9 function main thread 0
+----------------------------------------------------
+  rtU.limits = 0 (00000000)
+
+State 48 file ert_main.c line 30 column 9 function main thread 0
+----------------------------------------------------
+  rtU.standby = 1 (00000001)
+
+State 49 file ert_main.c line 31 column 9 function main thread 0
+----------------------------------------------------
+  rtU.supported = 0 (00000000)
+
+State 50 file ert_main.c line 32 column 9 function main thread 0
+----------------------------------------------------
+  rtU.apfail = 0 (00000000)
+
+State 51 file ert_main.c line 33 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[0] = 0 (00000000)
+
+State 52 file ert_main.c line 34 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[1] = 0 (00000000)
+
+State 53 file ert_main.c line 35 column 9 function main thread 0
+----------------------------------------------------
+  rtDW.Merge_p[2] = 0 (00000000)
+
+State 54 file fsm_12B_global.c line 44 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtb_UnitDelay = 1.000000 (00111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 55 file fsm_12B_global.c line 92 column 7 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge = 3.000000 (01000000 00001000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 56 file fsm_12B_global.c line 175 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtb_UnitDelay = 2.000000 (01000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 57 file fsm_12B_global.c line 223 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[1] = 0 (00000000)
+
+State 58 file fsm_12B_global.c line 224 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[2] = 0 (00000000)
+
+State 59 file fsm_12B_global.c line 225 column 5 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_p[0] = 1 (00000001)
+
+State 60 file fsm_12B_global.c line 299 column 7 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.Merge_g = 1.000000 (00111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 61 file fsm_12B_global.c line 323 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay_DSTATE = 3.000000 (01000000 00001000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 62 file fsm_12B_global.c line 329 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay2_DSTATE = 1 (00000001)
+
+State 63 file fsm_12B_global.c line 332 column 3 function fsm_12B_global_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay1_DSTATE = 1.000000 (00111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 64 file ert_main.c line 61 column 17 function main thread 0
+----------------------------------------------------
+Violated property:
+  file ert_main.c line 61 column 17 function main
+  Property 4: Should transition to MANEUVER state
+  (_Bool)(rtDW.Merge == 2.000000)
+
+
+VERIFICATION FAILED
+
+Bug found (k = 3)

@@ -1,0 +1,21 @@
+Verification Summary - 2025-01-13 17:16:01.725467
+Directory: ./2_tustin/LLM_code/Claude_code
+Source file: ert_main.c
+==================================================
+
+Property 1
+--------------------
+Status: SUCCESSFUL
+
+Property 2
+--------------------
+Status: FAILED
+
+Property 3
+--------------------
+Status: FAILED
+
+Property 4
+--------------------
+Status: SUCCESSFUL
+

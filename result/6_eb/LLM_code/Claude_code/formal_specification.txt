@@ -1,0 +1,135 @@
+# Effector Blender (EB_12B) Test Specification
+
+## 1. State Variable Mapping
+
+### Global Inputs (ExtU)
+- `rtU.B_j`: Control effectiveness matrix (3x5 double)
+- `rtU.Wp`: Control weighting preference matrix (5x5 double) [Constant]
+- `rtU.d`: Desired acceleration error vector (3x1 double) [Constant]
+- `rtU.up`: Preferred control solution vector (5x1 double)
+
+### Global Outputs (ExtY)
+- `rtY.check`: Inversion Check Matrix (3x3 double)
+- `rtY.yinv`: Inverse of B(inv(Wp')B' (3x3 double)  
+- `rtY.P_k`: Transformation Gain Matrix Solution (5x3 double)
+- `rtY.u`: Control effector solution vector (5x1 double)
+- `rtY.Buminusd`: Error vector of constraint (3x1 double)
+- `rtY.J`: Total Cost of solution (1x1 double)
+- `rtY.ridge_on`: Ridge Regression Active flag (boolean)
+
+### Internal Variables
+- `rtb_Product1_f`: B(inv(Wp')B' matrix (3x3 double)
+- `rtb_RelationalOperator`: Ridge regression condition flag (boolean)
+
+## 2. Requirement-Specific Tests
+
+### Requirement 1: Ridge Regression Accuracy (High Det)
+Initial Conditions:
+- Input: det(B(inv(Wp')B') > 1e-12
+- `rtY.ridge_on` set to False
+
+Input Triggers:
+- Execute EB_12B_step()
+
+Expected State Changes:
+- `rtY.check` should be computed with ridge off
+
+Output Verification:
+- For each element i,j in `rtY.check`:
+  abs(rtY.check[i][j] - I[i][j]) < 1e-12
+  where I is 3x3 identity matrix
+
+Timing:
+- Verify within 1 cycle after step call
+
+### Requirement 2: Ridge Regression Accuracy (Low Det)
+Initial Conditions:
+- Input: det(B(inv(Wp')B') <= 1e-12
+- `rtY.ridge_on` set to True
+
+Input Triggers:
+- Execute EB_12B_step()
+
+Expected State Changes:
+- `rtY.check` should be computed with ridge on
+
+Output Verification:
+- For each element i,j in `rtY.check`:
+  abs(rtY.check[i][j] - I[i][j]) < 1e-6
+  where I is 3x3 identity matrix
+
+Timing:
+- Verify within 1 cycle after step call
+
+### Requirement 3: Control Solution Vector Size
+Initial Conditions:
+- Any valid input state
+
+Input Triggers:
+- Execute EB_12B_step()
+
+Expected State Changes:
+- `rtY.u` updated
+
+Output Verification:
+- Verify `rtY.u` is 5x1 vector
+- Check all elements are valid double values
+
+Timing:
+- Verify within 1 cycle after step call
+
+### Requirement 4: Error Constraint
+Initial Conditions:
+- Any valid input state
+
+Input Triggers:
+- Execute EB_12B_step()
+
+Expected State Changes:
+- `rtY.Buminusd` updated
+
+Output Verification:
+- Verify ||rtY.Buminusd|| < 0.01
+  (where || || denotes 2-norm)
+
+Timing:
+- Verify within 1 cycle after step call
+
+### Requirement 5: Cost Minimization
+Initial Conditions:
+- Any valid input state
+
+Input Triggers:
+- Execute EB_12B_step()
+
+Expected State Changes:
+- `rtY.J` updated 
+
+Output Verification:
+- For given inputs:
+  rtY.J <= J' for any other valid solution
+  where J' is cost calculated with different valid u vector
+
+Timing:
+- Verify within 1 cycle after step call
+
+## 3. Timing Considerations
+
+### Update Sequence
+1. Calculate `rtb_Product1_f` (B(inv(Wp')B')
+2. Check determinant and set `rtY.ridge_on`
+3. Apply ridge regression if needed
+4. Calculate inverse (`rtY.yinv`)
+5. Compute solution (`rtY.u`)
+6. Calculate error (`rtY.Buminusd`)
+7. Calculate cost (`rtY.J`)
+
+### Critical Dependencies
+- Ridge regression check must complete before matrix inversion
+- Matrix inversion must complete before solution calculation
+- Solution must be computed before error and cost calculations
+
+### Cycle Requirements
+- All computations complete within single EB_12B_step() call
+- No state variables persist between cycles
+- Output verification performed after step completion

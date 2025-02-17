@@ -1,0 +1,58 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing triplex_12B.c
+Parsing ert_main.c
+ert_main.c:110:28: warning: absolute value function 'fabsf' given an argument of type 'double' but has parameter of type 'float' which may cause truncation of value [-Wabsolute-value]
+            __ESBMC_assert(fabsf(rtDW.Merge - mid_val) < 0.001,
+                           ^
+ert_main.c:110:28: note: use function 'fabs' instead
+            __ESBMC_assert(fabsf(rtDW.Merge - mid_val) < 0.001,
+                           ^~~~~
+                           fabs
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.188s
+GOTO program processing time: 0.007s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.004s (208 assignments)
+Slicing time: 0.000s (removed 184 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (24 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.004s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.208s
+Building error trace
+
+[Counterexample]
+
+
+State 3 file ert_main.c line 69 column 14 function main thread 0
+----------------------------------------------------
+  ia = 1.070474e+0f (00111111 10001001 00000101 01001100)
+
+State 4 file ert_main.c line 70 column 14 function main thread 0
+----------------------------------------------------
+  ib = 1.060203e-37f (00000010 00010000 01001110 10110010)
+
+State 5 file ert_main.c line 71 column 14 function main thread 0
+----------------------------------------------------
+  ic = 2.000000f (01000000 00000000 00000000 00000000)
+
+State 6 file ert_main.c line 105 column 44 function main thread 0
+----------------------------------------------------
+  mid_val = 1.070474e+0f (00111111 10001001 00000101 01001100)
+
+State 7 file ert_main.c line 110 column 13 function main thread 0
+----------------------------------------------------
+Violated property:
+  file ert_main.c line 110 column 13 function main
+  RM-002: Output should be mid-value in no-fail state
+  (_Bool)((double)(abs((float)(IEEE_SUB(rtDW.Merge, (double)mid_val)))) < 1.000000e-3)
+
+
+VERIFICATION FAILED
+
+Bug found (k = 1)

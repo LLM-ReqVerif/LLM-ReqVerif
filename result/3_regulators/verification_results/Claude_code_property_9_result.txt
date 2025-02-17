@@ -1,0 +1,173 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing regs_12B.c
+Parsing regs_12B_data.c
+Parsing ert_main.c
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.240s
+GOTO program processing time: 0.010s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 2 iteration 1   file regs_12B.c line 115 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 2 iteration 1   file regs_12B.c line 115 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 8 iteration 1   file ert_main.c line 148 column 5 function main
+Symex completed in: 0.120s (386 assignments)
+Slicing time: 0.002s (removed 265 assignments)
+Generated 145 VCC(s), 37 remaining after simplification (121 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.052s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.356s
+Building error trace
+
+[Counterexample]
+
+
+State 3 file ert_main.c line 123 column 27 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.lcv_cmd_fcs_dps = { .beta_adc_deg=0.000000, .vtas_adc_kts=0.000000, .lcv_cmd_fcs_dps=nondet_symbol(symex::nondet0),
+    .hdg_des_deg=0.000000,
+    .mcv_cmd_fcs_dps=0.000000, .alt_des_ft=0.000000,
+    .ncv_cmd_fcs_dps=0.000000, .xcv_cmd_fcs_fps=0.000000,
+    .airspeed_des_fps=0.000000, .hcv_cmd_fcs_fps=0.000000,
+    .lcv_fps_dps=0.000000, .mcv_fcs_dps=0.000000,
+    .ncv_fcs_dps=0.000000, .dcv_fcs_fps=0.000000,
+    .zcv_fcs_fps=0.000000, .beta_dot=0.000000 }
+
+State 4 file ert_main.c line 124 column 23 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.lcv_fps_dps = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 5 file ert_main.c line 125 column 27 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.mcv_cmd_fcs_dps = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 6 file ert_main.c line 126 column 23 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.mcv_fcs_dps = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 7 file ert_main.c line 127 column 27 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.ncv_cmd_fcs_dps = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 8 file ert_main.c line 128 column 24 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.beta_adc_deg = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 9 file ert_main.c line 129 column 20 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.beta_dot = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 10 file ert_main.c line 130 column 24 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.vtas_adc_kts = -8.691695e-311 (10000000 00000000 00010000 00000000 00000000 00000000 00000000 00000000)
+
+State 11 file ert_main.c line 131 column 23 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.ncv_fcs_dps = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 12 file ert_main.c line 132 column 27 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.xcv_cmd_fcs_fps = 3.583732e-299 (00000001 11110111 11111111 11111111 11111011 11111111 11111111 11111110)
+
+State 13 file ert_main.c line 133 column 23 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.dcv_fcs_fps = -INFINITY (11111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 14 file ert_main.c line 134 column 27 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.hcv_cmd_fcs_fps = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 15 file ert_main.c line 135 column 23 function set_nondet_inputs thread 0
+----------------------------------------------------
+  rtU.zcv_fcs_fps = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 16 file regs_12B.c line 198 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtY.lcvdt_cmd_fcs_dps2 = { .lcvdt_cmd_fcs_dps2=IEEE_MUL(IEEE_SUB(rtU&0#14.lcv_cmd_fcs_dps, rtU&0#14.lcv_fps_dps), 2.500000e+0), .mcvdt_cmd_fcs_dps2=0.000000,
+    .ncvdt_cmd_fcs_dps2=0.000000, .xcvdt_cmd_fcs_fps2=0.000000,
+    .hcvdt_cmd_fcs_fps2=0.000000 }
+
+State 17 file regs_12B.c line 172 column 3 function rt_Lookup thread 0
+----------------------------------------------------
+  idx = 0 (00000000 00000000 00000000 00000000)
+
+State 30 file regs_12B.c line 173 column 3 function rt_Lookup thread 0
+----------------------------------------------------
+  num = IEEE_SUB((double)(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(byte_extract_little_endian(0.000000, 7), byte_extract_little_endian(0.000000, 6)), byte_extract_little_endian(0.000000, 5)), byte_extract_little_endian(0.000000, 4)), byte_extract_little_endian(0.000000, 3)), byte_extract_little_endian(0.000000, 2)), byte_extract_little_endian(0.000000, 1)), byte_extract_little_endian(0.000000, 0))), (double)(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(byte_extract_little_endian(0.000000, 7), byte_extract_little_endian(0.000000, 6)), byte_extract_little_endian(0.000000, 5)), byte_extract_little_endian(0.000000, 4)), byte_extract_little_endian(0.000000, 3)), byte_extract_little_endian(0.000000, 2)), byte_extract_little_endian(0.000000, 1)), byte_extract_little_endian(0.000000, 0))))
+
+State 43 file regs_12B.c line 174 column 3 function rt_Lookup thread 0
+----------------------------------------------------
+  den = IEEE_SUB((double)(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(byte_extract_little_endian(50.000000, 7), byte_extract_little_endian(50.000000, 6)), byte_extract_little_endian(50.000000, 5)), byte_extract_little_endian(50.000000, 4)), byte_extract_little_endian(50.000000, 3)), byte_extract_little_endian(50.000000, 2)), byte_extract_little_endian(50.000000, 1)), byte_extract_little_endian(50.000000, 0))), (double)(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(byte_extract_little_endian(0.000000, 7), byte_extract_little_endian(0.000000, 6)), byte_extract_little_endian(0.000000, 5)), byte_extract_little_endian(0.000000, 4)), byte_extract_little_endian(0.000000, 3)), byte_extract_little_endian(0.000000, 2)), byte_extract_little_endian(0.000000, 1)), byte_extract_little_endian(0.000000, 0))))
+
+State 44 file regs_12B.c line 179 column 3 function rt_Lookup thread 0
+----------------------------------------------------
+  m = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 57 file regs_12B.c line 222 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtY.ncvdt_cmd_fcs_dps2 = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 58 file regs_12B.c line 231 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtb_CVdt_cmd = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 59 file regs_12B.c line 247 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtb_CVdt_cmd = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 60 file regs_12B.c line 257 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtb_Sum1 = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 61 file regs_12B.c line 279 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtY.hcvdt_cmd_fcs_fps2 = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 62 file regs_12B.c line 285 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtb_Sum3 = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 63 file regs_12B.c line 295 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtb_Sum1_h = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 64 file regs_12B.c line 173 column 3 function rt_Lookup thread 0
+----------------------------------------------------
+  num = IEEE_SUB((double)(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(byte_extract_little_endian(20.000000, 7), byte_extract_little_endian(20.000000, 6)), byte_extract_little_endian(20.000000, 5)), byte_extract_little_endian(20.000000, 4)), byte_extract_little_endian(20.000000, 3)), byte_extract_little_endian(20.000000, 2)), byte_extract_little_endian(20.000000, 1)), byte_extract_little_endian(20.000000, 0))), (double)(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(byte_extract_little_endian(15.000000, 7), byte_extract_little_endian(15.000000, 6)), byte_extract_little_endian(15.000000, 5)), byte_extract_little_endian(15.000000, 4)), byte_extract_little_endian(15.000000, 3)), byte_extract_little_endian(15.000000, 2)), byte_extract_little_endian(15.000000, 1)), byte_extract_little_endian(15.000000, 0))))
+
+State 65 file regs_12B.c line 174 column 3 function rt_Lookup thread 0
+----------------------------------------------------
+  den = IEEE_SUB((double)(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(byte_extract_little_endian(185.000000, 7), byte_extract_little_endian(185.000000, 6)), byte_extract_little_endian(185.000000, 5)), byte_extract_little_endian(185.000000, 4)), byte_extract_little_endian(185.000000, 3)), byte_extract_little_endian(185.000000, 2)), byte_extract_little_endian(185.000000, 1)), byte_extract_little_endian(185.000000, 0))), (double)(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(CONCAT(byte_extract_little_endian(120.000000, 7), byte_extract_little_endian(120.000000, 6)), byte_extract_little_endian(120.000000, 5)), byte_extract_little_endian(120.000000, 4)), byte_extract_little_endian(120.000000, 3)), byte_extract_little_endian(120.000000, 2)), byte_extract_little_endian(120.000000, 1)), byte_extract_little_endian(120.000000, 0))))
+
+State 66 file regs_12B.c line 179 column 3 function rt_Lookup thread 0
+----------------------------------------------------
+  m = 7.692308e-2 (00111111 10110011 10110001 00111011 00010011 10110001 00111011 00010100)
+
+State 67 file regs_12B.c line 320 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtY.mcvdt_cmd_fcs_dps2 = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 68 file regs_12B.c line 331 column 3 function regs_12B_step thread 0
+----------------------------------------------------
+  rtY.xcvdt_cmd_fcs_fps2 = -INFINITY (11111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 69 file ert_main.c line 108 column 5 function check_requirements thread 0
+----------------------------------------------------
+  axial_rate = -INFINITY (11111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 70 file ert_main.c line 109 column 5 function check_requirements thread 0
+----------------------------------------------------
+Violated property:
+  file ert_main.c line 109 column 5 function check_requirements
+  Axial rate of change limit violated
+  (_Bool)(abs(axial_rate) <= 32.000000)
+
+
+VERIFICATION FAILED
+
+Bug found (k = 1)

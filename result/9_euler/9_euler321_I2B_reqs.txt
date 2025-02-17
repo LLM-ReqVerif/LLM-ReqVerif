@@ -1,0 +1,62 @@
+﻿9) Euler 321 Inertial to Body Frame
+ Model:  ‘euler321_I2B_12B.mdl’
+Description:  This component creates a Rotation Matrix describing a 321 rotation about the z-axis, y-axis, and finally x-axis of an Inertial frame in Euclidean space, and, given an Input Vector, outputs the representation of the Input Vector in the new rotated frame.  
+Note the y-axis and x-axis subsequent rotations are the second and third transform operations, identified in the 321 operation by the 2 and 3 label description, respectively.  The latter two operations are rotations about the intermediate frames.
+The computed Rotation Matrix Shall Equal a Special Orthogonal(3) 3x3 with the following properties: (i) the rows and columns of the Output Matrix shall be orthonormal; (ii) the Output Matrix multiplied with the Transpose of the Output Matrix shall be the Identity (3x3) Matrix; and (iii) the determinant of the Output Matrix shall be equal to 1.
+Input Scope
+Name
+#
+Type
+Description
+Global
+phi
+1
+Double
+Roll angle [rad]
+Global
+theta
+2
+Double
+Pitch angle [rad]
+Global
+psi
+3
+Double
+Yaw angle [rad]
+Global
+Vi
+4
+Double
+3x1 Inertial Vector
+ 
+Output Scope
+Name
+#
+Type
+Description
+Global
+DCM321
+1
+Double
+3x3 Rotation Matrix
+Global
+Vb
+2
+Double
+3x1 Body Vector
+
+Definitions:
+Euler3 Roll rotation:  
+
+Euler2 Pitch rotation: 
+Euler1 Heading Rotation: 
+
+Requirements:  
+    1. The Rotation Matrix Output, DCM321, of this Function Shall Equal a 3x3 Matrix Product of a 3x3 Euler 3 (Roll) Rotation Matrix times a 3x3 Euler 2 (Pitch) Rotation Matrix times a 3x3 Euler 1 (Heading) Rotation Matrix.
+    2. The Body Vector Output, Vb, of this Function Shall Equal a 3x1 Vector Product of the 3x3 Rotation Matrix Output, DCM321, times the Input Inertial Vector, Vi.
+    3. The magnitude of the Body Vector Output, Vb, shall equal the magnitude of the Input Inertial Vector, Vi.
+    4. The Rotation Matrix, DCM321, shall be invertible with the exception of the case where theta = +/- pi/2 radians.
+    5. The Rotation Matrix, DCM321, shall provide a distinct mapping from the input vector, Vi, to the output vector, Vb, for each pitch angle, theta.  Note:  the DCM321 is not distinct for all phi and psi inputs.   
+    6. The rows and columns of the Rotation Matrix, DCM321, shall be orthonormal.  For instance, denoting r1 as row 1 and r2 as row 2 of DCM321, <r1, r2> = r1 r2T = 0 and <r1, r1> = r1 r1T = 1.  Likewise, with c1 as column 1 and c2 as column 2 of DCM321, <c1, c2> = c1 c2T = 0 and <c1, c1> = c1 c1T = 1.
+    7. The Rotation Matrix, DCM321, multiplied by the transpose of the Rotation Matrix, DCM321T shall be the Identity (3x3) Matrix.
+    8. The determinant of the Rotation Matrix, |DCM321|, shall be equal to 1.0.       

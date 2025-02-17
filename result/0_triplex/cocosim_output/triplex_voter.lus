@@ -1,0 +1,111 @@
+-- Triplex voter system implemented in Lustre
+-- Constants for failure codes
+const NO_FAIL = 0;
+const BRANCH_C_FAIL = 1;
+const BRANCH_B_FAIL = 2;
+const BRANCH_A_FAIL = 4;
+
+node abs_real(x: real) returns (y: real);
+let
+    y = if x < 0.0 then -x else x;
+tel;
+
+-- Main triplex voter node
+node triplex_voter(
+    ia, ib, ic: real;      -- Input signals
+    Tlevel: real;          -- Threshold level
+    PClimit: int          -- Persistence counter limit
+) returns (
+    PC, TC, FC: int;       -- Persistence, transient, and failure counters
+    sel_val: real;         -- Selected output value
+    property2: bool        -- Made property2 an output
+);
+var
+    -- Difference calculations
+    diff_ab, diff_bc, diff_ac: real;
+    -- Threshold comparisons
+    thresh_ab, thresh_bc, thresh_ac: bool;
+    -- Previous state
+    pre_PC, pre_TC, pre_FC: int;
+    -- Average calculations
+    avg_all, avg_ab, avg_bc, avg_ac: real;
+    -- Intermediate conditions for property2
+    case1, case2, case3: bool;
+let
+    -- Calculate absolute differences
+    diff_ab = abs_real(ia - ib);
+    diff_bc = abs_real(ib - ic);
+    diff_ac = abs_real(ia - ic);
+
+    -- Compare with threshold
+    thresh_ab = diff_ab > Tlevel;
+    thresh_bc = diff_bc > Tlevel;
+    thresh_ac = diff_ac > Tlevel;
+
+    -- Initialize previous values
+    pre_PC = 0 -> pre(PC);
+    pre_TC = 0 -> pre(TC);
+    pre_FC = 0 -> pre(FC);
+
+    -- Calculate averages
+    avg_all = (ia + ib + ic) / 3.0;
+    avg_ab = (ia + ib) / 2.0;
+    avg_bc = (ib + ic) / 2.0;
+    avg_ac = (ia + ic) / 2.0;
+
+    -- Failure counter logic
+    FC = if (not thresh_ab and not thresh_bc and not thresh_ac) then
+            NO_FAIL
+         else if (thresh_ab and thresh_bc and not thresh_ac) then
+            BRANCH_C_FAIL
+         else if (thresh_ab and not thresh_bc and thresh_ac) then
+            BRANCH_B_FAIL
+         else if (not thresh_ab and thresh_bc and thresh_ac) then
+            BRANCH_A_FAIL
+         else
+            pre_FC;
+
+    -- Persistence counter logic
+    PC = if pre_PC >= PClimit then
+            0
+         else if (not thresh_ab and not thresh_bc and not thresh_ac) then
+            pre_PC + 1
+         else
+            0;
+
+    -- Transient counter logic
+    TC = if FC = NO_FAIL then
+            pre_TC + 1
+         else
+            0;
+
+    -- Output selection logic
+    sel_val = if FC = NO_FAIL then
+                if abs_real(ia - avg_all) <= abs_real(ib - avg_all) and 
+                   abs_real(ia - avg_all) <= abs_real(ic - avg_all) then
+                    ia
+                else if abs_real(ib - avg_all) <= abs_real(ic - avg_all) then
+                    ib
+                else
+                    ic
+             else if FC = BRANCH_C_FAIL then
+                avg_ab
+             else if FC = BRANCH_B_FAIL then
+                avg_ac
+             else if FC = BRANCH_A_FAIL then
+                avg_bc
+             else
+                avg_all;
+
+    -- Property 2 cases
+    case1 = (ia <= ib and ib <= ic) => (sel_val = ib);
+    case2 = (ia <= ic and ic <= ib) => (sel_val = ic);
+    case3 = (ib <= ia and ia <= ic) => (sel_val = ia);
+
+    -- Property 2: When FC = 0 (no failure), selected value is median
+    property2 = (FC = NO_FAIL) => (case1 and case2 and case3);
+
+    --%PROPERTY property2;
+    --%PROPERTY "PC_non_negative" PC >= 0;
+    --%PROPERTY "TC_non_negative" TC >= 0;
+tel;

@@ -1,0 +1,83 @@
+﻿4) Nonlinear Guidance
+Model:  ‘NLGuidance_12B.mdl’
+Description:  This example is a nonlinear algorithm for generating a guidance command for an air vehicle.  The vector method determines an intercept location in Euclidean space for a target (static) referred to as aim points. The intercept location is a function of the relative position between the vehicle and target, where a minimum relative position to maintain is specified as a desired standoff distance.  
+Input Scope
+Name
+#
+Type
+Description
+Global
+Xtarg
+1
+Double
+Inertial Position 3x1 Vector of the Target [m]
+Global
+Xv
+2
+Double
+Inertial Position 3x1 Vector of the Vehicle [m]
+Global
+Vv
+3
+Double
+Inertial Velocity 3x1 Vector of the Vehicle [m/sec]
+Global
+r
+4
+Double
+Minimum Standoff Radius [m]
+Global
+Vt
+5
+Double
+Inertial Velocity 3x1 Vector of the Target [m/sec]
+
+Output Scope
+Name
+#
+Type
+Description
+Global
+yout
+1
+Double
+Aim Point Inertial Position 3x1 Vector for CCW Orbit Acquisition [m]
+
+
+Initial Requirements:  
+    1. NLGuidance shall always maintain the target on the port-side of the vehicle.
+    2. NLGuidance shall compute the inertial position vector for aim point 1, defining the location at Standoff 1 with an offset from the target position, and oriented on a vector perpendicular to the tangent relative position vector from the vehicle to the corresponding aim point.
+    3. NLGuidance shall compute the inertial position vector for aim point 2, defining the location at Standoff 2 with an offset from the target position, and oriented on a vector perpendicular to the tangent relative position vector from the vehicle to the corresponding aim point.
+    4. NLGuidance shall always select an inertial position vector of aim point #1 or #2 which shall result in a counter clockwise loiter for the UAV.  For example, the picture above with vehicle position, UAV, would return Tangent Aim Point #2.  
+    5. When the UAV relative position to the target is less than the minimum standoff distance, NLGuidance shall command the nearest inertial position in order to reestablish the minimum standoff distance while maintaining the target on the port-side of the vehicle.  
+    6. NLGuidance shall output consistent aim point with a static target without appreciable transient behavior in the command generation other than aim point switching where a transient is required to maintain a counter clockwise loiter (ref requirement 3).  Appreciable transient behavior is defined as erratic changes in the aim point command, beyond the following specific tolerance:
+        a. The change in the magnitude of the output over one frame of execution with T sample period shall not exceed the quantity of the combined velocity of the target plus the velocity of the vehicle multiplied by T.    
+    7. NLGuidance shall output the equivalent altitude of the vehicle for in-plane navigation.  In-plane navigation is defined where the target and the vehicle altitude (3rd component in the input inertial position vectors) are equal.
+
+
+
+Name
+Variable Name
+Definition
+Relative Position Vector
+Xr
+Inertial Position Vector describing position of Vehicle with respect to the Target.
+Aim Point #1
+Xap1
+Inertial Position Vector of Aim Point #1
+Aim Point #1
+Xap2
+Inertial Position Vector of Aim Point #2
+Relative Position Vector to Tangent Aim Point #1
+r1
+Inertial Position Vector describing position of Vehicle with respect to the Xap1.
+Relative Position Vector to Tangent Aim Point #2
+r2
+Inertial Position Vector describing position of Vehicle with respect to the Xap2.
+Unit Vector of Aim Point #1 from Target
+u1
+Inertial Position Vector describing Aim Point #1 with respect to Target
+Unit Vector of Aim Point #2 from Target
+u2
+Inertial Position Vector describing Aim Point #1 with respect to Target
+

@@ -1,0 +1,47 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing triplex_12B.c
+Parsing ert_main.c
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.196s
+GOTO program processing time: 0.007s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.004s (191 assignments)
+Slicing time: 0.000s (removed 178 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (13 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.250s
+Building error trace
+
+[Counterexample]
+
+
+State 3 file ert_main.c line 69 column 14 function main thread 0
+----------------------------------------------------
+  ia = +INFINITY (01111111 10000000 00000000 00000000)
+
+State 4 file ert_main.c line 70 column 14 function main thread 0
+----------------------------------------------------
+  ib = -INFINITY (11111111 10000000 00000000 00000000)
+
+State 5 file ert_main.c line 71 column 14 function main thread 0
+----------------------------------------------------
+  ic = 4.701979e-38f (00000001 10000000 00000000 00000010)
+
+State 6 file ert_main.c line 87 column 13 function main thread 0
+----------------------------------------------------
+Violated property:
+  file ert_main.c line 87 column 13 function main
+  RM-001: PC should increment or fault should be detected
+  (_Bool)(rtDW.Delay1_DSTATE[0] > prev_fc || rtDW.Delay1_DSTATE[2] != 0)
+
+
+VERIFICATION FAILED
+
+Bug found (k = 1)

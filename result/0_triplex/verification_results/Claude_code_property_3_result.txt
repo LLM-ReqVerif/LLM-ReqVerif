@@ -1,0 +1,495 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing triplex_12B.c
+Parsing ert_main.c
+ert_main.c:132:28: warning: absolute value function 'fabsf' given an argument of type 'double' but has parameter of type 'float' which may cause truncation of value [-Wabsolute-value]
+            __ESBMC_assert(fabsf(rtDW.Merge - expected_val) < 0.001,
+                           ^
+ert_main.c:132:28: note: use function 'fabs' instead
+            __ESBMC_assert(fabsf(rtDW.Merge - expected_val) < 0.001,
+                           ^~~~~
+                           fabs
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.212s
+GOTO program processing time: 0.009s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.004s (185 assignments)
+Slicing time: 0.000s (removed 181 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.004s
+No bug has been found in the base case
+Checking forward condition, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.004s (185 assignments)
+Slicing time: 0.000s (removed 181 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.002s
+The forward condition is unable to prove the property
+Checking base case, k = 2
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.004s (238 assignments)
+Slicing time: 0.002s (removed 234 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.005s
+No bug has been found in the base case
+Checking forward condition, k = 2
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.004s (238 assignments)
+Slicing time: 0.000s (removed 234 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.000s
+The forward condition is unable to prove the property
+Checking inductive step, k = 2
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.011s (416 assignments)
+Slicing time: 0.002s (removed 294 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (122 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.016s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 3.159s
+The inductive step is unable to prove the property
+Checking base case, k = 3
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.005s (291 assignments)
+Slicing time: 0.002s (removed 287 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.006s
+No bug has been found in the base case
+Checking forward condition, k = 3
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.005s (291 assignments)
+Slicing time: 0.002s (removed 287 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.000s
+The forward condition is unable to prove the property
+Checking inductive step, k = 3
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.014s (545 assignments)
+Slicing time: 0.002s (removed 365 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (180 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.021s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 4.942s
+The inductive step is unable to prove the property
+Checking base case, k = 4
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.008s (344 assignments)
+Slicing time: 0.000s (removed 340 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.008s
+No bug has been found in the base case
+Checking forward condition, k = 4
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.007s (344 assignments)
+Slicing time: 0.000s (removed 340 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.002s
+The forward condition is unable to prove the property
+Checking inductive step, k = 4
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.021s (674 assignments)
+Slicing time: 0.002s (removed 436 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (238 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.025s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 5.564s
+The inductive step is unable to prove the property
+Checking base case, k = 5
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.008s (397 assignments)
+Slicing time: 0.002s (removed 393 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.009s
+No bug has been found in the base case
+Checking forward condition, k = 5
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.007s (397 assignments)
+Slicing time: 0.000s (removed 393 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.002s
+The forward condition is unable to prove the property
+Checking inductive step, k = 5
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.032s (803 assignments)
+Slicing time: 0.002s (removed 507 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (296 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.036s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 18.965s
+The inductive step is unable to prove the property
+Checking base case, k = 6
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.011s (450 assignments)
+Slicing time: 0.000s (removed 446 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.011s
+No bug has been found in the base case
+Checking forward condition, k = 6
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.008s (450 assignments)
+Slicing time: 0.002s (removed 446 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.002s
+The forward condition is unable to prove the property
+Checking inductive step, k = 6
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.044s (932 assignments)
+Slicing time: 0.003s (removed 578 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (354 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.050s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 13.749s
+The inductive step is unable to prove the property
+Checking base case, k = 7
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.012s (503 assignments)
+Slicing time: 0.002s (removed 499 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.013s
+No bug has been found in the base case
+Checking forward condition, k = 7
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.009s (503 assignments)
+Slicing time: 0.002s (removed 499 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.002s
+The forward condition is unable to prove the property
+Checking inductive step, k = 7
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.052s (1061 assignments)
+Slicing time: 0.003s (removed 649 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (412 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.051s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 19.965s
+The inductive step is unable to prove the property
+Checking base case, k = 8
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.019s (556 assignments)
+Slicing time: 0.000s (removed 552 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.019s
+No bug has been found in the base case
+Checking forward condition, k = 8
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.015s (556 assignments)
+Slicing time: 0.000s (removed 552 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.002s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.000s
+The forward condition is unable to prove the property
+Checking inductive step, k = 8
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.132s (1190 assignments)
+Slicing time: 0.004s (removed 720 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (470 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.084s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 27.089s
+The inductive step is unable to prove the property
+Checking base case, k = 9
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 9   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.017s (609 assignments)
+Slicing time: 0.002s (removed 605 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.018s
+No bug has been found in the base case
+Checking forward condition, k = 9
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 9   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.012s (609 assignments)
+Slicing time: 0.002s (removed 605 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.002s
+The forward condition is unable to prove the property
+Checking inductive step, k = 9
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 9   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.084s (1319 assignments)
+Slicing time: 0.003s (removed 791 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (528 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.067s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 51.754s
+The inductive step is unable to prove the property
+Checking base case, k = 10
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 9   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 10   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.017s (662 assignments)
+Slicing time: 0.000s (removed 658 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (4 assignments)
+BMC program time: 0.017s
+No bug has been found in the base case
+Checking forward condition, k = 10
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 9   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 10   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.012s (662 assignments)
+Slicing time: 0.002s (removed 658 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (4 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.002s
+The forward condition is unable to prove the property
+Checking inductive step, k = 10
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 9   file ert_main.c line 67 column 5 function main
+Not unwinding loop 6 iteration 10   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.087s (1448 assignments)
+Slicing time: 0.004s (removed 862 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (586 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.070s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 56.471s
+The inductive step is unable to prove the property
+Checking base case, k = 11
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 9   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 10   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.019s (661 assignments)
+Slicing time: 0.002s (removed 658 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (3 assignments)
+BMC program time: 0.020s
+No bug has been found in the base case
+Checking forward condition, k = 11
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 2   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 3   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 4   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 5   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 6   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 7   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 8   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 9   file ert_main.c line 67 column 5 function main
+Unwinding loop 6 iteration 10   file ert_main.c line 67 column 5 function main
+Symex completed in: 0.012s (661 assignments)
+Slicing time: 0.002s (removed 658 assignments)
+Generated 0 VCC(s), 0 remaining after simplification (3 assignments)
+BMC program time: 0.013s
+
+VERIFICATION SUCCESSFUL
+
+Solution found by the forward condition; all states are reachable (k = 11)

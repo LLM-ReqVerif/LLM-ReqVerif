@@ -1,0 +1,25 @@
+Verification Summary - 2025-01-13 14:59:49.779020
+Directory: ./6_eb/LLM_code/ChatGPT_code
+Source file: ert_main.c
+==================================================
+
+Property 1
+--------------------
+Status: TIMEOUT
+
+Property 2
+--------------------
+Status: TIMEOUT
+
+Property 3
+--------------------
+Status: TIMEOUT
+
+Property 4
+--------------------
+Status: TIMEOUT
+
+Property 5
+--------------------
+Status: TIMEOUT
+

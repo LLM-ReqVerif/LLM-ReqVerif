@@ -1,0 +1,866 @@
+{
+"meta": {
+        "compiler-name": "lustrec",
+        "compiler-version": "1.7",
+        "command": "/home/lukeubun/PhdProject/CoCoSim/tools/verifiers/linux/bin/lustrec -int_div_euclidean -algebraic-loop-solve -int long long int -I /home/lukeubun/PhdProject/CoCoSim/tools/verifiers/linux/include/lustrec -d /home/lukeubun/PhdProject/lm_challenges/FRET_CoCoSim/4_nlguide/CoCoSim/cocosim_output/NLGuidance_12B_with_contracts_PP -emf /home/lukeubun/PhdProject/lm_challenges/FRET_CoCoSim/4_nlguide/FRET/NLGuidanceSpec.lus",
+        "source_file": "NLGuidanceSpec"
+        },
+"typedef": [],
+"consts": [],
+"imported_nodes": {
+                  },
+"nodes": {
+         "OTlore": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "N", "datatype": { "kind": "int" }, "original_name": "N"},
+                      {"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"}],
+           "outputs": [{"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "locals": [{"name": "__OTlore_9", "datatype": { "kind": "int" }, "original_name": "__OTlore_9"},
+                      {"name": "__OTlore_8", "datatype": { "kind": "int" }, "original_name": "__OTlore_8"},
+                      {"name": "__OTlore_7", "datatype": { "kind": "bool" }, "original_name": "__OTlore_7"},
+                      {"name": "__OTlore_5", "datatype": { "kind": "int" }, "original_name": "__OTlore_5"},
+                      {"name": "__OTlore_4", "datatype": { "kind": "bool" }, "original_name": "__OTlore_4"},
+                      {"name": "__OTlore_3", "datatype": { "kind": "int" }, "original_name": "__OTlore_3"},
+                      {"name": "__OTlore_2", "datatype": { "kind": "bool" }, "original_name": "__OTlore_2"},
+                      {"name": "__OTlore_11", "datatype": { "kind": "int" }, "original_name": "__OTlore_11"},
+                      {"name": "__OTlore_10", "datatype": { "kind": "int" }, "original_name": "__OTlore_10"},
+                      {"name": "__OTlore_1", "datatype": { "kind": "bool" }, "original_name": "__OTlore_1"},
+                      {"name": "C", "datatype": { "kind": "int" }, "original_name": "C"}],
+           "mems": [{"name": "__OTlore_6", "datatype": { "kind": "int" }, "original_name": "__OTlore_6"}],
+           "original_name": "OTlore",
+           "instrs": {  "__OTlore_8": {
+                          "kind": "local_assign",
+                          "lhs": "__OTlore_8",
+                          "rhs": {"type": "constant", "value": "1",
+                                  "datatype": { "kind": "int" } }
+                      },
+                       "__OTlore_7": {
+                         "kind": "operator",
+                         "lhs": "__OTlore_7",
+                         "name": "<",
+                         "args": [{"type": "variable", "value": "__OTlore_6",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "constant", "value": "0",
+                                   "datatype": { "kind": "int" } }]
+                      },
+                       "__OTlore_3": {
+                         "kind": "local_assign",
+                         "lhs": "__OTlore_3",
+                         "rhs": {"type": "constant", "value": "0",
+                                 "datatype": { "kind": "int" } }
+                      },
+                       "branch_1": {
+                         "kind": "branch",
+                         "guard": {"type": "variable", "value": "__OTlore_7",
+                                   "datatype": { "kind": "bool" } },
+                         "outputs": ["__OTlore_9"],
+                         "inputs": [{"name": "__OTlore_3", "datatype": { "kind": "int" }, "original_name": "__OTlore_3"},
+                                    {"name": "__OTlore_7", "datatype": { "kind": "bool" }, "original_name": "__OTlore_7"},
+                                    {"name": "__OTlore_8", "datatype": { "kind": "int" }, "original_name": "__OTlore_8"}],
+                         "branches": {
+                           "true": {
+                             "guard_value": "true",
+                             "inputs": [{"name": "__OTlore_3", "datatype": { "kind": "int" }, "original_name": "__OTlore_3"}],
+                             "instrs": {
+                                "__OTlore_9": {
+                                  "kind": "local_assign",
+                                  "lhs": "__OTlore_9",
+                                  "rhs": {"type": "variable",
+                                          "value": "__OTlore_3",
+                                          "datatype": { "kind": "int" } }
+                               }
+                             }
+                           },
+                           "false": {
+                             "guard_value": "false",
+                             "inputs": [{"name": "__OTlore_8", "datatype": { "kind": "int" }, "original_name": "__OTlore_8"}],
+                             "instrs": {
+                                "__OTlore_9": {
+                                  "kind": "local_assign",
+                                  "lhs": "__OTlore_9",
+                                  "rhs": {"type": "variable",
+                                          "value": "__OTlore_8",
+                                          "datatype": { "kind": "int" } }
+                               }
+                             }
+                           }
+                         }
+                      },
+                       "__OTlore_5": {
+                         "kind": "operator",
+                         "lhs": "__OTlore_5",
+                         "name": "uminus",
+                         "args": [{"type": "constant", "value": "1",
+                                   "datatype": { "kind": "int" } }]
+                      },
+                       "__OTlore_4_ni_10": {
+                         "kind": "arrow",
+                         "name": "ni_10",
+                         "lhs": "__OTlore_4",
+                         "rhs": "reset_ni_10"
+                      },
+                       "__OTlore_10": {
+                         "kind": "operator",
+                         "lhs": "__OTlore_10",
+                         "name": "+",
+                         "args": [{"type": "variable", "value": "__OTlore_6",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "__OTlore_9",
+                                   "datatype": { "kind": "int" } }]
+                      },
+                       "branch_2": {
+                         "kind": "branch",
+                         "guard": {"type": "variable", "value": "__OTlore_4",
+                                   "datatype": { "kind": "bool" } },
+                         "outputs": ["__OTlore_11"],
+                         "inputs": [{"name": "__OTlore_10", "datatype": { "kind": "int" }, "original_name": "__OTlore_10"},
+                                    {"name": "__OTlore_4", "datatype": { "kind": "bool" }, "original_name": "__OTlore_4"},
+                                    {"name": "__OTlore_5", "datatype": { "kind": "int" }, "original_name": "__OTlore_5"}],
+                         "branches": {
+                           "true": {
+                             "guard_value": "true",
+                             "inputs": [{"name": "__OTlore_5", "datatype": { "kind": "int" }, "original_name": "__OTlore_5"}],
+                             "instrs": {
+                                "__OTlore_11": {
+                                  "kind": "local_assign",
+                                  "lhs": "__OTlore_11",
+                                  "rhs": {"type": "variable",
+                                          "value": "__OTlore_5",
+                                          "datatype": { "kind": "int" } }
+                               }
+                             }
+                           },
+                           "false": {
+                             "guard_value": "false",
+                             "inputs": [{"name": "__OTlore_10", "datatype": { "kind": "int" }, "original_name": "__OTlore_10"}],
+                             "instrs": {
+                                "__OTlore_11": {
+                                  "kind": "local_assign",
+                                  "lhs": "__OTlore_11",
+                                  "rhs": {"type": "variable",
+                                          "value": "__OTlore_10",
+                                          "datatype": { "kind": "int" } }
+                               }
+                             }
+                           }
+                         }
+                      },
+                       "branch_3": {
+                         "kind": "branch",
+                         "guard": {"type": "variable", "value": "X",
+                                   "datatype": { "kind": "bool" } },
+                         "outputs": ["C"],
+                         "inputs": [{"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"},
+                                    {"name": "__OTlore_11", "datatype": { "kind": "int" }, "original_name": "__OTlore_11"},
+                                    {"name": "__OTlore_3", "datatype": { "kind": "int" }, "original_name": "__OTlore_3"}],
+                         "branches": {
+                           "true": {
+                             "guard_value": "true",
+                             "inputs": [{"name": "__OTlore_3", "datatype": { "kind": "int" }, "original_name": "__OTlore_3"}],
+                             "instrs": {
+                                "C": {
+                                  "kind": "local_assign",
+                                  "lhs": "C",
+                                  "rhs": {"type": "variable",
+                                          "value": "__OTlore_3",
+                                          "datatype": { "kind": "int" } }
+                               }
+                             }
+                           },
+                           "false": {
+                             "guard_value": "false",
+                             "inputs": [{"name": "__OTlore_11", "datatype": { "kind": "int" }, "original_name": "__OTlore_11"}],
+                             "instrs": {
+                                "C": {
+                                  "kind": "local_assign",
+                                  "lhs": "C",
+                                  "rhs": {"type": "variable",
+                                          "value": "__OTlore_11",
+                                          "datatype": { "kind": "int" } }
+                               }
+                             }
+                           }
+                         }
+                      },
+                       "__OTlore_6": {
+                         "kind": "pre",
+                         "lhs": "__OTlore_6",
+                         "rhs": {"type": "variable", "value": "C",
+                                 "datatype": { "kind": "int" } }
+                      },
+                       "__OTlore_2": {
+                         "kind": "operator",
+                         "lhs": "__OTlore_2",
+                         "name": "<=",
+                         "args": [{"type": "constant", "value": "0",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "C",
+                                   "datatype": { "kind": "int" } }]
+                      },
+                       "__OTlore_1": {
+                         "kind": "operator",
+                         "lhs": "__OTlore_1",
+                         "name": "<=",
+                         "args": [{"type": "variable", "value": "C",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "N",
+                                   "datatype": { "kind": "int" } }]
+                      },
+                       "Y": {
+                         "kind": "operator",
+                         "lhs": "Y",
+                         "name": "&&",
+                         "args": [{"type": "variable", "value": "__OTlore_2",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "__OTlore_1",
+                                   "datatype": { "kind": "bool" } }]
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "delay": {
+           "imported": "false",
+           "kind": "stateless",
+           "inputs": [{"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"},
+                      {"name": "R", "datatype": { "kind": "int" }, "original_name": "R"}],
+           "outputs": [{"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "locals": [],
+           "mems": [],
+           "original_name": "delay",
+           "instrs": {  "Y": {
+                          "kind": "local_assign",
+                          "lhs": "Y",
+                          "rhs": {"type": "variable", "value": "X",
+                                  "datatype": { "kind": "bool" } }
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "OT": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "L", "datatype": { "kind": "int" }, "original_name": "L"},
+                      {"name": "R", "datatype": { "kind": "int" }, "original_name": "R"},
+                      {"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"}],
+           "outputs": [{"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "locals": [{"name": "__OT_1", "datatype": { "kind": "int" }, "original_name": "__OT_1"},
+                      {"name": "D", "datatype": { "kind": "bool" }, "original_name": "D"}],
+           "mems": [],
+           "original_name": "OT",
+           "instrs": {  "__OT_1": {
+                          "kind": "operator",
+                          "lhs": "__OT_1",
+                          "name": "-",
+                          "args": [{"type": "variable", "value": "L",
+                                    "datatype": { "kind": "int" } },
+                                   {"type": "variable", "value": "R",
+                                    "datatype": { "kind": "int" } }]
+                      },
+                       "D_delay": {
+                         "kind": "statelesscall",
+                         "name": "delay",
+                         "id": "delay",
+                         "lhs": ["D"],
+                         "args": [{"type": "variable", "value": "X",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "R",
+                                   "datatype": { "kind": "int" } }]
+                         
+                      },
+                       "Y_ni_9": {
+                         "kind": "statefulcall",
+                         "name": "OTlore",
+                         "id": "ni_9",
+                         "lhs": ["Y"],
+                         "args": [{"type": "variable", "value": "__OT_1",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "D",
+                                   "datatype": { "kind": "bool" } }],
+                         "reset": { "name": "reset_ni_9", "resetable": "false"}
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "SI": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"},
+                      {"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "outputs": [{"name": "Z", "datatype": { "kind": "bool" }, "original_name": "Z"}],
+           "locals": [{"name": "__SI_5", "datatype": { "kind": "bool" }, "original_name": "__SI_5"},
+                      {"name": "__SI_4", "datatype": { "kind": "bool" }, "original_name": "__SI_4"},
+                      {"name": "__SI_2", "datatype": { "kind": "bool" }, "original_name": "__SI_2"},
+                      {"name": "__SI_1", "datatype": { "kind": "bool" }, "original_name": "__SI_1"}],
+           "mems": [{"name": "__SI_3", "datatype": { "kind": "bool" }, "original_name": "__SI_3"}],
+           "original_name": "SI",
+           "instrs": {  "__SI_2": {
+                          "kind": "local_assign",
+                          "lhs": "__SI_2",
+                          "rhs": {"type": "constant", "value": "false",
+                                  "datatype": { "kind": "bool" } }
+                      },
+                       "__SI_1_ni_8": {
+                         "kind": "arrow",
+                         "name": "ni_8",
+                         "lhs": "__SI_1",
+                         "rhs": "reset_ni_8"
+                      },
+                       "branch_4": {
+                         "kind": "branch",
+                         "guard": {"type": "variable", "value": "__SI_1",
+                                   "datatype": { "kind": "bool" } },
+                         "outputs": ["__SI_4"],
+                         "inputs": [{"name": "__SI_1", "datatype": { "kind": "bool" }, "original_name": "__SI_1"},
+                                    {"name": "__SI_2", "datatype": { "kind": "bool" }, "original_name": "__SI_2"},
+                                    {"name": "__SI_3", "datatype": { "kind": "bool" }, "original_name": "__SI_3"}],
+                         "branches": {
+                           "true": {
+                             "guard_value": "true",
+                             "inputs": [{"name": "__SI_2", "datatype": { "kind": "bool" }, "original_name": "__SI_2"}],
+                             "instrs": {
+                                "__SI_4": {
+                                  "kind": "local_assign",
+                                  "lhs": "__SI_4",
+                                  "rhs": {"type": "variable",
+                                          "value": "__SI_2",
+                                          "datatype": { "kind": "bool" } }
+                               }
+                             }
+                           },
+                           "false": {
+                             "guard_value": "false",
+                             "inputs": [{"name": "__SI_3", "datatype": { "kind": "bool" }, "original_name": "__SI_3"}],
+                             "instrs": {
+                                "__SI_4": {
+                                  "kind": "local_assign",
+                                  "lhs": "__SI_4",
+                                  "rhs": {"type": "variable",
+                                          "value": "__SI_3",
+                                          "datatype": { "kind": "bool" } }
+                               }
+                             }
+                           }
+                         }
+                      },
+                       "__SI_5": {
+                         "kind": "operator",
+                         "lhs": "__SI_5",
+                         "name": "||",
+                         "args": [{"type": "variable", "value": "X",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "__SI_4",
+                                   "datatype": { "kind": "bool" } }]
+                      },
+                       "Z": {
+                         "kind": "operator",
+                         "lhs": "Z",
+                         "name": "&&",
+                         "args": [{"type": "variable", "value": "Y",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "__SI_5",
+                                   "datatype": { "kind": "bool" } }]
+                      },
+                       "__SI_3": {
+                         "kind": "pre",
+                         "lhs": "__SI_3",
+                         "rhs": {"type": "variable", "value": "Z",
+                                 "datatype": { "kind": "bool" } }
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "S": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"},
+                      {"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "outputs": [{"name": "Z", "datatype": { "kind": "bool" }, "original_name": "Z"}],
+           "locals": [{"name": "__S_5", "datatype": { "kind": "bool" }, "original_name": "__S_5"},
+                      {"name": "__S_4", "datatype": { "kind": "bool" }, "original_name": "__S_4"},
+                      {"name": "__S_2", "datatype": { "kind": "bool" }, "original_name": "__S_2"},
+                      {"name": "__S_1", "datatype": { "kind": "bool" }, "original_name": "__S_1"}],
+           "mems": [{"name": "__S_3", "datatype": { "kind": "bool" }, "original_name": "__S_3"}],
+           "original_name": "S",
+           "instrs": {  "__S_2": {
+                          "kind": "local_assign",
+                          "lhs": "__S_2",
+                          "rhs": {"type": "constant", "value": "false",
+                                  "datatype": { "kind": "bool" } }
+                      },
+                       "__S_1_ni_7": {
+                         "kind": "arrow",
+                         "name": "ni_7",
+                         "lhs": "__S_1",
+                         "rhs": "reset_ni_7"
+                      },
+                       "branch_5": {
+                         "kind": "branch",
+                         "guard": {"type": "variable", "value": "__S_1",
+                                   "datatype": { "kind": "bool" } },
+                         "outputs": ["__S_4"],
+                         "inputs": [{"name": "__S_1", "datatype": { "kind": "bool" }, "original_name": "__S_1"},
+                                    {"name": "__S_2", "datatype": { "kind": "bool" }, "original_name": "__S_2"},
+                                    {"name": "__S_3", "datatype": { "kind": "bool" }, "original_name": "__S_3"}],
+                         "branches": {
+                           "true": {
+                             "guard_value": "true",
+                             "inputs": [{"name": "__S_2", "datatype": { "kind": "bool" }, "original_name": "__S_2"}],
+                             "instrs": {
+                                "__S_4": {
+                                  "kind": "local_assign",
+                                  "lhs": "__S_4",
+                                  "rhs": {"type": "variable",
+                                          "value": "__S_2",
+                                          "datatype": { "kind": "bool" } }
+                               }
+                             }
+                           },
+                           "false": {
+                             "guard_value": "false",
+                             "inputs": [{"name": "__S_3", "datatype": { "kind": "bool" }, "original_name": "__S_3"}],
+                             "instrs": {
+                                "__S_4": {
+                                  "kind": "local_assign",
+                                  "lhs": "__S_4",
+                                  "rhs": {"type": "variable",
+                                          "value": "__S_3",
+                                          "datatype": { "kind": "bool" } }
+                               }
+                             }
+                           }
+                         }
+                      },
+                       "__S_5": {
+                         "kind": "operator",
+                         "lhs": "__S_5",
+                         "name": "&&",
+                         "args": [{"type": "variable", "value": "Y",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "__S_4",
+                                   "datatype": { "kind": "bool" } }]
+                      },
+                       "Z": {
+                         "kind": "operator",
+                         "lhs": "Z",
+                         "name": "||",
+                         "args": [{"type": "variable", "value": "X",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "__S_5",
+                                   "datatype": { "kind": "bool" } }]
+                      },
+                       "__S_3": {
+                         "kind": "pre",
+                         "lhs": "__S_3",
+                         "rhs": {"type": "variable", "value": "Z",
+                                 "datatype": { "kind": "bool" } }
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "O": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"}],
+           "outputs": [{"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "locals": [{"name": "__O_4", "datatype": { "kind": "bool" }, "original_name": "__O_4"},
+                      {"name": "__O_2", "datatype": { "kind": "bool" }, "original_name": "__O_2"},
+                      {"name": "__O_1", "datatype": { "kind": "bool" }, "original_name": "__O_1"}],
+           "mems": [{"name": "__O_3", "datatype": { "kind": "bool" }, "original_name": "__O_3"}],
+           "original_name": "O",
+           "instrs": {  "__O_2": {
+                          "kind": "local_assign",
+                          "lhs": "__O_2",
+                          "rhs": {"type": "constant", "value": "false",
+                                  "datatype": { "kind": "bool" } }
+                      },
+                       "__O_1_ni_6": {
+                         "kind": "arrow",
+                         "name": "ni_6",
+                         "lhs": "__O_1",
+                         "rhs": "reset_ni_6"
+                      },
+                       "branch_6": {
+                         "kind": "branch",
+                         "guard": {"type": "variable", "value": "__O_1",
+                                   "datatype": { "kind": "bool" } },
+                         "outputs": ["__O_4"],
+                         "inputs": [{"name": "__O_1", "datatype": { "kind": "bool" }, "original_name": "__O_1"},
+                                    {"name": "__O_2", "datatype": { "kind": "bool" }, "original_name": "__O_2"},
+                                    {"name": "__O_3", "datatype": { "kind": "bool" }, "original_name": "__O_3"}],
+                         "branches": {
+                           "true": {
+                             "guard_value": "true",
+                             "inputs": [{"name": "__O_2", "datatype": { "kind": "bool" }, "original_name": "__O_2"}],
+                             "instrs": {
+                                "__O_4": {
+                                  "kind": "local_assign",
+                                  "lhs": "__O_4",
+                                  "rhs": {"type": "variable",
+                                          "value": "__O_2",
+                                          "datatype": { "kind": "bool" } }
+                               }
+                             }
+                           },
+                           "false": {
+                             "guard_value": "false",
+                             "inputs": [{"name": "__O_3", "datatype": { "kind": "bool" }, "original_name": "__O_3"}],
+                             "instrs": {
+                                "__O_4": {
+                                  "kind": "local_assign",
+                                  "lhs": "__O_4",
+                                  "rhs": {"type": "variable",
+                                          "value": "__O_3",
+                                          "datatype": { "kind": "bool" } }
+                               }
+                             }
+                           }
+                         }
+                      },
+                       "Y": {
+                         "kind": "operator",
+                         "lhs": "Y",
+                         "name": "||",
+                         "args": [{"type": "variable", "value": "X",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "__O_4",
+                                   "datatype": { "kind": "bool" } }]
+                      },
+                       "__O_3": {
+                         "kind": "pre",
+                         "lhs": "__O_3",
+                         "rhs": {"type": "variable", "value": "Y",
+                                 "datatype": { "kind": "bool" } }
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "H": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"}],
+           "outputs": [{"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "locals": [{"name": "__H_4", "datatype": { "kind": "bool" }, "original_name": "__H_4"},
+                      {"name": "__H_3", "datatype": { "kind": "bool" }, "original_name": "__H_3"},
+                      {"name": "__H_1", "datatype": { "kind": "bool" }, "original_name": "__H_1"}],
+           "mems": [{"name": "__H_2", "datatype": { "kind": "bool" }, "original_name": "__H_2"}],
+           "original_name": "H",
+           "instrs": {  "__H_3": {
+                          "kind": "operator",
+                          "lhs": "__H_3",
+                          "name": "&&",
+                          "args": [{"type": "variable", "value": "X",
+                                    "datatype": { "kind": "bool" } },
+                                   {"type": "variable", "value": "__H_2",
+                                    "datatype": { "kind": "bool" } }]
+                      },
+                       "__H_1_ni_5": {
+                         "kind": "arrow",
+                         "name": "ni_5",
+                         "lhs": "__H_1",
+                         "rhs": "reset_ni_5"
+                      },
+                       "branch_7": {
+                         "kind": "branch",
+                         "guard": {"type": "variable", "value": "__H_1",
+                                   "datatype": { "kind": "bool" } },
+                         "outputs": ["__H_4"],
+                         "inputs": [{"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"},
+                                    {"name": "__H_1", "datatype": { "kind": "bool" }, "original_name": "__H_1"},
+                                    {"name": "__H_3", "datatype": { "kind": "bool" }, "original_name": "__H_3"}],
+                         "branches": {
+                           "true": {
+                             "guard_value": "true",
+                             "inputs": [{"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"}],
+                             "instrs": {
+                                "__H_4": {
+                                  "kind": "local_assign",
+                                  "lhs": "__H_4",
+                                  "rhs": {"type": "variable", "value": "X",
+                                          "datatype": { "kind": "bool" } }
+                               }
+                             }
+                           },
+                           "false": {
+                             "guard_value": "false",
+                             "inputs": [{"name": "__H_3", "datatype": { "kind": "bool" }, "original_name": "__H_3"}],
+                             "instrs": {
+                                "__H_4": {
+                                  "kind": "local_assign",
+                                  "lhs": "__H_4",
+                                  "rhs": {"type": "variable",
+                                          "value": "__H_3",
+                                          "datatype": { "kind": "bool" } }
+                               }
+                             }
+                           }
+                         }
+                      },
+                       "Y": {
+                         "kind": "local_assign",
+                         "lhs": "Y",
+                         "rhs": {"type": "variable", "value": "__H_4",
+                                 "datatype": { "kind": "bool" } }
+                      },
+                       "__H_2": {
+                         "kind": "pre",
+                         "lhs": "__H_2",
+                         "rhs": {"type": "variable", "value": "Y",
+                                 "datatype": { "kind": "bool" } }
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "dot_product": {
+           "imported": "false",
+           "kind": "stateless",
+           "inputs": [{"name": "x", "datatype": { "kind": "array", "base_type": { "kind": "real" }, "dim": {"kind": "int",
+                      "value": "3"} }, "original_name": "x"},
+                      {"name": "y", "datatype": { "kind": "array", "base_type": { "kind": "real" }, "dim": {"kind": "int",
+                      "value": "3"} }, "original_name": "y"}],
+           "outputs": [{"name": "z", "datatype": { "kind": "real" }, "original_name": "z"}],
+           "locals": [{"name": "__dot_product_4", "datatype": { "kind": "real" }, "original_name": "__dot_product_4"},
+                      {"name": "__dot_product_3", "datatype": { "kind": "real" }, "original_name": "__dot_product_3"},
+                      {"name": "__dot_product_2", "datatype": { "kind": "real" }, "original_name": "__dot_product_2"},
+                      {"name": "__dot_product_1", "datatype": { "kind": "real" }, "original_name": "__dot_product_1"}],
+           "mems": [],
+           "original_name": "dot_product",
+           "instrs": {  "__dot_product_3": {
+                          "kind": "operator",
+                          "lhs": "__dot_product_3",
+                          "name": "*",
+                          "args": [{"type": "array access",
+                                    "array": [{"type": "variable",
+                                               "value": "x",
+                                               "datatype": { "kind": "array", "base_type": { "kind": "real" }, "dim": {"kind": "int",
+                                               "value": "3"} } }],
+                                    "idx": [{"type": "constant",
+                                             "value": "0",
+                                             "datatype": { "kind": "int" } }]
+                                    },
+                                   {"type": "array access",
+                                    "array": [{"type": "variable",
+                                               "value": "y",
+                                               "datatype": { "kind": "array", "base_type": { "kind": "real" }, "dim": {"kind": "int",
+                                               "value": "3"} } }],
+                                    "idx": [{"type": "constant",
+                                             "value": "0",
+                                             "datatype": { "kind": "int" } }]
+                                    }]
+                      },
+                       "__dot_product_2": {
+                         "kind": "operator",
+                         "lhs": "__dot_product_2",
+                         "name": "*",
+                         "args": [{"type": "array access",
+                                   "array": [{"type": "variable",
+                                              "value": "x",
+                                              "datatype": { "kind": "array", "base_type": { "kind": "real" }, "dim": {"kind": "int",
+                                              "value": "3"} } }],
+                                   "idx": [{"type": "constant", "value": "1",
+                                            "datatype": { "kind": "int" } }]
+                                   },
+                                  {"type": "array access",
+                                   "array": [{"type": "variable",
+                                              "value": "y",
+                                              "datatype": { "kind": "array", "base_type": { "kind": "real" }, "dim": {"kind": "int",
+                                              "value": "3"} } }],
+                                   "idx": [{"type": "constant", "value": "1",
+                                            "datatype": { "kind": "int" } }]
+                                   }]
+                      },
+                       "__dot_product_4": {
+                         "kind": "operator",
+                         "lhs": "__dot_product_4",
+                         "name": "+",
+                         "args": [{"type": "variable",
+                                   "value": "__dot_product_3",
+                                   "datatype": { "kind": "real" } },
+                                  {"type": "variable",
+                                   "value": "__dot_product_2",
+                                   "datatype": { "kind": "real" } }]
+                      },
+                       "__dot_product_1": {
+                         "kind": "operator",
+                         "lhs": "__dot_product_1",
+                         "name": "*",
+                         "args": [{"type": "array access",
+                                   "array": [{"type": "variable",
+                                              "value": "x",
+                                              "datatype": { "kind": "array", "base_type": { "kind": "real" }, "dim": {"kind": "int",
+                                              "value": "3"} } }],
+                                   "idx": [{"type": "constant", "value": "2",
+                                            "datatype": { "kind": "int" } }]
+                                   },
+                                  {"type": "array access",
+                                   "array": [{"type": "variable",
+                                              "value": "y",
+                                              "datatype": { "kind": "array", "base_type": { "kind": "real" }, "dim": {"kind": "int",
+                                              "value": "3"} } }],
+                                   "idx": [{"type": "constant", "value": "2",
+                                            "datatype": { "kind": "int" } }]
+                                   }]
+                      },
+                       "z": {
+                         "kind": "operator",
+                         "lhs": "z",
+                         "name": "+",
+                         "args": [{"type": "variable",
+                                   "value": "__dot_product_4",
+                                   "datatype": { "kind": "real" } },
+                                  {"type": "variable",
+                                   "value": "__dot_product_1",
+                                   "datatype": { "kind": "real" } }]
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "SIT": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "L", "datatype": { "kind": "int" }, "original_name": "L"},
+                      {"name": "R", "datatype": { "kind": "int" }, "original_name": "R"},
+                      {"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"},
+                      {"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "outputs": [{"name": "Z", "datatype": { "kind": "bool" }, "original_name": "Z"}],
+           "locals": [{"name": "__SIT_2", "datatype": { "kind": "bool" }, "original_name": "__SIT_2"},
+                      {"name": "__SIT_1", "datatype": { "kind": "bool" }, "original_name": "__SIT_1"}],
+           "mems": [],
+           "original_name": "SIT",
+           "instrs": {  "__SIT_2_ni_4": {
+                          "kind": "statefulcall",
+                          "name": "SI",
+                          "id": "ni_4",
+                          "lhs": ["__SIT_2"],
+                          "args": [{"type": "variable", "value": "X",
+                                    "datatype": { "kind": "bool" } },
+                                   {"type": "variable", "value": "Y",
+                                    "datatype": { "kind": "bool" } }],
+                          "reset": { "name": "reset_ni_4", "resetable": "false"}
+                      },
+                       "__SIT_1_ni_3": {
+                         "kind": "statefulcall",
+                         "name": "OT",
+                         "id": "ni_3",
+                         "lhs": ["__SIT_1"],
+                         "args": [{"type": "variable", "value": "L",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "R",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "X",
+                                   "datatype": { "kind": "bool" } }],
+                         "reset": { "name": "reset_ni_3", "resetable": "false"}
+                      },
+                       "Z": {
+                         "kind": "operator",
+                         "lhs": "Z",
+                         "name": "&&",
+                         "args": [{"type": "variable", "value": "__SIT_2",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "__SIT_1",
+                                   "datatype": { "kind": "bool" } }]
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "ST": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "L", "datatype": { "kind": "int" }, "original_name": "L"},
+                      {"name": "R", "datatype": { "kind": "int" }, "original_name": "R"},
+                      {"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"},
+                      {"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "outputs": [{"name": "Z", "datatype": { "kind": "bool" }, "original_name": "Z"}],
+           "locals": [{"name": "__ST_2", "datatype": { "kind": "bool" }, "original_name": "__ST_2"},
+                      {"name": "__ST_1", "datatype": { "kind": "bool" }, "original_name": "__ST_1"}],
+           "mems": [],
+           "original_name": "ST",
+           "instrs": {  "__ST_2_ni_2": {
+                          "kind": "statefulcall",
+                          "name": "S",
+                          "id": "ni_2",
+                          "lhs": ["__ST_2"],
+                          "args": [{"type": "variable", "value": "X",
+                                    "datatype": { "kind": "bool" } },
+                                   {"type": "variable", "value": "Y",
+                                    "datatype": { "kind": "bool" } }],
+                          "reset": { "name": "reset_ni_2", "resetable": "false"}
+                      },
+                       "__ST_1_ni_1": {
+                         "kind": "statefulcall",
+                         "name": "OT",
+                         "id": "ni_1",
+                         "lhs": ["__ST_1"],
+                         "args": [{"type": "variable", "value": "L",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "R",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "X",
+                                   "datatype": { "kind": "bool" } }],
+                         "reset": { "name": "reset_ni_1", "resetable": "false"}
+                      },
+                       "Z": {
+                         "kind": "operator",
+                         "lhs": "Z",
+                         "name": "&&",
+                         "args": [{"type": "variable", "value": "__ST_2",
+                                   "datatype": { "kind": "bool" } },
+                                  {"type": "variable", "value": "__ST_1",
+                                   "datatype": { "kind": "bool" } }]
+                      }
+           },
+           "annots": { 
+           }
+         },
+         "HT": {
+           "imported": "false",
+           "kind": "stateful",
+           "inputs": [{"name": "L", "datatype": { "kind": "int" }, "original_name": "L"},
+                      {"name": "R", "datatype": { "kind": "int" }, "original_name": "R"},
+                      {"name": "X", "datatype": { "kind": "bool" }, "original_name": "X"}],
+           "outputs": [{"name": "Y", "datatype": { "kind": "bool" }, "original_name": "Y"}],
+           "locals": [{"name": "__HT_2", "datatype": { "kind": "bool" }, "original_name": "__HT_2"},
+                      {"name": "__HT_1", "datatype": { "kind": "bool" }, "original_name": "__HT_1"}],
+           "mems": [],
+           "original_name": "HT",
+           "instrs": {  "__HT_1": {
+                          "kind": "operator",
+                          "lhs": "__HT_1",
+                          "name": "not",
+                          "args": [{"type": "variable", "value": "X",
+                                    "datatype": { "kind": "bool" } }]
+                      },
+                       "__HT_2_ni_0": {
+                         "kind": "statefulcall",
+                         "name": "OT",
+                         "id": "ni_0",
+                         "lhs": ["__HT_2"],
+                         "args": [{"type": "variable", "value": "L",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "R",
+                                   "datatype": { "kind": "int" } },
+                                  {"type": "variable", "value": "__HT_1",
+                                   "datatype": { "kind": "bool" } }],
+                         "reset": { "name": "reset_ni_0", "resetable": "false"}
+                      },
+                       "Y": {
+                         "kind": "operator",
+                         "lhs": "Y",
+                         "name": "not",
+                         "args": [{"type": "variable", "value": "__HT_2",
+                                   "datatype": { "kind": "bool" } }]
+                      }
+           },
+           "annots": { 
+           }
+         }}
+}

@@ -1,0 +1,11 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing NLGuidance_12B.c
+Parsing ert_main.c
+ert_main.c:43:8: error: unknown type name 'ExtU_NLGuidance_12B_T'
+extern ExtU_NLGuidance_12B_T rtU;  /* External inputs */
+       ^
+ert_main.c:44:8: error: unknown type name 'ExtY_NLGuidance_12B_T'
+extern ExtY_NLGuidance_12B_T rtY;  /* External outputs */
+       ^
+ERROR: PARSING ERROR

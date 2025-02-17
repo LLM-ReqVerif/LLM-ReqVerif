@@ -1,0 +1,45 @@
+Verification Summary - 2025-01-13 17:16:14.999988
+Directory: ./3_regulators/LLM_code/Claude_code
+Source file: ert_main.c
+==================================================
+
+Property 1
+--------------------
+Status: TIMEOUT
+
+Property 2
+--------------------
+Status: TIMEOUT
+
+Property 3
+--------------------
+Status: TIMEOUT
+
+Property 4
+--------------------
+Status: TIMEOUT
+
+Property 5
+--------------------
+Status: TIMEOUT
+
+Property 6
+--------------------
+Status: FAILED
+
+Property 7
+--------------------
+Status: FAILED
+
+Property 8
+--------------------
+Status: FAILED
+
+Property 9
+--------------------
+Status: FAILED
+
+Property 10
+--------------------
+Status: FAILED
+

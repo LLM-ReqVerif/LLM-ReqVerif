@@ -1,0 +1,283 @@
+==============================
+Systematic Code-Based Analysis
+==============================
+
+Below is a detailed analysis derived strictly from the provided C code excerpts (`regs_12B.c`, `regs_12B_data.c`) and the specified requirements. All variable names and signal names exactly match their usage in the code. Each “global step” call (i.e., `regs_12B_step()`) is considered a single cycle at the nominal 100 Hz update rate.
+
+--------------------------------------------------------------------------------
+1) State Variable Mapping
+--------------------------------------------------------------------------------
+
+In the generated code, the internal (persistent) state variables are all stored in the `DW` structure (`DW rtDW`). Their definitions and update sequences appear at the end of the `regs_12B_step()` function. **All updates occur after the global step.** Below is a list of each state variable, possible values, and usage meaning based solely on the code:
+
+1. **`rtDW.Memory_PreviousInput`**  
+   - **Type**: `real_T`  
+   - **Range**: Not explicitly clamped; numeric range governed by double precision in C.  
+   - **Meaning**: Stores the previous-cycle value of the local variable `rtb_Sum1` from Subsystem `<S9>`. Used in the summation logic associated with `hcvdt_cmd_fcs_fps2` calculations.
+
+2. **`rtDW.UnitDelay_DSTATE`**  
+   - **Type**: `real_T`  
+   - **Range**: Not explicitly clamped; numeric range governed by double precision in C.  
+   - **Meaning**: Used in Subsystem `<S13>` for the integral-like calculation of the height channel commands. At the end of each cycle, it is assigned `rtb_CVdt_cmd` (the difference of `hcv_cmd_fcs_fps` and `zcv_fcs_fps`, possibly saturated).
+
+3. **`rtDW.UnitDelay1_DSTATE`**  
+   - **Type**: `real_T`  
+   - **Range**: Not explicitly clamped; numeric range governed by double precision in C.  
+   - **Meaning**: Used in Subsystem `<S13>` for the integrator state in height channel. At the end of each cycle, it is assigned `rtb_Sum1` (the integrated sum for the height regulator).
+
+4. **`rtDW.UnitDelay_DSTATE_o`**  
+   - **Type**: `real_T`  
+   - **Range**: Not explicitly clamped; numeric range governed by double precision in C.  
+   - **Meaning**: Used in Subsystem `<S16>` for the pitch channel. At the end of each cycle, it is assigned `rtb_Sum3` (the difference of `mcv_cmd_fcs_dps` and `mcv_fcs_dps`).
+
+5. **`rtDW.UnitDelay1_DSTATE_k`**  
+   - **Type**: `real_T`  
+   - **Range**: Not explicitly clamped; numeric range governed by double precision in C.  
+   - **Meaning**: Used in Subsystem `<S16>` for the integrator state in the pitch channel. At the end of each cycle, it is assigned `rtb_Sum1_h` (the integrated sum for the pitch regulator).
+
+**IMPORTANT**:  
+All above states are updated only *after* `regs_12B_step()` finishes computing the new outputs. Then, in the next cycle, these new states are used as inputs to the next step’s calculations.
+
+--------------------------------------------------------------------------------
+2) Requirements Analysis
+--------------------------------------------------------------------------------
+
+Below are the ten requirements exactly as provided. For each requirement, we identify:
+
+- **Relevant State Variables** (if any) needed to monitor or derive the relevant output.
+- **Input Triggers** or conditions causing the output to change.
+- **Expected State Changes** that correspond to the requirement’s behavior.
+- **Output Verification** signals to be monitored or verified.
+- **Timing Requirements** regarding how many cycles (at 100 Hz) are involved in each check.
+
+Each requirement stands alone with no merging.
+
+--------------------------------------------------
+(1) The Inner Loop Roll Regulator Shall not command angular roll accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+
+- **Relevant State Variables**:  
+  None directly control the roll acceleration in this code; the roll acceleration command is computed in one line.  
+  The roll acceleration command is `rtY.lcvdt_cmd_fcs_dps2`.
+
+- **Input Triggers**:  
+  - `rtU.lcv_cmd_fcs_dps`  
+  - `rtU.lcv_fps_dps`  
+
+- **Expected State Changes**:  
+  - No code-based internal “if” or clamp specifically for 50 deg/sec2. The code sets `rtY.lcvdt_cmd_fcs_dps2 = (rtU.lcv_cmd_fcs_dps - rtU.lcv_fps_dps) * 2.5;`.  
+  - The persistent states (`Memory_PreviousInput`, `UnitDelay_*`) do not affect `lcvdt_cmd_fcs_dps2`.
+
+- **Output Verification**:  
+  - Check `rtY.lcvdt_cmd_fcs_dps2` each cycle to ensure it does not exceed 50 deg/sec2 for longer than 100 consecutive cycles.
+
+- **Timing Requirements**:  
+  - Must monitor over 100 frames (1 second).  
+  - Check at the *end of each global step* (after `regs_12B_step()`).
+
+--------------------------------------------------
+(2) The Inner Loop Pitch Regulator Shall not command angular pitch accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+
+- **Relevant State Variables**:  
+  - The pitch acceleration command is `rtY.mcvdt_cmd_fcs_dps2`.  
+  - The integrator states for pitch channel are `rtDW.UnitDelay_DSTATE_o` and `rtDW.UnitDelay1_DSTATE_k`, but these do not enforce a 50 deg/sec2 clamp internally.
+
+- **Input Triggers**:  
+  - `rtU.mcv_cmd_fcs_dps`  
+  - `rtU.mcv_fcs_dps`  
+  - `rtU.vtas_adc_kts` (used in a lookup for transition gain in `<S10>`)
+
+- **Expected State Changes**:  
+  - Each cycle, `rtY.mcvdt_cmd_fcs_dps2` is computed as `transition_bvr(...) * (mcv_cmd_fcs_dps - mcv_fcs_dps) + 5.0 * <integrator>`.  
+  - No direct clamp to 50 deg/sec2 is in the code.
+
+- **Output Verification**:  
+  - Check `rtY.mcvdt_cmd_fcs_dps2` each cycle to ensure it does not exceed 50 deg/sec2 for longer than 100 consecutive cycles.
+
+- **Timing Requirements**:  
+  - Must observe for 100 frames.  
+  - Verified at cycle end.
+
+--------------------------------------------------
+(3) The Inner Loop Yaw Regulator Shall not command angular yaw accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+
+- **Relevant State Variables**:  
+  - The yaw acceleration command is `rtY.ncvdt_cmd_fcs_dps2`.  
+  - No local states directly enforce a 50 deg/sec2 limit.
+
+- **Input Triggers**:  
+  - `rtU.ncv_cmd_fcs_dps`  
+  - `rtU.ncv_fcs_dps`  
+  - `rtU.beta_adc_deg`, `rtU.beta_dot`, and `rtU.vtas_adc_kts` (used in the yaw logic `<S12>`)
+
+- **Expected State Changes**:  
+  - `rtY.ncvdt_cmd_fcs_dps2` is computed via multi-term expression:  
+    ```
+    rtY.ncvdt_cmd_fcs_dps2 =
+       ((ncv_cmd_fcs_dps * 4.0 + 4.0 * beta_adc_deg) + 1.5 * beta_dot) * <transition> 
+       + (1.0 - <transition>) * (ncv_cmd_fcs_dps - ncv_fcs_dps);
+    ```
+  - No direct clamp is present for 50 deg/sec2.
+
+- **Output Verification**:  
+  - Monitor `rtY.ncvdt_cmd_fcs_dps2` each cycle; ensure it stays within 50 deg/sec2 for not more than 100 cycles.
+
+- **Timing Requirements**:  
+  - 100 frames.  
+  - Check after each step call.
+
+--------------------------------------------------
+(4) The Inner Loop Airspeed Regulator Shall not command translational axial accelerations greater than the capability of the system (32 ft/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+
+- **Relevant State Variables**:  
+  - The axial acceleration command is `rtY.xcvdt_cmd_fcs_fps2`.  
+  - No direct clamp to 32 ft/sec2 is enforced in code.
+
+- **Input Triggers**:  
+  - `rtU.xcv_cmd_fcs_fps`  
+  - `rtU.dcv_fcs_fps` (note the code uses `-rtU.dcv_fcs_fps` in the difference)
+
+- **Expected State Changes**:  
+  - Computed as `rtY.xcvdt_cmd_fcs_fps2 = (xcv_cmd_fcs_fps - (-dcv_fcs_fps)) * 0.5;`
+  - No additional code-based clamp.
+
+- **Output Verification**:  
+  - Check `rtY.xcvdt_cmd_fcs_fps2` each cycle against 32 ft/sec2 for more than 100 cycles.
+
+- **Timing Requirements**:  
+  - Monitor for 100 consecutive frames.  
+  - End-of-step check.
+
+--------------------------------------------------
+(5) The Inner Loop Height Regulator Shall not command translational height accelerations greater than the capability of the system (32 ft/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+
+- **Relevant State Variables**:  
+  - The height acceleration command is `rtY.hcvdt_cmd_fcs_fps2`.  
+  - Intermediate integrator states:
+    - `rtDW.Memory_PreviousInput`
+    - `rtDW.UnitDelay_DSTATE`
+    - `rtDW.UnitDelay1_DSTATE`
+  - None of these states implement a numeric clamp of 32 ft/sec2.
+
+- **Input Triggers**:  
+  - `rtU.hcv_cmd_fcs_fps`  
+  - `rtU.zcv_fcs_fps` (used as negative sign in the code)
+
+- **Expected State Changes**:  
+  - `rtY.hcvdt_cmd_fcs_fps2 = 0.25 * <integrator_output> + <difference>;`
+  - No direct clamp to 32 ft/sec2 is present.
+
+- **Output Verification**:  
+  - Check `rtY.hcvdt_cmd_fcs_fps2` each cycle against 32 ft/sec2 for 100 frames.
+
+- **Timing Requirements**:  
+  - 1 second = 100 frames.  
+  - Verified at step end.
+
+--------------------------------------------------
+(6) The Inner Loop Roll Regulator Shall not command transient changes in angular roll acceleration greater than 50 deg/sec2/sec.
+
+- **Relevant State Variables**:  
+  - The roll acceleration output `rtY.lcvdt_cmd_fcs_dps2` does *not* have any internal memory in the code.  
+  - No direct state is used to limit the rate of change for roll acceleration.
+
+- **Input Triggers**:  
+  - The same triggers as Requirement (1):  
+    - `rtU.lcv_cmd_fcs_dps`  
+    - `rtU.lcv_fps_dps`
+
+- **Expected State Changes**:  
+  - The difference between consecutive values of `rtY.lcvdt_cmd_fcs_dps2` must remain ≤ 50 deg/sec2 each cycle.
+
+- **Output Verification**:  
+  - Externally check `Δ(rtY.lcvdt_cmd_fcs_dps2)` between consecutive steps.  
+  - The code does not clamp or store previous roll acceleration; such a check must be done outside.
+
+- **Timing Requirements**:  
+  - Evaluate the difference every cycle at the end of `regs_12B_step()`.
+
+--------------------------------------------------
+(7) The Inner Loop Pitch Regulator Shall not command transient changes in angular pitch acceleration greater than 50 deg/sec2/sec.
+
+- **Relevant State Variables**:  
+  - `rtY.mcvdt_cmd_fcs_dps2` is the pitch acceleration output.  
+  - No explicit memory or clamp for ∂(pitch acceleration)/∂t.  
+  - Integrator states: `rtDW.UnitDelay_DSTATE_o`, `rtDW.UnitDelay1_DSTATE_k`.
+
+- **Input Triggers**:  
+  - `mcv_cmd_fcs_dps`, `mcv_fcs_dps`, `vtas_adc_kts`.
+
+- **Expected State Changes**:  
+  - The difference in `rtY.mcvdt_cmd_fcs_dps2` from one cycle to the next must remain ≤ 50 deg/sec2.
+
+- **Output Verification**:  
+  - Check `rtY.mcvdt_cmd_fcs_dps2` each cycle, compare with previous cycle’s value.
+
+- **Timing Requirements**:  
+  - Verified once per cycle after step completion.
+
+--------------------------------------------------
+(8) The Inner Loop Yaw Regulator Shall not command transient changes in angular yaw acceleration greater than 50 deg/sec2/sec.
+
+- **Relevant State Variables**:  
+  - `rtY.ncvdt_cmd_fcs_dps2` is the yaw acceleration output.  
+  - No direct code-based limiting of its rate of change.
+
+- **Input Triggers**:  
+  - `ncv_cmd_fcs_dps`, `ncv_fcs_dps`, `beta_adc_deg`, `beta_dot`, `vtas_adc_kts`.
+
+- **Expected State Changes**:  
+  - Consecutive-step difference in `rtY.ncvdt_cmd_fcs_dps2` must stay within 50 deg/sec2.
+
+- **Output Verification**:  
+  - Compare each new `rtY.ncvdt_cmd_fcs_dps2` to the prior cycle’s value.
+
+- **Timing Requirements**:  
+  - Checked once per cycle, end of step.
+
+--------------------------------------------------
+(9) The Inner Loop Airspeed Regulator Shall not command transient changes in translational axial acceleration greater than 32 ft/sec2/sec.
+
+- **Relevant State Variables**:  
+  - The axial acceleration is `rtY.xcvdt_cmd_fcs_fps2`.  
+  - No internal memory or clamp for rate-of-change limiting.
+
+- **Input Triggers**:  
+  - `xcv_cmd_fcs_fps`, `dcv_fcs_fps`.
+
+- **Expected State Changes**:  
+  - Consecutive-step difference in `rtY.xcvdt_cmd_fcs_fps2` must be ≤ 32 ft/sec2.
+
+- **Output Verification**:  
+  - Compare the new `rtY.xcvdt_cmd_fcs_fps2` to the last cycle’s value.
+
+- **Timing Requirements**:  
+  - Verified each step call.
+
+--------------------------------------------------
+(10) The Inner Loop Height Regulator Shall not command transient changes in translational height acceleration greater than 32 ft/sec2/sec.
+
+- **Relevant State Variables**:  
+  - The height acceleration output is `rtY.hcvdt_cmd_fcs_fps2`.  
+  - Integrator states for height control: `rtDW.Memory_PreviousInput`, `rtDW.UnitDelay_DSTATE`, `rtDW.UnitDelay1_DSTATE`.
+
+- **Input Triggers**:  
+  - `hcv_cmd_fcs_fps`, `zcv_fcs_fps`.
+
+- **Expected State Changes**:  
+  - Consecutive-step difference in `rtY.hcvdt_cmd_fcs_fps2` must remain ≤ 32 ft/sec2.
+
+- **Output Verification**:  
+  - Compare `rtY.hcvdt_cmd_fcs_fps2` to previous cycle.
+
+- **Timing Requirements**:  
+  - Verified each cycle end.
+
+--------------------------------------------------------------------------------
+3) Timing Considerations
+--------------------------------------------------------------------------------
+
+**Update Sequences**  
+- Each call to `regs_12B_step()` constitutes one cycle.  
+- The output signals (`rtY.*`) are computed first within the step function.  
+- **Very Important**: The five persistent states (`Memory_PreviousInput`, `UnitDelay_DSTATE`, `UnitDelay1_DSTATE`, `UnitDelay_DSTATE_o`, `UnitDelay1_DSTATE_k`) are all updated *after* the outputs are calculated at the very end of `regs_12B_step()`. Specifically:
+

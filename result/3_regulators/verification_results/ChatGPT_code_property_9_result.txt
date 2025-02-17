@@ -1,0 +1,106 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing regs_12B.c
+Parsing regs_12B_data.c
+Parsing ert_main.c
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.179s
+GOTO program processing time: 0.007s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 8 iteration 1   file ert_main.c line 91 column 3 function main
+Symex completed in: 0.085s (304 assignments)
+Slicing time: 0.002s (removed 229 assignments)
+Generated 123 VCC(s), 37 remaining after simplification (75 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.019s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.009s
+BMC program time: 0.112s
+No bug has been found in the base case
+Checking forward condition, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 8 iteration 1   file ert_main.c line 91 column 3 function main
+Symex completed in: 0.089s (303 assignments)
+Slicing time: 0.000s (removed 242 assignments)
+Generated 125 VCC(s), 39 remaining after simplification (61 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.010s
+The forward condition is unable to prove the property
+Checking base case, k = 2
+Starting Bounded Model Checking
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 8 iteration 1   file ert_main.c line 91 column 3 function main
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 8 iteration 2   file ert_main.c line 91 column 3 function main
+Symex completed in: 0.358s (659 assignments)
+Slicing time: 0.004s (removed 353 assignments)
+Generated 294 VCC(s), 194 remaining after simplification (306 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.055s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.035s
+BMC program time: 0.449s
+No bug has been found in the base case
+Checking forward condition, k = 2
+Starting Bounded Model Checking
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 8 iteration 1   file ert_main.c line 91 column 3 function main
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 8 iteration 2   file ert_main.c line 91 column 3 function main
+Symex completed in: 0.380s (657 assignments)
+Slicing time: 0.003s (removed 381 assignments)
+Generated 297 VCC(s), 197 remaining after simplification (276 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.013s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.015s
+The forward condition is unable to prove the property
+Checking inductive step, k = 2
+Starting Bounded Model Checking
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 8 iteration 1   file ert_main.c line 91 column 3 function main
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Unwinding loop 3 iteration 1   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 3 iteration 2   file regs_12B.c line 140 column 7 function rt_GetLookupIndex
+Not unwinding loop 8 iteration 2   file ert_main.c line 91 column 3 function main
+Symex completed in: 0.453s (787 assignments)
+Slicing time: 0.007s (removed 346 assignments)
+Generated 149 VCC(s), 121 remaining after simplification (441 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.084s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.068s
+BMC program time: 0.609s
+
+VERIFICATION SUCCESSFUL
+
+Solution found by the inductive step (k = 2)

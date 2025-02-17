@@ -1,0 +1,21 @@
+Verification Summary - 2025-01-13 17:56:07.572503
+Directory: ./0_triplex/LLM_code/ChatGPT_code
+Source file: ert_main.c
+==================================================
+
+Property 1
+--------------------
+Status: FAILED
+
+Property 2
+--------------------
+Status: FAILED
+
+Property 3
+--------------------
+Status: FAILED
+
+Property 4
+--------------------
+Status: FAILED
+

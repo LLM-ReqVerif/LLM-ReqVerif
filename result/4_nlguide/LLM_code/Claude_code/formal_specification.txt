@@ -1,0 +1,169 @@
+# NLGuidance 12B Analysis
+
+## 1. State Variable Mapping
+
+### Core State Variables
+Based on the code implementation in NLGuidance_12B.c:
+
+**Input States (ExtU rtU)**
+- rtU.Xtarg[3]: Target inertial position vector (m)
+- rtU.Xv[3]: Vehicle inertial position vector (m) 
+- rtU.Vv[3]: Vehicle velocity vector (m/s)
+- rtU.r: Minimum standoff radius (m)
+- rtU.Vt[3]: Target velocity vector (m/s)
+
+**Output States (ExtY rtY)**
+- rtY.yout[3]: Aim point inertial position vector (m)
+
+### Key Intermediate Variables
+- rtb_XrDotVv: Dot product of relative position and vehicle velocity
+- rtb_MathFunction1: Square root of squared relative position
+- rtb_Sum2: Difference between squared relative position and squared standoff radius
+- rtb_Product1: Used for various intermediate calculations
+- rtb_Sum_c_idx_[0,1,2]: Components of sum calculation for CCW orbit
+
+## 2. Requirements Analysis
+
+### Requirement 1: Port-Side Target Maintenance
+**Initial Conditions:**
+- Vehicle position: rtU.Xv
+- Target position: rtU.Xtarg
+
+**Verification Points:**
+- After global_step()
+- Check cross product between vehicle-to-target vector and vehicle velocity vector
+```c
+// Relative position vector Xr
+Xr[0] = rtU.Xtarg[0] - rtU.Xv[0]
+Xr[1] = rtU.Xtarg[1] - rtU.Xv[1]
+Xr[2] = rtU.Xtarg[2] - rtU.Xv[2]
+
+// Cross product z-component should be positive for port-side
+cross_z = Xr[0]*rtU.Vv[1] - Xr[1]*rtU.Vv[0]
+ASSERT(cross_z > 0)
+```
+
+### Requirement 2: Aim Point 1 Computation
+**Initial Conditions:**
+- Vehicle position: rtU.Xv
+- Target position: rtU.Xtarg
+- Standoff radius: rtU.r
+
+**Verification Points:**
+- After global_step()
+- When in outer mode (rtb_Sum2 > 0 && rtb_MathFunction_idx_0 > 0)
+- Verify perpendicular alignment:
+```c
+// For aim point 1 (CW case)
+dot_product = (rtY.yout[0] - rtU.Xtarg[0]) * (rtU.Xv[0] - rtY.yout[0]) +
+              (rtY.yout[1] - rtU.Xtarg[1]) * (rtU.Xv[1] - rtY.yout[1]) +
+              (rtY.yout[2] - rtU.Xtarg[2]) * (rtU.Xv[2] - rtY.yout[2])
+ASSERT(abs(dot_product) < EPSILON)
+```
+
+### Requirement 3: Aim Point 2 Computation
+**Initial Conditions:**
+- Vehicle position: rtU.Xv
+- Target position: rtU.Xtarg
+- Standoff radius: rtU.r
+
+**Verification Points:**
+- After global_step()
+- When in outer mode (rtb_Sum2 > 0 && rtb_MathFunction_idx_0 > 0)
+- Verify perpendicular alignment for CCW case:
+```c
+// For aim point 2 (CCW case)
+dot_product = (rtY.yout[0] - rtU.Xtarg[0]) * (rtU.Xv[0] - rtY.yout[0]) +
+              (rtY.yout[1] - rtU.Xtarg[1]) * (rtU.Xv[1] - rtY.yout[1]) +
+              (rtY.yout[2] - rtU.Xtarg[2]) * (rtU.Xv[2] - rtY.yout[2])
+ASSERT(abs(dot_product) < EPSILON)
+```
+
+### Requirement 4: CCW Loiter Selection
+**Initial Conditions:**
+- Previous aim point: rtY.yout_prev[3]
+- Current vehicle position: rtU.Xv
+
+**Verification Points:**
+- After global_step()
+- When in outer mode
+- Verify CCW rotation:
+```c
+// Cross product should indicate CCW rotation
+cross_z = (rtY.yout[0] - rtU.Xtarg[0])*(rtU.Xv[1] - rtU.Xtarg[1]) -
+          (rtY.yout[1] - rtU.Xtarg[1])*(rtU.Xv[0] - rtU.Xtarg[0])
+ASSERT(cross_z > 0)
+```
+
+### Requirement 5: Inside Standoff Recovery
+**Initial Conditions:**
+- Vehicle inside standoff radius: |rtU.Xv - rtU.Xtarg| < rtU.r
+
+**Verification Points:**
+- After global_step()
+- When in inner mode (rtb_Sum2 <= 0 || rtb_MathFunction_idx_0 <= 0)
+- Verify movement toward standoff:
+```c
+// Distance to target should increase
+dist_new = sqrt(pow(rtY.yout[0] - rtU.Xtarg[0], 2) +
+                pow(rtY.yout[1] - rtU.Xtarg[1], 2) +
+                pow(rtY.yout[2] - rtU.Xtarg[2], 2))
+ASSERT(dist_new >= rtU.r)
+```
+
+### Requirement 6: Transient Behavior Control
+**Initial Conditions:**
+- Previous aim point: rtY.yout_prev[3]
+- Sample period: T
+
+**Verification Points:**
+- After global_step()
+- For each cycle
+- Verify maximum change:
+```c
+// Calculate maximum allowed change
+max_change = (sqrt(pow(rtU.Vv[0],2) + pow(rtU.Vv[1],2) + pow(rtU.Vv[2],2)) +
+              sqrt(pow(rtU.Vt[0],2) + pow(rtU.Vt[1],2) + pow(rtU.Vt[2],2))) * T
+
+// Verify actual change is within bounds
+actual_change = sqrt(pow(rtY.yout[0] - rtY.yout_prev[0], 2) +
+                    pow(rtY.yout[1] - rtY.yout_prev[1], 2) +
+                    pow(rtY.yout[2] - rtY.yout_prev[2], 2))
+ASSERT(actual_change <= max_change)
+```
+
+### Requirement 7: In-Plane Navigation
+**Initial Conditions:**
+- Vehicle altitude: rtU.Xv[2]
+- Target altitude: rtU.Xtarg[2]
+
+**Verification Points:**
+- After global_step()
+- Verify altitude matching:
+```c
+ASSERT(rtY.yout[2] == rtU.Xv[2])
+```
+
+## 3. Timing Considerations
+
+### Update Sequence
+1. Input processing
+2. Mode determination (inner/outer)
+3. Aim point calculation
+4. Output generation
+
+### Critical Dependencies
+- Mode selection depends on relative position and velocity calculations
+- Aim point calculation depends on mode
+- Output depends on selected aim point and current position
+
+### Cycle Requirements
+- All calculations must complete within one cycle
+- State updates occur at cycle end
+- No unit delays identified in code implementation
+- All verifications should be performed after global_step()
+
+### State Update Notes
+- No explicit unit delays found in code
+- All calculations are combinational within single step
+- State persists only through input/output structures (rtU, rtY)

@@ -1,0 +1,152 @@
+﻿3) Regulators
+Model:  ‘regs_12B.mdl’
+Description:  This example model demonstrates a simplified regulators inner loop architecture used in many feedback control applications.  The model includes two subsystems.  The first is the input subsystem which is used solely for signal routing with variable renaming and bus creation.  The second subsystem is the primary system under test, the regulators algorithm.  The regulators algorithm consists of 5 classical controllers for establishing the desired dynamics of a vehicle for the roll, pitch, yaw, axial, and height channels. 
+
+Input Scope
+Name
+#
+Type
+Description
+Global
+beta_adc_deg
+1
+Double
+Angle of sideslip [deg]
+Global
+vtas_adc_kts
+2
+Double
+True airspeed [knots]
+Global
+lcv_cmd_fcs_dps
+3
+Double
+Roll Control Variable Command for Flight Control System [deg/sec]
+Global
+hdg_des_deg
+4
+Double
+Desired Heading [deg]
+Global
+mcv_cmd_fcs_dps
+5
+Double
+Pitch Control Variable Command for Flight Control System [deg/sec]
+Global
+alt_des_ft
+6
+Double
+Desired Altitude [feet]
+Global
+ncv_cmd_fcs_dps
+7
+Double
+Yaw Control Variable Command for Flight Control System [deg/sec]
+Global
+xcv_cmd_fcs_fps
+8
+Double
+Axial Control Variable Command for Flight Control System [ft/sec]
+Global
+airspeed_des_fps
+9
+Double
+Desired Airspeed [feet/sec]
+Global
+hcv_cmd_fcs_fps
+10
+Double
+Height Control Variable Command for Flight Control System [ft/sec]
+Global
+lcv_fps_dps
+11
+Double
+Roll Control Variable for Flight Control System [deg/sec]
+Global
+mcv_fcs_dps
+12
+Double
+Pitch Control Variable for Flight Control System [deg/sec]
+Global
+ncv_fcs_dps
+13
+Double
+Yaw Control Variable for Flight Control System [deg/sec]
+Global
+dcv_fcs_fps
+14
+Double
+Axial Control Variable for Flight Control System [ft/sec]
+Global
+zcv_fcs_fps
+15
+Double
+Height Control Variable for Flight Control System [ft/sec]
+Global
+betadot
+16
+Double
+Angle of sideslip rate [deg/sec]
+
+Output Scope
+Name
+#
+Type
+Description
+Global
+lcvdt_cmd_fcs_dps2
+1
+Double
+Roll Output Command [deg/sec2]
+Global
+mcvdt_cmd_fcs_dps2
+2
+Double
+Pitch Output Command [deg/sec2]
+Global
+ncvdt_cmd_fcs_dps2
+3
+Double
+Yaw Output Command [deg/sec2]
+Global
+xcvdt_cmd_fcs_fps2
+4
+Double
+Axial Output Command [ft/sec2]
+Global
+hcvdt_cmd_fcs_fps2
+5
+Double
+Height Output Command [ft/sec2]
+
+Initial Requirements:  
+    1. The Inner Loop Roll Regulator Shall not command angular roll accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+    2. The Inner Loop Pitch Regulator Shall not command angular pitch accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+    3. The Inner Loop Yaw Regulator Shall not command angular yaw accelerations greater than the capability of the system (50 deg/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+    4. The Inner Loop Airspeed Regulator Shall not command translational axial accelerations greater than the capability of the system (32 ft/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+    5. The Inner Loop Height Regulator Shall not command translational height accelerations greater than the capability of the system (32 ft/sec2) for durations exceeding 100 frames (1 second @ 100 hz).
+    6. The Inner Loop Roll Regulator Shall not command transient changes in angular roll acceleration greater than 50 deg/sec2/sec.
+    7. The Inner Loop Pitch Regulator Shall not command transient changes in angular pitch acceleration greater than 50 deg/sec2/sec.
+    8. The Inner Loop Yaw Regulator Shall not command transient changes in angular yaw acceleration greater than 50 deg/sec2/sec.
+    9. The Inner Loop Airspeed Regulator Shall not command transient changes in translational axial acceleration greater than 32 ft/sec2/sec.
+    10. The Inner Loop Height Regulator Shall not command transient changes in translational height acceleration greater than 32 ft/sec2/sec.
+
+Output Signal Name
+Static Persistence Limit
+Rate Limit
+lcvdt_cmd_fcs_dps2
+50 deg/sec2
+50 deg/sec2/sec
+mcvdt_cmd_fcs_dps2
+50 deg/sec2
+50 deg/sec2/sec
+ncvdt_cmd_fcs_dps2
+50 deg/sec2
+50 deg/sec2/sec
+xcvdt_cmd_fcs_fps2
+32 ft/sec2
+32 ft/sec2/sec
+hcvdt_cmd_fcs_fps2
+32 ft/sec2
+32 ft/sec2/sec
+

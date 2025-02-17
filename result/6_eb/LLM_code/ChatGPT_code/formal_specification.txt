@@ -1,0 +1,217 @@
+========================
+EB_12B_SysAnalysis.txt
+========================
+
+--------------------------------------------------------------------------------
+1) STATE VARIABLE MAPPING
+--------------------------------------------------------------------------------
+   In the provided C code (`EB_12B.c` and `EB_12B_data.c`), there are no
+   persistent internal states updated across function calls. The data structure:
+
+       DW rtDW;
+
+   is declared, but never used or updated. No `UnitDelay` or other memory
+   elements exist in the function `EB_12B_step()`. All variables used are either
+   local to `EB_12B_step()` or are external inputs/outputs (i.e., `rtU` and
+   `rtY`), with no carry-over from one cycle to the next.
+
+   Therefore:
+   - **No internal state variables** exist to track over multiple cycles.
+   - **No state transitions** occur within or across cycles.
+   - **No update sequences** for persistent states are present.
+
+   All computations in `EB_12B_step()` are purely feed-forward for each cycle
+   from `rtU` (inputs) to `rtY` (outputs). Hence, there is no state variable
+   mapping to describe beyond noting that `DW rtDW` is unused.
+
+--------------------------------------------------------------------------------
+2) PER-REQUIREMENT ANALYSIS
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Requirement (1)
+--------------------------------------------------------------------------------
+"When the determinant of B(inv(Wp’)B’) is <= 1e-12 as indicated by ridge_on
+ set to True, the inversion of the B(inv(Wp’)B’) matrix should be accurate to
+ 6 digits precision in that each element in the check output matrix is within
+ a 1e-6 tolerance with respect to the elements of a 3x3 identity matrix."
+
+   (a) **Initial Conditions**  
+       - No internal state variables exist. Hence, no initial condition applies.
+       - At each call to `EB_12B_step()`, the code calculates the determinant
+         of the matrix `B(inv(Wp’)B’)` on the fly.
+
+   (b) **Input Triggers**  
+       - A single call to `EB_12B_step()` is triggered externally (one cycle).
+       - Within `EB_12B_step()`, the determinant check is performed via:
+         
+             (((((rtb_Product1_f[0] * ... ) - ... ) <= 1.0E-12))
+
+         If `<= 1e-12`, the boolean `rtb_RelationalOperator` is set to `true`.
+         This directly sets `rtY.ridge_on = true;`
+
+   (c) **Expected State Changes**  
+       - No state changes (no memory updates). The function sets `rtY.ridge_on`
+         to `true` if the determinant condition is met, but this is an output,
+         not a state.
+
+   (d) **Output Verification**  
+       - If `rtY.ridge_on == true`, the code adds a diagonal `1e-12*I` before
+         inversion. This yields output `rtY.check` (3x3) intended to be the
+         identity matrix within 1e-6 tolerance.
+       - Verification: each element in `rtY.check` must be within ±1e-6 of
+         the corresponding identity element (i.e., diag = 1.0, off-diag = 0.0).
+
+   (e) **Timing Requirements**  
+       - This check must be performed at the end of each `EB_12B_step()` call.
+       - Because there is no memory, no additional cycles are needed to confirm
+         or propagate any state. Verification occurs at cycle end, once per
+         call.
+
+--------------------------------------------------------------------------------
+Requirement (2)
+--------------------------------------------------------------------------------
+"When the determinant of B(inv(Wp’)B’) is > 1e-12 as indicated by ridge_on
+ set to False, the inversion of the B(inv(Wp’)B’) matrix should be accurate
+ to 12 digits precision in that each element in the check output matrix is
+ within a 1e-12 tolerance with respect to the elements of a 3x3 identity matrix."
+
+   (a) **Initial Conditions**  
+       - Again, no state is retained from previous cycles. No special initial
+         condition.
+
+   (b) **Input Triggers**  
+       - One call to `EB_12B_step()` per cycle. The determinant is checked:
+         
+             (((((rtb_Product1_f[0] * ... ) - ... ) > 1.0E-12))
+
+         If `> 1e-12`, the boolean `rtb_RelationalOperator` is `false` and
+         `rtY.ridge_on = false;`
+
+   (c) **Expected State Changes**  
+       - No memory update. The code simply sets `rtY.ridge_on = false;`
+       - No state transitions.
+
+   (d) **Output Verification**  
+       - If `rtY.ridge_on == false`, no diagonal ridge term is added, and
+         `rtY.check` must match identity to within ±1e-12 for each element.
+
+   (e) **Timing Requirements**  
+       - Must confirm `rtY.check` at the end of `EB_12B_step()`. No multi-cycle
+         dependencies.
+
+--------------------------------------------------------------------------------
+Requirement (3)
+--------------------------------------------------------------------------------
+"The output u vector should be a 5x1 vector."
+
+   (a) **Initial Conditions**  
+       - No state memory, so no initial conditions apply to internal variables.
+
+   (b) **Input Triggers**  
+       - Single function call to `EB_12B_step()`.
+
+   (c) **Expected State Changes**  
+       - None. The output is computed feed-forward.
+
+   (d) **Output Verification**  
+       - After `EB_12B_step()` completes, the code writes to `rtY.u[5]`.
+         That array has 5 elements: `rtY.u[0]` through `rtY.u[4]`.
+         By inspection in the code:
+
+             for (i = 0; i < 5; i++) {
+               rtY.u[i] = rtb_Product7_0; 
+             }
+
+         thus `u` is indeed a 5x1 vector. This satisfies the requirement.
+
+   (e) **Timing Requirements**  
+       - Verified at the end of each cycle when `EB_12B_step()` completes.
+
+--------------------------------------------------------------------------------
+Requirement (4)
+--------------------------------------------------------------------------------
+"The 2-norm of the output Buminusd should be less than 0.01."
+
+   (a) **Initial Conditions**  
+       - No internal states or accumulations from prior cycles.
+
+   (b) **Input Triggers**  
+       - Each call to `EB_12B_step()`. The code computes `rtY.Buminusd[0..2]`
+         as:
+
+             rtY.Buminusd[i] = (B * u)[i] - d[i]
+
+         (with `d` from `rtConstP.Const2_Value` in this code snippet).
+
+   (c) **Expected State Changes**  
+       - No states are updated; purely feed-forward.
+
+   (d) **Output Verification**  
+       - The output `rtY.Buminusd` is a 3x1.  
+       - The requirement is: 2-norm < 0.01  
+         i.e., `sqrt( (Buminusd[0])^2 + (Buminusd[1])^2 + (Buminusd[2])^2 ) < 0.01`
+
+       - The code does not explicitly check the norm within `EB_12B_step()`.
+         The requirement states that it "should be less than 0.01," so external
+         verification or a test harness must confirm that `rtY.Buminusd` meets
+         this bound after each function call.
+
+   (e) **Timing Requirements**  
+       - Verified at the end of each `EB_12B_step()` call, once the final
+         outputs are computed.
+
+--------------------------------------------------------------------------------
+Requirement (5)
+--------------------------------------------------------------------------------
+"The output cost J shall be the minimum possible value given the set of input
+ conditions."
+
+   (a) **Initial Conditions**  
+       - No memory or states to initialize.
+
+   (b) **Input Triggers**  
+       - Each call to `EB_12B_step()`.
+
+   (c) **Expected State Changes**  
+       - None, as there is no persistent state.
+
+   (d) **Output Verification**  
+       - `rtY.J` is computed in `EB_12B_step()` as:
+
+             rtb_Product7_0 += rtb_MathFunction2[i] * rtb_Product7[i];
+             rtY.J = rtb_Product7_0;
+
+         which follows the cost definition \( J = (u - up)^T Wp (u - up) \) or
+         analogous logic in the derived code. The requirement states it must be
+         the minimum possible cost, but the code does not explicitly store
+         alternate solutions. By design, the closed-form solution ensures this
+         minimal cost property if the matrix inversion is correct.
+
+   (e) **Timing Requirements**  
+       - Verified at the end of each `EB_12B_step()` call.
+
+--------------------------------------------------------------------------------
+3) TIMING CONSIDERATIONS
+--------------------------------------------------------------------------------
+   - **Update Sequences**: The function `EB_12B_step()` is purely feed-forward,
+     so it reads `rtU` inputs, performs matrix multiplications and checks,
+     and writes to `rtY` outputs in a single pass.
+   - **Critical Dependencies**: The only critical numeric check is the determinant
+     calculation which decides whether to add the ridge term (1e-12 identity) to
+     `B(inv(Wp’)B’)`. That must be done before the inversion within the same
+     function call.
+   - **Cycle Requirements**:
+       - One cycle = one call to `EB_12B_step()`.
+       - No internal memory or `UnitDelay` usage. Therefore, no delayed updates
+         or multi-cycle latching occurs.
+       - All verification (for `ridge_on`, `check` matrix tolerance, `u` size,
+         `Buminusd` norm, and `J` minimality) applies immediately at the end
+         of the single step in each cycle.
+
+   **NOTE**: There is explicitly **NO** `UnitDelay` in the code. No variables
+   in `DW rtDW` are updated. Hence there is no “VERY IMPORTANT” delayed update
+   to describe. All calculations happen in `EB_12B_step()` and outputs are
+   written directly to `rtY` by the end of that same step call.
+
+======================== (END OF FILE) ========================

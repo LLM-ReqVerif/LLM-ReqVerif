@@ -1,0 +1,153 @@
+# Requirements Analysis for Euler 321 I2B Component
+
+## 1. State Variable Mapping
+
+### Input Variables (ExtU rtU)
+- rtU.phi: Roll angle [rad]
+- rtU.theta: Pitch angle [rad] 
+- rtU.psi: Yaw angle [rad]
+- rtU.Vi[3]: 3x1 Inertial Vector
+
+### Output Variables (ExtY rtY)
+- rtY.DCM321[9]: 3x3 Rotation Matrix
+- rtY.Vb[3]: 3x1 Body Vector
+
+### Intermediate Variables
+- rtb_Product[9]: Intermediate product matrix for rotation calculations
+- rtb_VectorConcatenate[9]: Intermediate matrix for rotation transformations
+- rtb_VectorConcatenate_g[9]: Secondary intermediate matrix for rotation transformations
+- rtb_sincos_o1, rtb_sincos_o2: Intermediate sine/cosine calculation results
+
+Note: No unit delays or persistent state variables are present in the implementation.
+
+## 2. Requirements Analysis
+
+### Requirement 1
+Initial Conditions:
+- None (combinatorial logic)
+
+Input Triggers:
+- rtU.phi (Roll)
+- rtU.theta (Pitch)
+- rtU.psi (Yaw)
+
+State Transitions:
+- rtb_VectorConcatenate = Euler2 rotation matrix(theta)
+- rtb_VectorConcatenate_g = Euler1 rotation matrix(psi)
+- rtb_Product = rtb_VectorConcatenate_g × rtb_VectorConcatenate
+- rtb_VectorConcatenate = Euler3 rotation matrix(phi)
+- rtY.DCM321 = rtb_VectorConcatenate × rtb_Product
+
+Verification Points:
+- Check rtY.DCM321 equals product of Euler3(phi) × Euler2(theta) × Euler1(psi)
+- Verify matrix multiplication order matches 321 sequence
+
+### Requirement 2
+Initial Conditions:
+- None (combinatorial logic)
+
+Input Triggers:
+- rtU.Vi (Input vector)
+- rtY.DCM321 (Computed rotation matrix)
+
+State Transitions:
+- rtY.Vb[i] = Σ(rtY.DCM321[i,j] × rtU.Vi[j]) for i,j in [0,2]
+
+Verification Points:
+- Verify rtY.Vb equals matrix product of rtY.DCM321 × rtU.Vi
+- Check vector dimensions (3×1)
+
+### Requirement 3
+Initial Conditions:
+- None (combinatorial logic)
+
+Input Triggers:
+- rtU.Vi (Input vector)
+- rtY.Vb (Output vector)
+
+Verification Points:
+- Verify ||rtY.Vb|| = ||rtU.Vi||
+- Check magnitude preservation using:
+  sqrt(rtY.Vb[0]^2 + rtY.Vb[1]^2 + rtY.Vb[2]^2) = 
+  sqrt(rtU.Vi[0]^2 + rtU.Vi[1]^2 + rtU.Vi[2]^2)
+
+### Requirement 4
+Initial Conditions:
+- None (combinatorial logic)
+
+Input Triggers:
+- rtU.theta (Pitch angle)
+
+Verification Points:
+- Verify rtY.DCM321 is invertible when rtU.theta ≠ ±π/2
+- Check determinant calculation
+- Verify singularity condition at rtU.theta = ±π/2
+
+### Requirement 5
+Initial Conditions:
+- None (combinatorial logic)
+
+Input Triggers:
+- rtU.theta (Pitch angle)
+- rtU.Vi (Input vector)
+
+Verification Points:
+- For each unique rtU.theta, verify unique mapping rtU.Vi → rtY.Vb
+- Check output vector uniqueness across different pitch angles
+
+### Requirement 6
+Initial Conditions:
+- None (combinatorial logic)
+
+Input Triggers:
+- rtY.DCM321 computed
+
+Verification Points:
+- For rows i,j in [1,3]:
+  - Verify dot product (row[i] · row[j]) = 0 when i≠j
+  - Verify dot product (row[i] · row[i]) = 1
+- For columns i,j in [1,3]:
+  - Verify dot product (col[i] · col[j]) = 0 when i≠j
+  - Verify dot product (col[i] · col[i]) = 1
+
+### Requirement 7
+Initial Conditions:
+- None (combinatorial logic)
+
+Input Triggers:
+- rtY.DCM321 computed
+
+Verification Points:
+- Verify rtY.DCM321 × rtY.DCM321^T = I (3×3 identity matrix)
+- Check all elements of resulting matrix:
+  - Diagonal elements = 1.0
+  - Off-diagonal elements = 0.0
+
+### Requirement 8
+Initial Conditions:
+- None (combinatorial logic)
+
+Input Triggers:
+- rtY.DCM321 computed
+
+Verification Points:
+- Calculate det(rtY.DCM321)
+- Verify det(rtY.DCM321) = 1.0
+
+## 3. Timing Considerations
+
+### Update Sequence
+1. Compute sine/cosine of input angles
+2. Form individual rotation matrices
+3. Perform matrix multiplications
+4. Compute final vector transformation
+
+### Critical Dependencies
+- All calculations must complete within single cycle
+- No inter-cycle dependencies (purely combinatorial)
+
+### Execution Time Requirements
+- Single cycle execution (no state retention)
+- All computations complete before next euler321_I2B_12B_step() call
+
+Note: Implementation is stateless with no unit delays or persistent storage between cycles.

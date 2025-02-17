@@ -1,0 +1,19 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing swim_12B.c
+Parsing ert_main.c
+ert_main.c:118:41: error: no member named 'swimGet_QcMinEnable_lbspft2' in 'ExtY'; did you mean 'swimGet_QcMinDisable_lbspft2'?
+        (rtU.E_AI_IMPACT_PRESSURE > rtY.swimGet_QcMinEnable_lbspft2);
+                                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+                                        swimGet_QcMinDisable_lbspft2
+./swim_12B.h:51:10: note: 'swimGet_QcMinDisable_lbspft2' declared here
+  real_T swimGet_QcMinDisable_lbspft2;
+         ^
+ert_main.c:152:30: error: no member named 'swimGet_QcMinEnable_lbspft2' in 'ExtY'; did you mean 'swimGet_QcMinDisable_lbspft2'?
+      double threshold = rtY.swimGet_QcMinEnable_lbspft2 - 28.72;
+                             ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+                             swimGet_QcMinDisable_lbspft2
+./swim_12B.h:51:10: note: 'swimGet_QcMinDisable_lbspft2' declared here
+  real_T swimGet_QcMinDisable_lbspft2;
+         ^
+ERROR: PARSING ERROR

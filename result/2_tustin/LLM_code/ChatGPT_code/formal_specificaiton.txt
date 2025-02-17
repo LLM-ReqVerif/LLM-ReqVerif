@@ -1,0 +1,188 @@
+==============================
+File: integrator_12B_Analysis.txt
+==============================
+
+-------------------------------------------------------------------------
+1) STATE VARIABLE MAPPING
+-------------------------------------------------------------------------
+
+Based on the provided Simulink-generated code structure and typical code patterns for a Tustin Integrator, the internal state variables are maintained within the generated “integrator_12B” model. Although the *complete* integrator_12B_step() function is not shown in the snippet, standard Simulink C code for a discrete integrator block typically contains:
+
+- A state variable for the previous output (often called `UnitDelay_DSTATE` or something similar).
+- A state variable for the previous input (often called `UnitDelay1_DSTATE` or similar).
+
+From the requirement document and usual Tustin integrator implementation, we infer the following *likely* naming and usage (please note that the exact variable names may differ in your generated code, but we must adhere to the representation that Simulink typically uses):
+
+1. `rtDW.UnitDelay_DSTATE` (double)
+   - **Meaning**: Stores the “prior output value” \(y_{pv}\) used in the next integration step.  
+   - **Possible Values**: Any double-precision value within valid numeric range.  
+   - **Role in Tustin**: This is the memory of \(y_{pv}\) that gets updated at the end of each cycle with the new output `rtY.yout`.
+
+2. `rtDW.UnitDelay1_DSTATE` (double)
+   - **Meaning**: Stores the “prior input value” \(x_{in\,pv}\) used in the Tustin formula.  
+   - **Possible Values**: Any double-precision value within valid numeric range.  
+   - **Role in Tustin**: This is the memory of \(x_{in\,pv}\) that gets updated at the end of each cycle with the new input `rtU.xin`.
+
+3. `rtU.xin` (double, external input)
+   - **Meaning**: Current-cycle input signal to be integrated.
+
+4. `rtU.T` (double, external input)
+   - **Meaning**: The time step, \(\Delta t\), used for Tustin integration.
+
+5. `rtU.TL` (double, external input)
+   - **Meaning**: Top Limit for bounding the integrated output.
+
+6. `rtU.BL` (double, external input)
+   - **Meaning**: Bottom Limit for bounding the integrated output.
+
+7. `rtU.reset` (boolean, external input)
+   - **Meaning**: Reset control flag.
+
+8. `rtU.ic` (double, external input)
+   - **Meaning**: The Initial Condition used when reset = true.
+
+9. `rtY.yout` (double, external output)
+   - **Meaning**: The integrator output at the end of each global step.
+
+---------
+IMPORTANT NOTE ON UPDATES
+---------
+- The code calls `integrator_12B_step()` once per cycle.  
+- **At the end of** each call to `integrator_12B_step()`, the `UnitDelay_DSTATE` and `UnitDelay1_DSTATE` are typically updated with the **current** values of `rtY.yout` and `rtU.xin`, respectively.  
+- Therefore:  
+  - **UnitDelay_DSTATE** (i.e., `rtDW.UnitDelay_DSTATE`) is updated to the new output `yout` **after** the integrator_12B_step() function completes.  
+  - **UnitDelay1_DSTATE** (i.e., `rtDW.UnitDelay1_DSTATE`) is updated to the new input `xin` **after** the integrator_12B_step() function completes.  
+
+-------------------------------------------------------------------------
+2) REQUIREMENTS TRACING & ANALYSIS
+-------------------------------------------------------------------------
+
+Below, each numbered requirement is addressed separately. For each requirement, we list:
+- **Initial Conditions** (if relevant)
+- **Input Triggers / Conditions**
+- **Relevant State Variables**
+- **Expected State Changes or Output**
+- **Verification Timing** (when the check should be done)
+
+-----------------------------------------------
+Req #1
+-----------------------------------------------
+**Requirement Text (simplified)**  
+1) When reset == true and the initial condition `ic` is within the provided [BL, TL], then `yout` = `ic`. Otherwise, if `ic` is out of [BL, TL], saturate `yout` at the respective boundary. Also, if TL < BL, the bounding is reversed internally but effectively saturates in the correct order.
+
+**a) If reset == true and BL <= ic <= TL, then yout = ic**  
+**b) If reset == true and ic >= TL >= BL, then yout = TL**  
+**c) If reset == true and ic <= BL <= TL, then yout = BL**  
+**d) If reset == true and TL < BL, and ic >= BL, then yout = BL**  
+**e) If reset == true and TL < BL, and ic <= TL, then yout = TL**
+
+- **Initial Conditions**: The integrator states can be arbitrary. On a reset==true cycle, we *must* re-initialize `yout`.
+- **Input Trigger**: `rtU.reset` becomes true.
+- **Relevant State Variables**:  
+  - `rtU.reset`  
+  - `rtU.ic`  
+  - `rtU.BL` and `rtU.TL`  
+  - `rtY.yout`  
+  - `rtDW.UnitDelay_DSTATE` (the prior yout) might be overwritten or bypassed if reset is true.  
+- **Expected State Changes**:  
+  - On the cycle where `reset` is true, the integrator will set `yout` to `ic` if `ic` is within [BL, TL]. Otherwise, it saturates to BL or TL as spelled out in the requirement.  
+  - The *UnitDelay_DSTATE* is updated to `rtY.yout` (the newly saturated or newly set value) at the end of that cycle.  
+- **Verification Timing**:  
+  - Must be checked at the end of the same cycle (immediately after `integrator_12B_step()` completes) where `reset` becomes true.
+
+-----------------------------------------------
+Req #2
+-----------------------------------------------
+**Requirement Text (simplified)**  
+2) The output `yout` shall remain bounded by Top Limit (`TL`) and Bottom Limit (`BL`). If `TL >= BL`, then `BL <= yout <= TL`. If `TL < BL`, then `TL <= yout <= BL`.
+
+- **Initial Conditions**: Not strictly mandated; can be any.  
+- **Input Trigger**: This requirement applies *every cycle*, whenever `integrator_12B_step()` is called.  
+- **Relevant State Variables**:  
+  - `rtU.TL`  
+  - `rtU.BL`  
+  - `rtY.yout`  
+- **Expected State Changes**:
+  - After each Tustin calculation, the output is saturated to ensure it stays within the correct bounding range.  
+- **Verification Timing**:  
+  - Check at the end of every cycle (`integrator_12B_step()`). `rtY.yout` must lie within [BL, TL] or [TL, BL] depending on which is smaller or larger.
+
+-----------------------------------------------
+Req #3
+-----------------------------------------------
+**Requirement Text (simplified)**  
+3) When in normal operation (reset == false, output is not saturated beyond the limits), the output shall be computed by the Tustin equation:  
+\[
+   yout = y_{pv} + \frac{T}{2}(x_{in} + x_{in\,pv})
+\]  
+subject to final saturation if needed.
+
+- **Initial Conditions**: The integrator’s prior states `UnitDelay_DSTATE` and `UnitDelay1_DSTATE` are the stored values from the previous cycle.  
+- **Input Trigger**: `rtU.reset == false`. Also, the result of Tustin is within the limit range.  
+- **Relevant State Variables**:
+  - `rtDW.UnitDelay_DSTATE` (previous `yout`)  
+  - `rtDW.UnitDelay1_DSTATE` (previous `xin`)  
+  - `rtU.xin`, `rtU.T`, `rtY.yout`  
+- **Expected State Changes**:
+  1. `yout` is first computed as \( y_{pv} + \frac{T}{2} (xin + xin_{pv}) \).  
+  2. If that computed value exceeds or goes below the bounding range, it is saturated.  
+  3. At the end of the cycle, `rtDW.UnitDelay_DSTATE` = the final `yout`, and `rtDW.UnitDelay1_DSTATE` = the current `xin`.  
+- **Verification Timing**:
+  - At the end of each cycle with `reset == false`, confirm that the equation holds *before* bounding, but final `rtY.yout` is always post-bounding.  
+
+-----------------------------------------------
+Req #4 (and sub-Req #4a, #4b)
+-----------------------------------------------
+**Requirement Text (simplified)**  
+4) The Tustin output `yout` must approximate the integral of `xin` over time.
+
+- **(4a)** After 10 seconds at 10 Hz (so 100 cycles), with `xin=1.0`, `T=0.1`, no reset, and no saturation effect, the final integrated result should be ~10.0 ± 0.1.  
+- **(4b)** Similarly, with `xin=cos(t)`, after 10 seconds at 10 Hz, `yout` should match `sin(t)` ± 0.1.
+
+- **Initial Conditions**:
+  - Typically `rtU.reset == false` from the start, or it is false once normal operation begins.  
+  - `ic = 0` (common for these tests, though not explicitly stated in the snippet, it is implied from the classical integral test).  
+- **Input Trigger**:
+  - The integrator is run for 100 cycles. For (4a) `xin` is constant 1.0. For (4b) `xin` is the discrete cosine values.  
+- **Relevant State Variables**:
+  - `rtDW.UnitDelay_DSTATE`, `rtDW.UnitDelay1_DSTATE`, `rtU.xin`, `rtY.yout`  
+- **Expected State Changes**:
+  - Each cycle, Tustin formula updates `yout`. Summation should approximate an integral (i.e., ~ `y = \int xin dt`).  
+  - After 100 cycles (10 seconds at 10 Hz), we check if the final `yout` is close to the ideal integrals.  
+- **Verification Timing**:
+  - At the end of the 100th cycle for (4a) → Check if final `rtY.yout ≈ 10.0 ± 0.1`.  
+  - At each step for (4b), or at the end of 100 cycles, check `rtY.yout ≈ sin(t)` ± 0.1.  
+  - Because Tustin integration is a discrete approximation, each step is verified at cycle end.
+
+-------------------------------------------------------------------------
+3) TIMING CONSIDERATIONS
+-------------------------------------------------------------------------
+
+1. **Global Step Call**:  
+   - Each execution of `integrator_12B_step()` is exactly one cycle.  
+   - All verifications for output (`rtY.yout`) happen **after** the step completes.  
+
+2. **Update Sequences** (VERY IMPORTANT):  
+   - **Inside** `integrator_12B_step()`, the integrator reads the current inputs:  
+     `rtU.xin, rtU.T, rtU.reset, rtU.ic, rtU.BL, rtU.TL`  
+     as well as the previous states in `rtDW.UnitDelay_DSTATE` and `rtDW.UnitDelay1_DSTATE`.  
+   - The Tustin equation or reset logic is applied.  
+   - The resulting new output is assigned to `rtY.yout`.  
+   - **After** the integrator calculation, the two unit delays are updated:  
+       - `rtDW.UnitDelay_DSTATE = rtY.yout;`  
+       - `rtDW.UnitDelay1_DSTATE = rtU.xin;`  
+   - This means the stored “previous output” and “previous input” become the *current* ones for the next cycle.
+
+3. **Critical Dependencies**:  
+   - The integrator depends on correct bounding (`TL`, `BL`) each cycle.  
+   - The reset logic overrides the normal Tustin formula if `reset == true`.  
+
+4. **Cycle Requirements**:  
+   - **Req #1**: Must be checked in the *same* cycle where `reset` becomes true.  
+   - **Req #2**: Must be checked *every* cycle to ensure bounding is correct.  
+   - **Req #3**: Checked every cycle in normal operation (reset == false).  
+   - **Req #4a** and **#4b**: Evaluated after a known number of cycles (e.g., 100 cycles for 10 seconds at 10 Hz), or at intermediate points as spelled out in the subtest sequences.
+
+===========================
+END OF FILE
+===========================

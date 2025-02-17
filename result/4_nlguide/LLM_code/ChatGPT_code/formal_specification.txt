@@ -1,0 +1,251 @@
+=============================
+FILE: NLGuidance_12B_Analysis.txt
+=============================
+
+-------------------------------------------------------------------------------
+1) STATE VARIABLE MAPPING
+-------------------------------------------------------------------------------
+From inspection of the generated C code [NLGuidance_12B.c], there are no persistent storage elements or UnitDelay blocks that retain state information across cycles. All variables within `NLGuidance_12B_step(void)` are local (e.g., `rtb_MathFunction_idx_0`, `rtb_Sum2`, etc.) and do not carry values from one invocation to the next. Consequently, there is no internal “state” that is updated at the end of each step.
+
+However, the code uses conditional branches (“Inner” vs. “Outer” under `<S1>/If`, and sub-branches “Act1” vs. “Act2” under `<S2>/If`, plus “CW” vs. “CCW” under `<S3>/If`) each cycle. For clarity in requirement tracing, we label these transient execution paths:
+
+- **Mode_1**: `<S1>/If`  
+  - **Inner** branch (IfAction SubSystem: `<S1>/Inner`)  
+  - **Outer** branch (IfAction SubSystem: `<S1>/Outer`)
+
+- **Mode_2** (only relevant when **Mode_1** = Inner): `<S2>/If`  
+  - **Act1** (IfAction SubSystem: `<S2>/Act1`)  
+  - **Act2** (IfAction SubSystem: `<S2>/Act2`)
+
+- **Mode_3** (only relevant when **Mode_1** = Outer): `<S3>/If`  
+  - **CW**  (IfAction SubSystem: `<S3>/CW`)  
+  - **CCW** (IfAction SubSystem: `<S3>/CCW`)
+
+None of these modes are stored in a static or global variable; each cycle re-computes these branches from scratch based on current inputs.
+
+**No UnitDelay or persistent data**:  
+- There is **no** `UnitDelay` or memory mechanism in this code.  
+- Thus, **no** variable is updated after `NLGuidance_12B_step()` finishes.  
+- All local variables are recalculated each cycle.  
+
+-------------------------------------------------------------------------------
+2) REQUIREMENT-BY-REQUIREMENT ANALYSIS
+-------------------------------------------------------------------------------
+Below are the seven requirements. For each one, we identify:
+- **Initial Conditions** (any assumed states or code paths at the start of a cycle)  
+- **Input Triggers** (which input conditions cause the requirement logic to be evaluated)  
+- **Expected State Changes** (which branch or path is taken, if any—though no persistent states exist, we note the “mode” changes within the single step)  
+- **Output Verification** (how `rtY.yout[...]` is affected or validated by the code)  
+- **Timing Requirements** (when the checks or updates occur relative to the cycle)
+
+--------------------------------------------------------------------------------
+2.1) REQUIREMENT #1
+--------------------------------------------------------------------------------
+**Text**: “NLGuidance shall always maintain the target on the port-side of the vehicle.”
+
+**Relevant Code Elements**  
+- The code block `<S3>/If` selects “CW” vs. “CCW” in the **Outer** path. This uses a cross-product sign to pick the resulting aim point.  
+- The branch:
+if ( (rtb_Sum2_tmp - rtb_Sum2_tmp) < 0.0 ) { // CW } else { // CCW }
+In practice, the code’s cross-product logic is simplified, but effectively if the sign is negative, it picks “CW” action; otherwise “CCW.”  
+
+**Initial Conditions**:  
+- No stored state. All variables are fresh each cycle.  
+
+**Input Triggers**:  
+- Execution always occurs once per call to `NLGuidance_12B_step()`.  
+- The sign of the cross product (internally computed from `rtb_Xr_idx_0 * rtb_Sum_c_idx_1 - ...`) determines “CW” vs. “CCW.”  
+
+**Expected State Changes**:  
+- No persistent state variable changes.  
+- Transient mode “CW” or “CCW” is selected if the code is in “Outer” branch.  
+
+**Output Verification**:  
+- If “CW,” the final `rtY.yout[...]` is set to certain sums.  
+- If “CCW,” `rtY.yout[...]` is set to the alternate sums.  
+- This is the only place in the code that enforces a directional wrap (clockwise or counterclockwise) around the target.  
+
+**Timing Requirements**:  
+- Checked once per cycle, at the end of `NLGuidance_12B_step()`.  
+- No memory is retained after the step.  
+
+--------------------------------------------------------------------------------
+2.2) REQUIREMENT #2
+--------------------------------------------------------------------------------
+**Text**: “NLGuidance shall compute the inertial position vector for aim point #1, defining the location at Standoff #1 with an offset from the target position, and oriented on a vector perpendicular to the tangent relative position vector from the vehicle to the corresponding aim point.”
+
+**Relevant Code Elements**:  
+- The “Inner” path (`<S1>/Inner`) generates an offset aim point if `(rtb_Sum2 <= 0.0) || (rtb_MathFunction_idx_0 <= 0.0)`.  
+- Inside “Inner,” the code chooses “Act1” (`<S2>/Act1`) or “Act2” (`<S2>/Act2`) by comparing the distances to two possible offsets:
+if ( rtb_Sum2_tmp < rtb_Xr_idx_1 ) { // Act1 => rtY.yout = [Xap1] } else { // Act2 => rtY.yout = [Xap2] }
+- These offsets are derived from `(rtU.r / rtb_MathFunction1) * [Xr] + Xtarg`.  
+
+**Initial Conditions**:  
+- No persistent states.  
+
+**Input Triggers**:  
+- If the code determines the vehicle is inside or near the standoff boundary (`(rtb_Sum2 <= 0.0)` or `(rtb_MathFunction_idx_0 <= 0.0)`), it enters the “Inner” mode.  
+
+**Expected State Changes**:  
+- Transient mode changes to “Inner.” Then inside “Inner,” either “Act1” or “Act2” is chosen.  
+
+**Output Verification**:  
+- Once in “Act1,” `rtY.yout[0..2]` become the inertial position for aim point #1.  
+- No memory or next-cycle carryover; output is immediate.  
+
+**Timing Requirements**:  
+- Computed in the same cycle, near the end of `NLGuidance_12B_step()`.  
+- Verification is done by comparing final `rtY.yout` to the standoff condition.  
+
+--------------------------------------------------------------------------------
+2.3) REQUIREMENT #3
+--------------------------------------------------------------------------------
+**Text**: “NLGuidance shall compute the inertial position vector for aim point #2, defining the location at Standoff #2 with an offset from the target position, and oriented on a vector perpendicular to the tangent relative position vector from the vehicle to the corresponding aim point.”
+
+**Relevant Code Elements**:  
+- Similar code path in “Inner” ( `<S1>/Inner` ), but if “Act2” is chosen (`<S2>/Act2` block), the aim point #2 is used.  
+- The code logic:
+if ( rtb_Sum2_tmp < rtb_Xr_idx_1 ) { // => Act1 } else { // => Act2 (which sets rtY.yout = [Xap2]) }
+- This “Act2” offset is also derived from the standoff radius.  
+
+**Initial Conditions**:  
+- None retained across cycles.  
+
+**Input Triggers**:  
+- Same trigger: inside “Inner” mode due to standoff checks, then the sub-condition picks aim point #1 or #2.  
+
+**Expected State Changes**:  
+- Transient sub-mode “Act2” is entered, so `rtY.yout` is replaced by aim point #2’s inertial position.  
+
+**Output Verification**:  
+- `rtY.yout` is set accordingly.  
+
+**Timing Requirements**:  
+- Evaluated each cycle in the last half of the step.  
+- No memory update across cycles.  
+
+--------------------------------------------------------------------------------
+2.4) REQUIREMENT #4
+--------------------------------------------------------------------------------
+**Text**: “NLGuidance shall always select an inertial position vector of aim point #1 or #2 which shall result in a counter clockwise loiter for the UAV. For example, if the vehicle position would return Tangent Aim Point #2, that ensures CCW.”
+
+**Relevant Code Elements**:  
+- The final selection between “CW” and “CCW” in `<S3>/If` occurs only if we are in the “Outer” mode.  
+- Within “Inner” mode, sub-block `<S2>/If` picks “Act1” or “Act2.”  
+- The code then sees if the cross product is negative or not to pick “CW” or “CCW.”  
+
+**Initial Conditions**:  
+- None specifically stored.  
+
+**Input Triggers**:  
+- Each cycle, the distance checks and cross product sign are reevaluated.  
+
+**Expected State Changes**:  
+- For “Outer,” the code sets final `rtY.yout` in either “CW” or “CCW” form.  
+- The intention is to produce a flight path that orients the loiter path in a CCW direction if feasible.  
+
+**Output Verification**:  
+- The “CCW” branch modifies `rtY.yout[...]` to produce the aimed orbit location.  
+
+**Timing Requirements**:  
+- Computed at each step once, near the end of the function.  
+
+--------------------------------------------------------------------------------
+2.5) REQUIREMENT #5
+--------------------------------------------------------------------------------
+**Text**: “When the UAV relative position to the target is less than the minimum standoff distance, NLGuidance shall command the nearest inertial position in order to reestablish the minimum standoff distance while maintaining the target on the port-side of the vehicle.”
+
+**Relevant Code Elements**:  
+- The condition `(rtb_Sum2 <= 0.0) || (rtb_MathFunction_idx_0 <= 0.0)` checks if the vehicle is within or on the standoff boundary.  
+- If true, the code enters “Inner” mode, which then selects the nearest offset aim point by comparing `rtb_Sum2_tmp` and `rtb_Xr_idx_1`.  
+- The cross product logic at the final stage ensures a consistent directional choice if “Outer” is triggered on subsequent cycles.  
+
+**Initial Conditions**:  
+- None.  
+
+**Input Triggers**:  
+- The standoff logic is triggered if `(rtb_Sum2 <= 0.0)` or `(rtb_MathFunction_idx_0 <= 0.0)` each cycle.  
+
+**Expected State Changes**:  
+- Switch to “Inner” => then “Act1” or “Act2,” commanding an aim point to push the UAV outward.  
+
+**Output Verification**:  
+- `rtY.yout` is set to that “nearest inertial position,” which is either the “Act1” or “Act2” result.  
+
+**Timing Requirements**:  
+- The check is done every cycle during `NLGuidance_12B_step()`.  
+- No state is retained afterwards; logic repeats next cycle if still inside standoff.  
+
+--------------------------------------------------------------------------------
+2.6) REQUIREMENT #6
+--------------------------------------------------------------------------------
+**Text**: “NLGuidance shall output consistent aim point with a static target without appreciable transient behavior in the command generation other than aim point switching where a transient is required to maintain a counter clockwise loiter. Appreciable transient is defined as erratic changes in the aim point command beyond the velocity-sum tolerance over T.”
+
+**Relevant Code Elements**:  
+- The code does not explicitly measure or limit the “change in yout” from one cycle to the next.  
+- However, the design uses direct geometry (distance checks, cross products) each cycle, which inherently avoids large jumps except when switching branches from “Inner” to “Outer” or from “CW” to “CCW.”  
+
+**Initial Conditions**:  
+- No memory states to smooth or filter the output.  
+
+**Input Triggers**:  
+- Each call to `NLGuidance_12B_step()` re-evaluates standoff conditions and cross products.  
+
+**Expected State Changes**:  
+- If the vehicle remains outside the standoff radius, it stays in “Outer” and picks “CW” or “CCW.”  
+- If it transitions from “Outer” to “Inner,” or vice versa, the aim point can jump (the code’s direct branch).  
+
+**Output Verification**:  
+- The final `rtY.yout[...]` is updated. Because there is no stored filter, the code by design tries to keep a geometry-based offset, which should limit large changes unless a branch changes.  
+
+**Timing Requirements**:  
+- One cycle check; the code is purely reactive.  
+- No internal state-based ramp or discrete filter is present.  
+
+--------------------------------------------------------------------------------
+2.7) REQUIREMENT #7
+--------------------------------------------------------------------------------
+**Text**: “NLGuidance shall output the equivalent altitude of the vehicle for in-plane navigation. In-plane navigation is defined where the target and the vehicle altitude (3rd component in the input inertial position vectors) are equal.”
+
+**Relevant Code Elements**:  
+- The final assignment to `rtY.yout[2]` is done in each branch. In the “Inner” branch, it is set to `0.0` or the same as `rtU.Xv[2]` plus the offset. In “Outer,” it sums `rtU.Xv[2]` with an offset that is derived from the geometry.  
+- For instance, in “Inner/Act1” or “Inner/Act2`, the code forcibly sets `rtY.yout[2] = 0.0`.  
+- In “Outer/CW” or “Outer/CCW,” it sets `rtY.yout[2] = rtU.Xv[2] + rtb_Sum_c_idx_2`.  
+
+**Initial Conditions**:  
+- None.  
+
+**Input Triggers**:  
+- Always computed in every cycle.  
+
+**Expected State Changes**:  
+- Not a stored state but an immediate assignment.  
+
+**Output Verification**:  
+- If “Inner/Act1” or “Act2,” altitude is forced to `0.0`.  
+- If “Outer,” altitude is set relative to `rtU.Xv[2]`.  
+- This enforces a planar or near-planar outcome if target and vehicle share altitude.  
+
+**Timing Requirements**:  
+- Updated each step, no memory afterwards.  
+
+-------------------------------------------------------------------------------
+3) TIMING CONSIDERATIONS
+-------------------------------------------------------------------------------
+- **Update Sequences**:  
+1. `NLGuidance_12B_step()` is called once per cycle.  
+2. The function reads `rtU.Xtarg`, `rtU.Xv`, `rtU.Vv`, `rtU.r`, etc.  
+3. Internal local variables (`rtb_...`) compute distances, cross products, and decide “Inner” or “Outer” path.  
+4. If “Inner,” the code picks “Act1” or “Act2.” If “Outer,” the code picks “CW” or “CCW.”  
+5. `rtY.yout[...]` is assigned at the end of the step.  
+
+- **Critical Dependencies**:  
+- The logic depends on standoff distance (`rtU.r`) vs. current range (`rtb_Sum2`, `rtb_MathFunction_idx_0`).  
+- The cross product sign chooses “CW”/“CCW.”  
+
+- **Cycle Requirements**:  
+- All checks and computations happen once per call.  
+- **No UnitDelay** is present, so there is **no** update of any stored variable after `NLGuidance_12B_step()`.  
+- The next cycle starts fresh, reading new input values from `rtU`.  
+
+================ END OF FILE ================

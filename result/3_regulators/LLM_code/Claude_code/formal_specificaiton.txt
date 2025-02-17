@@ -1,0 +1,247 @@
+# State Variable Mapping
+
+## Core State Variables
+- rtDW.Memory_PreviousInput: Previous value of height integrator output
+- rtDW.UnitDelay_DSTATE: Previous height control error
+- rtDW.UnitDelay1_DSTATE: Previous integrated height error 
+- rtDW.UnitDelay_DSTATE_o: Previous pitch control error
+- rtDW.UnitDelay1_DSTATE_k: Previous integrated pitch error
+
+## UnitDelay Update Sequence (After global_step()):
+1. rtDW.UnitDelay_DSTATE = rtb_CVdt_cmd (height error)
+2. rtDW.UnitDelay1_DSTATE = rtb_Sum1 (integrated height error)
+3. rtDW.UnitDelay1_DSTATE_k = rtb_Sum1_h (integrated pitch error) 
+4. rtDW.UnitDelay_DSTATE_o = rtb_Sum3 (pitch error)
+
+# Requirement 1: Roll Acceleration Limit
+
+## Verification Elements
+- Output: rtY.lcvdt_cmd_fcs_dps2
+- Limit: 50 deg/sec2
+- Duration: 100 cycles (1 sec @ 100Hz)
+
+## Checking Logic
+```
+Property Sequence:
+1. Store output value each cycle
+2. Check if |rtY.lcvdt_cmd_fcs_dps2| > 50 
+3. Count consecutive cycles where limit exceeded
+4. Violation if count > 100
+```
+
+## Input Triggers
+- rtU.lcv_cmd_fcs_dps
+- rtU.lcv_fps_dps
+
+# Requirement 2: Pitch Acceleration Limit
+
+## Verification Elements
+- Output: rtY.mcvdt_cmd_fcs_dps2
+- Limit: 50 deg/sec2
+- Duration: 100 cycles (1 sec @ 100Hz)
+
+## Checking Logic
+```
+Property Sequence:
+1. Store output value each cycle
+2. Check if |rtY.mcvdt_cmd_fcs_dps2| > 50
+3. Count consecutive cycles where limit exceeded
+4. Violation if count > 100
+```
+
+## Input Triggers
+- rtU.mcv_cmd_fcs_dps
+- rtU.mcv_fcs_dps
+- rtU.vtas_adc_kts
+
+# Requirement 3: Yaw Acceleration Limit
+
+## Verification Elements
+- Output: rtY.ncvdt_cmd_fcs_dps2
+- Limit: 50 deg/sec2
+- Duration: 100 cycles (1 sec @ 100Hz)
+
+## Checking Logic
+```
+Property Sequence:
+1. Store output value each cycle
+2. Check if |rtY.ncvdt_cmd_fcs_dps2| > 50
+3. Count consecutive cycles where limit exceeded
+4. Violation if count > 100
+```
+
+## Input Triggers
+- rtU.ncv_cmd_fcs_dps
+- rtU.beta_adc_deg
+- rtU.beta_dot
+- rtU.vtas_adc_kts
+- rtU.ncv_fcs_dps
+
+# Requirement 4: Axial Acceleration Limit
+
+## Verification Elements  
+- Output: rtY.xcvdt_cmd_fcs_fps2
+- Limit: 32 ft/sec2
+- Duration: 100 cycles (1 sec @ 100Hz)
+
+## Checking Logic
+```
+Property Sequence:
+1. Store output value each cycle
+2. Check if |rtY.xcvdt_cmd_fcs_fps2| > 32
+3. Count consecutive cycles where limit exceeded  
+4. Violation if count > 100
+```
+
+## Input Triggers
+- rtU.xcv_cmd_fcs_fps
+- rtU.dcv_fcs_fps
+
+# Requirement 5: Height Acceleration Limit
+
+## Verification Elements
+- Output: rtY.hcvdt_cmd_fcs_fps2
+- Limit: 32 ft/sec2
+- Duration: 100 cycles (1 sec @ 100Hz)
+
+## Checking Logic
+```
+Property Sequence:
+1. Store output value each cycle
+2. Check if |rtY.hcvdt_cmd_fcs_fps2| > 32
+3. Count consecutive cycles where limit exceeded
+4. Violation if count > 100
+```
+
+## Input Triggers
+- rtU.hcv_cmd_fcs_fps
+- rtU.zcv_fcs_fps
+- rtDW.Memory_PreviousInput
+- rtDW.UnitDelay_DSTATE
+- rtDW.UnitDelay1_DSTATE
+
+# Requirement 6: Roll Rate of Change Limit
+
+## Verification Elements
+- Output Change: Δ(rtY.lcvdt_cmd_fcs_dps2)
+- Limit: 50 deg/sec2/sec
+- Check: Every cycle
+
+## Checking Logic
+```
+Property Sequence:
+1. Store current and previous output
+2. Calculate rate: (current - previous) * sample_rate
+3. Check if |rate| > 50
+```
+
+## Input Triggers
+- rtU.lcv_cmd_fcs_dps
+- rtU.lcv_fps_dps
+
+# Requirement 7: Pitch Rate of Change Limit
+
+## Verification Elements
+- Output Change: Δ(rtY.mcvdt_cmd_fcs_dps2)
+- Limit: 50 deg/sec2/sec
+- Check: Every cycle
+
+## Checking Logic
+```
+Property Sequence:
+1. Store current and previous output
+2. Calculate rate: (current - previous) * sample_rate
+3. Check if |rate| > 50
+```
+
+## Input Triggers
+- rtU.mcv_cmd_fcs_dps
+- rtU.mcv_fcs_dps
+- rtU.vtas_adc_kts
+- rtDW.UnitDelay_DSTATE_o
+- rtDW.UnitDelay1_DSTATE_k
+
+# Requirement 8: Yaw Rate of Change Limit
+
+## Verification Elements
+- Output Change: Δ(rtY.ncvdt_cmd_fcs_dps2) 
+- Limit: 50 deg/sec2/sec
+- Check: Every cycle
+
+## Checking Logic
+```
+Property Sequence:
+1. Store current and previous output
+2. Calculate rate: (current - previous) * sample_rate
+3. Check if |rate| > 50
+```
+
+## Input Triggers
+- rtU.ncv_cmd_fcs_dps
+- rtU.beta_adc_deg
+- rtU.beta_dot
+- rtU.vtas_adc_kts
+- rtU.ncv_fcs_dps
+
+# Requirement 9: Axial Rate of Change Limit
+
+## Verification Elements
+- Output Change: Δ(rtY.xcvdt_cmd_fcs_fps2)
+- Limit: 32 ft/sec2/sec
+- Check: Every cycle
+
+## Checking Logic
+```
+Property Sequence:
+1. Store current and previous output
+2. Calculate rate: (current - previous) * sample_rate
+3. Check if |rate| > 32
+```
+
+## Input Triggers
+- rtU.xcv_cmd_fcs_fps
+- rtU.dcv_fcs_fps
+
+# Requirement 10: Height Rate of Change Limit
+
+## Verification Elements
+- Output Change: Δ(rtY.hcvdt_cmd_fcs_fps2)
+- Limit: 32 ft/sec2/sec
+- Check: Every cycle
+
+## Checking Logic
+```
+Property Sequence:
+1. Store current and previous output
+2. Calculate rate: (current - previous) * sample_rate
+3. Check if |rate| > 32
+```
+
+## Input Triggers
+- rtU.hcv_cmd_fcs_fps
+- rtU.zcv_fcs_fps
+- rtDW.Memory_PreviousInput 
+- rtDW.UnitDelay_DSTATE
+- rtDW.UnitDelay1_DSTATE
+
+# Timing Considerations
+
+## Update Sequence
+1. Calculate outputs
+2. Update memory states
+3. Update unit delays
+4. Check all requirements at cycle end
+
+## Sample Rate
+- System runs at 100Hz (0.01 sec period)
+- All timing checks use cycle count (* 0.01 for seconds)
+
+## State Dependencies
+- Height control depends on previous error and integral
+- Pitch control depends on previous error and integral
+- Other channels are stateless
+
+## Critical Timing
+- Persistence checks must span 100 cycles
+- Rate checks use consecutive cycle differences
+- All checks performed after state updates

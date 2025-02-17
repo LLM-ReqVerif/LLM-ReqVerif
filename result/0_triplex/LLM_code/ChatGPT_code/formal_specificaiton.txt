@@ -1,0 +1,203 @@
+========================
+State-Based Code Analysis for triplex_12B
+========================
+
+Below is a systematic analysis based purely on the **triplex_12B.c** code and the stated requirements ([RM-001], [RM-002], [RM-003], [RM-004]).  
+All references to variables, states, and I/O signals strictly follow the code definitions.  
+Each **global step** (one call to `triplex_12B_step()`) represents one cycle.  
+
+--------------------------------------------------------------------------------
+1) State Variable Mapping
+--------------------------------------------------------------------------------
+
+The main *persistent* (delay) states in the code are stored in the array:
+rtDW.Delay1_DSTATE[0] rtDW.Delay1_DSTATE[1] rtDW.Delay1_DSTATE[2]
+Each index is assigned as follows, based on the merge logic and final outputs:
+
+1. `rtDW.Delay1_DSTATE[0]`  -->  **PC**  
+   - **Meaning**: Persistence Count from the previous cycle  
+   - **Possible Values**: Integer ≥ 0  
+
+2. `rtDW.Delay1_DSTATE[1]`  -->  **TC**  
+   - **Meaning**: Totalizer Count from the previous cycle  
+   - **Possible Values**: Integer ≥ 0  
+
+3. `rtDW.Delay1_DSTATE[2]`  -->  **FC**  
+   - **Meaning**: Latched Fault Code from the previous cycle  
+   - **Possible Values**:  
+     - 0  => No-fail state  
+     - 1  => Single-BranchC-Fail  
+     - 2  => Single-BranchB-Fail  
+     - 4  => Single-BranchA-Fail  
+
+**Important**: At the end of each `triplex_12B_step()` call (i.e., *after* all logic is evaluated for the current cycle), the lines:
+rtDW.Delay1_DSTATE[0] = rtDW.Merge_e[0]; rtDW.Delay1_DSTATE[1] = rtDW.Merge_e[1]; rtDW.Delay1_DSTATE[2] = rtDW.Merge_e[2];
+
+update the Unit Delays with new values computed in this cycle.  
+Hence, **the new PC, TC, FC states become effective only at the start of the next cycle**.
+
+--------------------------------------------------------------------------------
+2) Requirement-by-Requirement Analysis
+--------------------------------------------------------------------------------
+
+Below, each requirement ([RM-001], [RM-002], [RM-003], [RM-004]) is addressed **individually**.  
+For each requirement, we identify:
+- Initial conditions (state)
+- Input triggers (conditions on `ia`, `ib`, `ic`, `Tlevel`, `PClimit`)
+- Expected state changes
+- Output verification (the relevant Outports or internal states)
+- Timing requirements (in cycles)
+
+----------------------------------------
+[RM-001]
+----------------------------------------
+**Requirement Text**:  
+“In the no-fail state, a mis-compare, which shall be characterized by one branch differing with the other two branches by a unique trip level that lasts for more than the persistence limit, shall be reported to failure management as a failure.”
+
+**a) Initial Conditions**  
+- `rtDW.Delay1_DSTATE[2]` (`FC`) == 0 (meaning *no-fail state* from the previous cycle).  
+
+**b) Input Triggers**  
+- The absolute difference between one input branch (e.g., `ia`) and each of the other two (e.g., `ib` and `ic`) exceeds `Tlevel` for consecutive cycles such that `PC` (`rtDW.Delay1_DSTATE[0]`) surpasses `PClimit`.  
+  - E.g., `fabs(ia - ib) > Tlevel` and `fabs(ia - ic) <= Tlevel`, etc.  
+  - The code checks these differences via `fabs(rtU.ia - rtU.ib) > rtU.Tlevel`, etc.  
+
+**c) Expected State Changes**  
+- If a single branch is consistently out of tolerance beyond `PClimit`, the code sets:
+  1. `PC` to 0 in the next cycle (indicating the count has been cleared).  
+  2. `FC` to a nonzero value (1, 2, or 4), depending on which branch is declared failed.  
+     - For example, if branch C fails: `FC` = 1.  
+     - If branch B fails: `FC` = 2.  
+     - If branch A fails: `FC` = 4.  
+
+**d) Output Verification**  
+- `rtY.FC` (same as `rtDW.Merge_e[2]` at the cycle’s end) becomes nonzero to indicate the latched failure.  
+- `rtY.PC` may reset to 0 when the failure is finally latched.  
+
+**e) Timing Requirements**  
+- The code increments or resets `PC` each cycle.  
+- Verification occurs at cycle end: once `PC > PClimit` (and the relevant miscompare conditions remain true), the failure is latched that same cycle.  
+- The latched `FC` is visible on the next cycle’s start (and output `rtY.FC` is visible at the end of the same cycle it latched).
+
+----------------------------------------
+[RM-002]
+----------------------------------------
+**Requirement Text**:  
+“In the no-fail state, the mid-value shall be the selected value. Note: a first failure in progress will not affect the method for determining the selected value.”
+
+**a) Initial Conditions**  
+- `FC` (`rtDW.Delay1_DSTATE[2]`) == 0 (no-fail state).  
+
+**b) Input Triggers**  
+- Normal operation with no latched failures in the current cycle.  
+- Even if there is a “failure in progress,” as long as `FC == 0`, we remain in the no-fail logic.  
+
+**c) Expected State Changes**  
+- No direct state change from this requirement alone. It only governs the *selection method* for `sel_val`.  
+
+**d) Output Verification**  
+- The code path:  
+
+/* If: '<S4>/If' / if (rtDW.Merge_e[2] == 0) { / "No-Fail" SubSystem / ... / Switches to find mid-value among ia, ib, ic */ rtDW.Merge = [mid-value]; }
+
+- The final outport is `rtY.sel_val = rtDW.Merge`.  
+- Ensure that `sel_val` corresponds to the mid-value among `ia`, `ib`, and `ic`.  
+
+**e) Timing Requirements**  
+- Applies every cycle where `FC` == 0 at the start of that cycle.  
+- The output `sel_val` is validated at the end of each cycle.
+
+----------------------------------------
+[RM-003]
+----------------------------------------
+**Requirement Text**:  
+“In the single fail state, a good channel average of the remaining two good branches shall be used to determine the selected value.”
+
+**a) Initial Conditions**  
+- Exactly one latched failure from a previous cycle, meaning `FC` ∈ {1, 2, 4} at the start of the current cycle.  
+- 1 => BranchC-Fail  
+- 2 => BranchB-Fail  
+- 4 => BranchA-Fail  
+
+**b) Input Triggers**  
+- Continuing operation in which the system has already latched a single fail.  
+
+**c) Expected State Changes**  
+- No immediate state change if no second fail is latched. The single-fail monitor remains active.  
+
+**d) Output Verification**  
+- In the step function, the “Single-Branch*-Fail” sections compute `(sum of the two good branches)/2`:  
+- `FC == 1` => use `(ia + ib)/2`.  
+- `FC == 2` => use `(ia + ic)/2`.  
+- `FC == 4` => use `(ib + ic)/2`.  
+- The code snippet:
+} else if (rtDW.Merge_e[2] == 1) { rtDW.Merge = (rtU.ia + rtU.ib) / 2.0; // Single-BranchC-Fail } else if (rtDW.Merge_e[2] == 2) { rtDW.Merge = (rtU.ia + rtU.ic) / 2.0; // Single-BranchB-Fail } else if (rtDW.Merge_e[2] == 4) { rtDW.Merge = (rtU.ib + rtU.ic) / 2.0; // Single-BranchA-Fail }
+
+- That final `rtDW.Merge` is assigned to `rtY.sel_val`.  
+
+**e) Timing Requirements**  
+- Each cycle, if exactly one branch is failed (`FC != 0`), the selection is done via the good channel average.  
+- The selection output is verified at the end of the same cycle.
+
+----------------------------------------
+[RM-004]
+----------------------------------------
+**Requirement Text**:  
+“If a second failure is in progress, the selected value shall remain unchanged from the previous selected value.”
+
+**a) Initial Conditions**  
+- The system has a single latched failure (`FC` ∈ {1,2,4}), and there is a *pending* second fail condition.  
+
+**b) Input Triggers**  
+- The code checks if there is a second miscompare that might be latched.  
+- If `PC` is incremented toward `PClimit` for a second branch, but *not* yet latched.  
+
+**c) Expected State Changes**  
+- Per the provided text: “Monitoring is terminated after the second failure... The selected value remains unchanged.”  
+- In the actual code, there is *no explicit* separate condition that sets a new `FC` for a second fail inside the same run (the code does have partial logic for second fail, but halts monitoring after a second fail is latched).  
+
+**d) Output Verification**  
+- From the snippet “If more than one branch is marked as failed in the MS ... then no monitoring is performed.”  
+- The code as given shows no additional else-branch for `FC` if two branches fail.  
+- Thus, the selection logic does *not* update to a new two-channel average for the second fail. It effectively uses the *existing* single-fail logic or does no new selection logic once `FC` would exceed single-fail.  
+
+**e) Timing Requirements**  
+- The code places no further transitions if `FC` attempts a second fail.  
+- The last valid `sel_val` persists because no new branch selection is made.  
+- Verification occurs at cycle end whenever `FC` remains the same.
+
+--------------------------------------------------------------------------------
+3) Timing Considerations
+--------------------------------------------------------------------------------
+
+1. **Update Sequences**  
+ - At the **start** of each cycle `n`, the code reads:
+   ```
+   rtb_Delay1_idx_0 = rtDW.Delay1_DSTATE[0]; // PC (prev cycle)
+   rtb_Delay1_idx_1 = rtDW.Delay1_DSTATE[1]; // TC (prev cycle)
+   rtb_Delay1_idx_2 = rtDW.Delay1_DSTATE[2]; // FC (prev cycle)
+   ```
+ - All logic is computed based on these values + current inputs (`ia`, `ib`, `ic`, `Tlevel`, `PClimit`).  
+ - The results are assigned to `rtDW.Merge_e[0]`, `rtDW.Merge_e[1]`, `rtDW.Merge_e[2]`.  
+ - Then the **Delay** is updated at the end of `triplex_12B_step()`:
+   ```
+   rtDW.Delay1_DSTATE[0] = rtDW.Merge_e[0]; // new PC
+   rtDW.Delay1_DSTATE[1] = rtDW.Merge_e[1]; // new TC
+   rtDW.Delay1_DSTATE[2] = rtDW.Merge_e[2]; // new FC
+   ```
+ - Therefore, **the new states take effect only on the next cycle**.
+
+2. **Critical Dependencies**  
+ - The “fail/no-fail” state depends heavily on `FC`. If `FC == 0`, the code uses the “No-Fail” path. Else if `FC` is 1,2,4, it uses the single-fail logic.  
+ - `PC` is incremented or reset depending on whether a miscompare remains within or beyond `Tlevel`.  
+ - Once `PC > PClimit`, a latched fail sets `FC`.  
+
+3. **Cycle Requirements**  
+ - Each check is completed by the end of the same cycle in which the code is executed.  
+ - The next cycle sees the updated PC, TC, FC.  
+ - For a “pending fail,” the code might increment `PC` by 1 each cycle. If the miscompare is resolved before `PC` surpasses `PClimit`, no fail is latched.
+
+--------------------------------------------------------------------------------
+END OF ANALYSIS
+--------------------------------------------------------------------------------
+

@@ -1,0 +1,115 @@
+# Triplex Monitor Analysis
+
+## 1. State Variable Mapping
+
+### Core State Variables
+- `rtDW.Delay1_DSTATE[3]`: Unit delay state array
+  - `Delay1_DSTATE[0]`: Persistence Counter (PC)
+    - Values: Integer (0 to PClimit)
+    - Meaning: Tracks duration of miscompare
+    - Updated after global_step() with rtDW.Merge_e[0]
+  - `Delay1_DSTATE[1]`: Totalizer Counter (TC)
+    - Values: Integer (increments)
+    - Meaning: Total count of miscompares
+    - Updated after global_step() with rtDW.Merge_e[1]
+  - `Delay1_DSTATE[2]`: Fault Code (FC)
+    - Values: 0,1,2,4
+    - Meaning: 
+      - 0: No fault
+      - 1: Branch C failed
+      - 2: Branch B failed  
+      - 4: Branch A failed
+    - Updated after global_step() with rtDW.Merge_e[2]
+
+### Intermediate Variables
+- `rtDW.Merge_e[3]`: Next state values for PC, TC, FC
+- `rtDW.Merge`: Selected output value
+
+## 2. Requirements Analysis
+
+### [RM-001] First Failure Detection
+Initial Conditions:
+- rtDW.Delay1_DSTATE[2] == 0 (No-fail state)
+- rtDW.Delay1_DSTATE[0] == 0 (Initial PC)
+
+Input Triggers:
+- |ia - ib| > Tlevel OR
+- |ib - ic| > Tlevel OR  
+- |ia - ic| > Tlevel
+
+State Changes:
+- PC increments each cycle while miscompare persists
+- When PC > PClimit:
+  - FC updates to indicate failed branch (1,2,4)
+  - PC resets to 0
+
+Verification Points:
+- Check PC increment while miscompare active
+- Verify FC update when PC exceeds PClimit
+- Confirm PC reset after failure declared
+
+### [RM-002] No-Fail Selection 
+Initial Conditions:
+- rtDW.Delay1_DSTATE[2] == 0 (No-fail state)
+
+Input Values:
+- Any valid ia, ib, ic inputs
+
+Expected Output:
+- sel_val = mid-value of (ia, ib, ic)
+- Mid-value selection continues even during first failure in progress
+
+Verification Points:
+- Verify mid-value selection for various input combinations
+- Confirm selection remains mid-value during persistence counting
+
+### [RM-003] Single-Fail Selection
+Initial Conditions:
+- rtDW.Delay1_DSTATE[2] in (1,2,4) (Single-fail state)
+
+Input Values:
+- Any valid remaining inputs after failure
+
+Expected Output:
+- For FC == 1: sel_val = (ia + ib)/2
+- For FC == 2: sel_val = (ia + ic)/2
+- For FC == 4: sel_val = (ib + ic)/2
+
+Verification Points:
+- Verify correct average calculation based on FC
+- Check transition from mid-value to average after failure declaration
+
+### [RM-004] Second Failure Handling
+Initial Conditions:
+- rtDW.Delay1_DSTATE[2] in (1,2,4) (Single-fail state)
+- Previous sel_val stored
+
+Input Triggers:
+- Second miscompare between remaining channels
+
+Expected Behavior:
+- sel_val remains unchanged from previous value
+- PC continues incrementing until second failure declared
+
+Verification Points:
+- Verify sel_val remains static during second failure persistence
+- Check PC increment during second failure detection
+
+## 3. Timing Considerations
+
+Update Sequence (Each Cycle):
+1. Read inputs (ia, ib, ic, Tlevel, PClimit)
+2. Process state transitions based on rtDW.Delay1_DSTATE
+3. Calculate new rtDW.Merge_e values
+4. Update outputs (PC, TC, FC, sel_val)
+5. Update rtDW.Delay1_DSTATE with rtDW.Merge_e values
+
+Critical Dependencies:
+- State updates occur only after complete cycle
+- Persistence counting depends on consistent cycle timing
+- Selection method switches immediately on FC change
+
+Key Timing Requirements:
+- Persistence count increments once per cycle
+- State transitions evaluated every cycle
+- Output updates occur before state variable updates

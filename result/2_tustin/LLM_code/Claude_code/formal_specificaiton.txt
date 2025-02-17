@@ -1,0 +1,114 @@
+# State Variable Mapping
+
+## Global State Variables
+- `rtDW.UnitDelay1_DSTATE`: Previous output value (ypv)
+  - Updated after global_step() with current output value (rtb_Switch1)
+- `rtDW.UnitDelay_DSTATE`: Previous input value (xinpv)
+  - Updated after global_step() with current input value (rtU.cmd)
+
+## Input Variables
+- `rtU.cmd`: Input signal to be integrated (xin)
+- `rtU.T`: Time step
+- `rtU.TL`: Top limit
+- `rtU.BL`: Bottom limit
+- `rtU.reset`: Reset flag
+- `rtU.ic`: Initial condition value
+
+## Output Variables
+- `rtY.yout`: Output signal
+
+# Requirements Analysis
+
+## Requirement 1: Reset Behavior
+Initial Condition Check (`reset` is True, `ic` bounded by limits):
+```cpp
+State Check: rtU.reset == true && rtU.ic <= rtU.TL && rtU.ic >= rtU.BL 
+Expected Output: rtY.yout == rtU.ic
+Timing: Single cycle verification
+```
+
+Reset with High IC (`reset` is True, `ic` > TL):
+```cpp
+State Check: rtU.reset == true && rtU.ic > rtU.TL && rtU.TL >= rtU.BL
+Expected Output: rtY.yout == rtU.TL
+Timing: Single cycle verification
+```
+
+Reset with Low IC (`reset` is True, `ic` < BL):
+```cpp
+State Check: rtU.reset == true && rtU.ic < rtU.BL && rtU.TL >= rtU.BL
+Expected Output: rtY.yout == rtU.BL
+Timing: Single cycle verification
+```
+
+Inverted Limits Reset High (`reset` is True, TL < BL):
+```cpp
+State Check: rtU.reset == true && rtU.ic >= rtU.BL && rtU.TL < rtU.BL
+Expected Output: rtY.yout == rtU.BL
+Timing: Single cycle verification
+```
+
+Inverted Limits Reset Low (`reset` is True, TL < BL):
+```cpp
+State Check: rtU.reset == true && rtU.ic <= rtU.TL && rtU.TL < rtU.BL
+Expected Output: rtY.yout == rtU.TL
+Timing: Single cycle verification
+```
+
+## Requirement 2: Output Bounds
+Normal Limits:
+```cpp
+State Check: rtU.TL >= rtU.BL
+Expected Output: rtU.BL <= rtY.yout && rtY.yout <= rtU.TL
+Timing: Continuous verification each cycle
+```
+
+Inverted Limits:
+```cpp
+State Check: rtU.TL < rtU.BL
+Expected Output: rtU.TL <= rtY.yout && rtY.yout <= rtU.BL
+Timing: Continuous verification each cycle
+```
+
+## Requirement 3: Normal Operation Integration
+```cpp
+State Check: !rtU.reset && rtU.TL >= rtU.BL && 
+            (0.5 * rtU.T * (rtU.cmd + rtDW.UnitDelay_DSTATE) + rtDW.UnitDelay1_DSTATE >= rtU.BL) &&
+            (0.5 * rtU.T * (rtU.cmd + rtDW.UnitDelay_DSTATE) + rtDW.UnitDelay1_DSTATE <= rtU.TL)
+Expected Output: rtY.yout == 0.5 * rtU.T * (rtU.cmd + rtDW.UnitDelay_DSTATE) + rtDW.UnitDelay1_DSTATE
+Timing: Continuous verification each cycle
+Update Sequence:
+- UnitDelay1_DSTATE updated with rtY.yout after global_step()
+- UnitDelay_DSTATE updated with rtU.cmd after global_step()
+```
+
+## Requirement 4a: Constant Input Integration
+```cpp
+State Check: rtU.cmd == 1.0 && rtU.T == 0.1 && !rtU.reset && 
+            rtU.TL >= rtU.BL && rtY.yout > rtU.BL && rtY.yout < rtU.TL
+Expected Output: For each time step n (0 to 100):
+                |rtY.yout - (n * rtU.T)| <= 0.1
+Timing: Verification over 100 cycles (10 seconds at 10Hz)
+Update Sequence: Same as Requirement 3
+```
+
+## Requirement 4b: Cosine Input Integration
+```cpp
+State Check: rtU.cmd matches cosine pattern && rtU.T == 0.1 && !rtU.reset && 
+            rtU.TL >= rtU.BL && rtY.yout > rtU.BL && rtY.yout < rtU.TL
+Expected Output: For each time step n (0 to 100):
+                |rtY.yout - sin(n * rtU.T)| <= 0.1
+Timing: Verification over 100 cycles (10 seconds at 10Hz)
+Update Sequence: Same as Requirement 3
+```
+
+# Critical Timing Dependencies
+1. State updates occur after global_step():
+   - UnitDelay1_DSTATE = current output (rtb_Switch1)
+   - UnitDelay_DSTATE = current input (rtU.cmd)
+2. Verification points:
+   - Requirements 1, 2: Check at end of each cycle
+   - Requirement 3: Check at end of each cycle
+   - Requirements 4a, 4b: Check at end of each cycle for 100 cycles
+3. All limit checks must be performed before output assignment
+4. Reset checks take precedence over normal operation

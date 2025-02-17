@@ -1,0 +1,175 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing triplex_12B.c
+Parsing ert_main.c
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.226s
+GOTO program processing time: 0.007s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 33 column 3 function main
+Symex completed in: 0.006s (270 assignments)
+Slicing time: 0.000s (removed 186 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (84 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.014s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.345s
+Building error trace
+
+[Counterexample]
+
+
+State 1 file ert_main.c line 241 column 3 function nondet_double thread 0
+----------------------------------------------------
+  x = 1.086462e-311 (00000000 00000000 00000010 00000000 00000000 00000000 00000000 00000000)
+
+State 2 file ert_main.c line 241 column 3 function nondet_double thread 0
+----------------------------------------------------
+  x = 2.262743e+154 (01011111 11111011 00000000 10001001 00010000 00000100 00000000 00000000)
+
+State 3 file ert_main.c line 241 column 3 function nondet_double thread 0
+----------------------------------------------------
+  x = -9.442573e+152 (11011111 10110010 00000111 01101111 00000011 10111111 11111111 11111000)
+
+State 4 file ert_main.c line 241 column 3 function nondet_double thread 0
+----------------------------------------------------
+  x = 1.697253e+154 (01011111 11110100 01000001 00000000 00000000 01000000 00000000 00000000)
+
+State 5 file ert_main.c line 241 column 3 function nondet_double thread 0
+----------------------------------------------------
+  x = -1.073786e+10 (11000010 00000100 00000000 00110110 01000111 01110000 11000111 11111001)
+
+State 6 file ert_main.c line 40 column 5 function main thread 0
+----------------------------------------------------
+  rtU.PClimit = 2147038994 (01111111 11111001 00110111 00010010)
+
+State 7 file triplex_12B.c line 69 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator_o = 1 (00000001)
+
+State 8 file triplex_12B.c line 78 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator1 = 1 (00000001)
+
+State 9 file triplex_12B.c line 87 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator2 = 0 (00000000)
+
+State 10 file triplex_12B.c line 93 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp = 1 (00000001)
+
+State 11 file triplex_12B.c line 98 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 12 file triplex_12B.c line 103 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 0 (00000000)
+
+State 13 file triplex_12B.c line 110 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_2 = 0 (00000000)
+
+State 14 file triplex_12B.c line 117 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4 = 0 (00000000)
+
+State 15 file triplex_12B.c line 123 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_LogicalOperator6 = 0 (00000000)
+
+State 16 file triplex_12B.c line 131 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 17 file triplex_12B.c line 137 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 0 (00000000)
+
+State 18 file triplex_12B.c line 143 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4 = 0 (00000000)
+
+State 19 file triplex_12B.c line 213 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator3 = 1 (00000001)
+
+State 20 file triplex_12B.c line 218 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator_o = 1 (00000001)
+
+State 21 file triplex_12B.c line 225 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp = 1 (00000001)
+
+State 22 file triplex_12B.c line 231 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 23 file triplex_12B.c line 237 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 0 (00000000)
+
+State 24 file triplex_12B.c line 251 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[0] = { .Merge=0.000000, .Merge_e={ 0 } WITH [0:=1], .Delay1_DSTATE={ 0 } }
+
+State 25 file triplex_12B.c line 252 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[1] = 1 (00000000 00000000 00000000 00000001)
+
+State 26 file triplex_12B.c line 253 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[2] = 0 (00000000 00000000 00000000 00000000)
+
+State 27 file triplex_12B.c line 339 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_Abs1 = 7.227724e+153 (01011111 11100001 01000000 00001100 00010101 00110000 00000000 00000000)
+
+State 28 file triplex_12B.c line 353 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch = 1.086462e-311 (00000000 00000000 00000010 00000000 00000000 00000000 00000000 00000000)
+
+State 29 file triplex_12B.c line 371 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge = 1.086462e-311 (00000000 00000000 00000010 00000000 00000000 00000000 00000000 00000000)
+
+State 30 file triplex_12B.c line 426 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[0] = 1 (00000000 00000000 00000000 00000001)
+
+State 31 file triplex_12B.c line 427 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[1] = 1 (00000000 00000000 00000000 00000001)
+
+State 32 file triplex_12B.c line 428 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[2] = 0 (00000000 00000000 00000000 00000000)
+
+State 33 file ert_main.c line 58 column 5 function main thread 0
+----------------------------------------------------
+  PC_new = 1.000000 (00111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 34 file ert_main.c line 60 column 5 function main thread 0
+----------------------------------------------------
+  FC_new = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 35 file ert_main.c line 83 column 9 function main thread 0
+----------------------------------------------------
+  cur_PClimit = 0.000000 (00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 36 file ert_main.c line 86 column 11 function main thread 0
+----------------------------------------------------
+Violated property:
+  file ert_main.c line 86 column 11 function main
+  [RM-001] A single branch must be latched as failed once PC_new > PClimit.
+  (_Bool)(FC_new == 1.000000 || FC_new == 2.000000 || FC_new == 4.000000)
+
+
+VERIFICATION FAILED
+
+Bug found (k = 1)

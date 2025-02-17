@@ -1,0 +1,284 @@
+===============================================================================
+1) STATE VARIABLE MAPPING
+===============================================================================
+Based on the provided euler321_I2B_12B.c code, there are NO internal (persistent)
+states or UnitDelays maintained across cycles. The function euler321_I2B_12B_step()
+uses input signals to compute outputs in a purely feed-forward manner. Therefore,
+there is no concept of “state transitions” inside this function. All variables
+used in the code can be classified as follows:
+
+------------------------------------------------------------------------------
+ a) External Input Structure:  ExtU rtU
+------------------------------------------------------------------------------
+   - rtU.phi   (Type: real_T)
+       Possible Values: Any real number (roll angle in radians)
+       Meaning:  Roll angle input to the function
+
+   - rtU.theta (Type: real_T)
+       Possible Values: Any real number (pitch angle in radians)
+       Meaning:  Pitch angle input to the function
+
+   - rtU.psi   (Type: real_T)
+       Possible Values: Any real number (yaw angle in radians)
+       Meaning:  Yaw angle input to the function
+
+   - rtU.Vi[3] (Type: real_T array of dimension 3)
+       Possible Values: Any 3-element real vector
+       Meaning:  Inertial-frame vector to be transformed into the Body frame
+
+------------------------------------------------------------------------------
+ b) External Output Structure:  ExtY rtY
+------------------------------------------------------------------------------
+   - rtY.DCM321[9] (Type: real_T array of dimension 9)
+       Possible Values: 3x3 real matrix
+       Meaning:  Rotation matrix from inertial to body frame using 3-2-1 Euler convention
+
+   - rtY.Vb[3]     (Type: real_T array of dimension 3)
+       Possible Values: 3-element real vector
+       Meaning:  The input vector rtU.Vi transformed into the new body frame
+
+------------------------------------------------------------------------------
+ c) Internal Variables Used in the Step Function (Local to euler321_I2B_12B_step)
+------------------------------------------------------------------------------
+   - rtb_sincos_o1, rtb_sincos_o2, rtb_VectorConcatenate, rtb_Product, etc.
+     These are temporary local variables used for intermediate computations.
+     They do not persist beyond each call and are not retained from cycle to cycle.
+
+------------------------------------------------------------------------------
+ d) UnitDelay or Persistent States
+------------------------------------------------------------------------------
+   - NONE. There are no UnitDelays, no discrete states, and no memory of past
+     cycles. Hence, there are no state updates at the end of euler321_I2B_12B_step().
+
+===============================================================================
+2) PER-REQUIREMENT ANALYSIS
+===============================================================================
+Below, each requirement is addressed independently. Since there are no persistent
+states, each “state change” bullet will reflect that no internal states are being
+updated. Checks must be performed after each call to euler321_I2B_12B_step(),
+i.e., once per cycle.
+
+------------------------------------------------------------------------------
+Requirement (1)
+"The Rotation Matrix Output, DCM321, of this Function Shall Equal a 3x3 Matrix 
+ Product of a 3x3 Euler 3 (Roll) Rotation Matrix times a 3x3 Euler 2 (Pitch) 
+ Rotation Matrix times a 3x3 Euler 1 (Heading) Rotation Matrix."
+
+   - Initial Conditions:
+       Not applicable (no internal states).
+
+   - Input Triggers:
+       The function euler321_I2B_12B_step() is called once per cycle. The
+       relevant inputs are:
+         * rtU.phi   (roll angle)
+         * rtU.theta (pitch angle)
+         * rtU.psi   (yaw angle)
+
+   - Expected State Changes:
+       None. No UnitDelays or persistent variables exist.
+
+   - Output Verification:
+       After the function call, rtY.DCM321 must be confirmed to be the product
+       of (Euler1 * Euler2 * Euler3) sub-matrices, as coded in the step function
+       lines that compute rtb_VectorConcatenate_g, rtb_VectorConcatenate, and
+       rtb_Product. The final multiplication is stored in rtY.DCM321.
+
+   - Timing Requirements (in cycles):
+       Verification is performed immediately at the end of the single
+       euler321_I2B_12B_step() call each cycle.
+
+------------------------------------------------------------------------------
+Requirement (2)
+"The Body Vector Output, Vb, of this Function Shall Equal a 3x1 Vector Product 
+ of the 3x3 Rotation Matrix Output, DCM321, times the Input Inertial Vector, Vi."
+
+   - Initial Conditions:
+       Not applicable (no internal states).
+
+   - Input Triggers:
+       The same single function call per cycle. Relevant inputs:
+         * rtU.Vi (3x1 inertial vector)
+         * rtU.phi, rtU.theta, rtU.psi for the DCM321 computation
+
+   - Expected State Changes:
+       None. No internal states are updated.
+
+   - Output Verification:
+       After the function call, rtY.Vb must be checked to be rtY.DCM321 * rtU.Vi.
+       In the code, this is computed in the final loop that multiplies the
+       3x3 matrix by the 3x1 input. The result is stored in rtY.Vb.
+
+   - Timing Requirements (in cycles):
+       Verified at the end of each euler321_I2B_12B_step() call.
+
+------------------------------------------------------------------------------
+Requirement (3)
+"The magnitude of the Body Vector Output, Vb, shall equal the magnitude of the 
+ Input Inertial Vector, Vi."
+
+   - Initial Conditions:
+       Not applicable (no internal states).
+
+   - Input Triggers:
+       Same single call per cycle. Inputs:
+         * rtU.Vi (for magnitude checks)
+
+   - Expected State Changes:
+       None.
+
+   - Output Verification:
+       After rtY.Vb is computed, check that |Vb| == |Vi|. Because DCM321 is a
+       proper orthonormal rotation matrix (no scale change), the magnitudes
+       should match. This is not explicitly checked in the code, but derived from
+       the orthonormal property of the matrix. Verification is external if needed.
+
+   - Timing Requirements (in cycles):
+       Checked after each execution of euler321_I2B_12B_step().
+
+------------------------------------------------------------------------------
+Requirement (4)
+"The Rotation Matrix, DCM321, shall be invertible with the exception of the case
+ where theta = +/- pi/2 radians."
+
+   - Initial Conditions:
+       Not applicable (no internal states).
+
+   - Input Triggers:
+       The function call. Key input: rtU.theta.
+
+   - Expected State Changes:
+       None.
+
+   - Output Verification:
+       If rtU.theta != ±π/2, the matrix is invertible. In the code, the matrix
+       is always computed with trigonometric functions sin(theta), cos(theta).
+       If theta = ±π/2, cos(theta) becomes 0, which can lead to the known
+       singularity in the 3-2-1 sequence. No code changes state, so no
+       transitions are tracked. The user (or test harness) must confirm
+       invertibility outside the singularity.
+
+   - Timing Requirements (in cycles):
+       Verified once per call, after euler321_I2B_12B_step() completes.
+
+------------------------------------------------------------------------------
+Requirement (5)
+"The Rotation Matrix, DCM321, shall provide a distinct mapping from the input 
+ vector, Vi, to the output vector, Vb, for each pitch angle, theta. Note: the 
+ DCM321 is not distinct for all phi and psi inputs."
+
+   - Initial Conditions:
+       Not applicable (no internal states).
+
+   - Input Triggers:
+       Single function call per cycle. Key input: rtU.theta.
+
+   - Expected State Changes:
+       None.
+
+   - Output Verification:
+       Because the code uses sin(theta) and cos(theta) to build the matrix,
+       each distinct theta (except the singularities) produces a unique DCM321
+       and thus a distinct mapping from Vi to Vb. For the same phi or psi,
+       certain Euler angle equivalences may yield the same DCM, but pitch
+       uniqueness is maintained.
+
+   - Timing Requirements (in cycles):
+       Checked after each execution.
+
+------------------------------------------------------------------------------
+Requirement (6)
+"The rows and columns of the Rotation Matrix, DCM321, shall be orthonormal."
+
+   - Initial Conditions:
+       Not applicable (no internal states).
+
+   - Input Triggers:
+       Each call to euler321_I2B_12B_step().
+
+   - Expected State Changes:
+       None.
+
+   - Output Verification:
+       After the multiplication chain in the code, each row and each column
+       of rtY.DCM321 should have unit norm, and any two different rows or
+       columns should be orthogonal. This property follows from the constructed
+       Euler rotation product. A test harness or run-time check can verify:
+         r1·r2 = 0, |r1|=1, etc.
+       No internal code modifies or checks this, but the math enforces it.
+
+   - Timing Requirements (in cycles):
+       Verified post-step each cycle as needed.
+
+------------------------------------------------------------------------------
+Requirement (7)
+"The Rotation Matrix, DCM321, multiplied by the transpose of the Rotation 
+ Matrix, DCM321^T, shall be the Identity (3x3) Matrix."
+
+   - Initial Conditions:
+       Not applicable (no internal states).
+
+   - Input Triggers:
+       Single function call per cycle.
+
+   - Expected State Changes:
+       None.
+
+   - Output Verification:
+       Because the matrix is orthonormal, DCM321 * DCM321^T = I. The code
+       internally does not directly verify it, but the creation of the matrix
+       from standard Euler rotations guarantees it. Post-processing can confirm
+       that the result is the identity to within numerical precision.
+
+   - Timing Requirements (in cycles):
+       Checked after each function call if required.
+
+------------------------------------------------------------------------------
+Requirement (8)
+"The determinant of the Rotation Matrix, |DCM321|, shall be equal to 1.0."
+
+   - Initial Conditions:
+       Not applicable (no internal states).
+
+   - Input Triggers:
+       Single function call.
+
+   - Expected State Changes:
+       None.
+
+   - Output Verification:
+       From standard orthonormal Euler rotation construction, the determinant 
+       must be +1. The code does not explicitly compute or verify the determinant,
+       but the math ensures it. A tester can compute det(rtY.DCM321) externally.
+
+   - Timing Requirements (in cycles):
+       Verification at the end of each call, if needed.
+
+===============================================================================
+3) TIMING CONSIDERATIONS
+===============================================================================
+ a) Update Sequences
+    - The step function euler321_I2B_12B_step() executes once per cycle.
+    - All internal local variables are computed fresh within that call.
+    - There are no additional updates after the function returns.
+    - No UnitDelay or memory elements exist.
+
+ b) Critical Dependencies
+    - The outputs rtY.DCM321 and rtY.Vb depend directly on the current cycle’s
+      inputs: rtU.phi, rtU.theta, rtU.psi, and rtU.Vi.
+    - No other dependencies across cycles exist because there is no stored state.
+
+ c) Cycle Requirements
+    - One call to euler321_I2B_12B_step() completes the rotation matrix and 
+      vector transformation. All checks should be performed after each call.
+    - No multi-cycle accumulation or delay is involved.
+
+===============================================================================
+IMPORTANT NOTE ABOUT UNIT DELAY
+===============================================================================
+There is NO UnitDelay in the code. Consequently, there is nothing updated across
+iterations. Each global step call (euler321_I2B_12B_step()) computes fresh outputs
+from current inputs and returns immediately.
+
+===============================================================================
+END OF ANALYSIS
+===============================================================================
