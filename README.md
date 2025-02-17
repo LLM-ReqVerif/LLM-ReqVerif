@@ -12,11 +12,17 @@ This repository includes all necessary resources to **run, test, and validate** 
 
 ## 📁 Project Structure
 LLM-ReqVerif/ 
+
 │── include/ # Simulink C code dependencies (header files) 
+
 │── raw_code/ # Generated C code used for verification 
+
 │── result/ # Collected results from SLDV, CoCoSim, Claude+ESBMC, ChatGPT+ESBMC 
+
     └──  run_verification.py # Script for automated verification and ground truth evaluation 
+    
     └──  results (9 folder for each tasks)
+    
 │── README.md # Project documentation 
 
 
@@ -70,10 +76,15 @@ esbmc ert_main.c triplex_12B.c -I ./ -I ../../../ --k-induction --memlimit 8g --
 This framework relies on the following formal verification tools:
 
 ESBMC – C Model Checker https://github.com/esbmc/esbmc
+
 CoCoSim – MATLAB/Simulink Verification Tool (could not install)
+
 SLDV (Simulink Design Verifier) – MATLAB built-in verification tool
+
 ✅ Adapting to Other Formal Verification Tools
+
 This framework can be adapted to other tools like CBMC, Kind2, CPAChecker, etc.
+
 To do so, modify:
 ```c
 __ESBMC_assert(bool, "")
