@@ -44,6 +44,9 @@ cd LLM-ReqVerif
 
 ### 2 Run Full Verification
 result has been collected at /result/verification_summary.csv
+But if you want to collect it again or use your own LLM prompts or models' result. Please modify the scripts, that should be structured that is easy to understand.
+
+If only use to try the script performance. Modify the Scripts:
 ```
 class PropertyVerifier:
     def __init__(self):
@@ -55,9 +58,9 @@ class PropertyVerifier:
             "/usr/local/MATLAB/R2024b/simulink/include/sf_runtime"
         ]
 ```
+with your own path.
 
-should be changed with your own path.
-then 
+Then 
 ```
 cd result
 python run_verification.py
@@ -77,9 +80,9 @@ This framework relies on the following formal verification tools:
 
 ESBMC – C Model Checker https://github.com/esbmc/esbmc
 
-CoCoSim – MATLAB/Simulink Verification Tool (could not install)
+CoCoSim – MATLAB/Simulink Verification Tool (result has been collected, so it could be used without installation)
 
-SLDV (Simulink Design Verifier) – MATLAB built-in verification tool
+SLDV (Simulink Design Verifier) – MATLAB built-in verification tool (we expect you installed Matlab and Simulink plugins)
 
 ✅ Adapting to Other Formal Verification Tools
 
