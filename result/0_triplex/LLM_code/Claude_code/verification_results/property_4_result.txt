@@ -1,0 +1,322 @@
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing triplex_12B.c
+Parsing ert_main.c
+ert_main.c:146:32: warning: absolute value function 'fabsf' given an argument of type 'double' but has parameter of type 'float' which may cause truncation of value [-Wabsolute-value]
+                __ESBMC_assert(fabsf(rtDW.Merge - prev_sel_val) < 0.001,
+                               ^
+ert_main.c:146:32: note: use function 'fabs' instead
+                __ESBMC_assert(fabsf(rtDW.Merge - prev_sel_val) < 0.001,
+                               ^~~~~
+                               fabs
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.489s
+GOTO program processing time: 0.008s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 65 column 5 function main
+Symex completed in: 0.006s (278 assignments)
+Slicing time: 0.000s (removed 189 assignments)
+Generated 2 VCC(s), 2 remaining after simplification (89 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.023s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 2.247s
+BMC program time: 2.275s
+No bug has been found in the base case
+Checking forward condition, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 65 column 5 function main
+Symex completed in: 0.007s (276 assignments)
+Slicing time: 0.000s (removed 263 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (13 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.003s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.105s
+The forward condition is unable to prove the property
+Checking base case, k = 2
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 65 column 5 function main
+Not unwinding loop 6 iteration 2   file ert_main.c line 65 column 5 function main
+Symex completed in: 0.010s (438 assignments)
+Slicing time: 0.002s (removed 232 assignments)
+Generated 4 VCC(s), 4 remaining after simplification (206 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.040s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 5.778s
+Building error trace
+
+[Counterexample]
+
+
+State 3 file ert_main.c line 67 column 9 function main thread 0
+----------------------------------------------------
+  rtU.ia = { .ia=(double)main::$tmp::return_value$_nondet_float$1?1!0&0#1, .ib=0.000000,
+    .ic=0.000000, .Tlevel=0.000000, .PClimit=0,
+    .anon_pad$5=0 }
+
+State 4 file ert_main.c line 68 column 9 function main thread 0
+----------------------------------------------------
+  rtU.ib = -1.267653e+30 (11000110 00110000 00000000 00000010 01000000 00000000 00000000 00000000)
+
+State 5 file ert_main.c line 69 column 9 function main thread 0
+----------------------------------------------------
+  rtU.ic = 2.151272e+38 (01000111 11100100 00111011 00000000 00000000 00000000 00000000 00000000)
+
+State 9 file triplex_12B.c line 69 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator_o = 0 (00000000)
+
+State 10 file triplex_12B.c line 78 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator1 = 1 (00000001)
+
+State 11 file triplex_12B.c line 87 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator2 = 1 (00000001)
+
+State 12 file triplex_12B.c line 93 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp = 0 (00000000)
+
+State 13 file triplex_12B.c line 98 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 14 file triplex_12B.c line 103 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 1 (00000001)
+
+State 15 file triplex_12B.c line 110 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_2 = 0 (00000000)
+
+State 16 file triplex_12B.c line 117 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4 = 0 (00000000)
+
+State 17 file triplex_12B.c line 123 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_LogicalOperator6 = 0 (00000000)
+
+State 18 file triplex_12B.c line 131 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 19 file triplex_12B.c line 137 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 1 (00000001)
+
+State 20 file triplex_12B.c line 143 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4 = 0 (00000000)
+
+State 21 file triplex_12B.c line 213 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator3 = 1 (00000001)
+
+State 22 file triplex_12B.c line 218 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator_o = 0 (00000000)
+
+State 23 file triplex_12B.c line 225 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp = 0 (00000000)
+
+State 24 file triplex_12B.c line 231 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 25 file triplex_12B.c line 237 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 1 (00000001)
+
+State 26 file triplex_12B.c line 251 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[0] = { .Merge=0.000000, .Merge_e={ 0 } WITH [0:=1], .Delay1_DSTATE={ 0 } }
+
+State 27 file triplex_12B.c line 252 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[1] = 1 (00000000 00000000 00000000 00000001)
+
+State 28 file triplex_12B.c line 253 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[2] = 0 (00000000 00000000 00000000 00000000)
+
+State 29 file triplex_12B.c line 339 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_Abs1 = 7.170908e+37 (01000111 11001010 11111001 01010101 01001111 11111111 11111111 01000000)
+
+State 30 file triplex_12B.c line 353 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch = -1.267653e+30 (11000110 00110000 00000000 00000010 01000000 00000000 00000000 00000000)
+
+State 31 file triplex_12B.c line 371 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge = -1.267653e+30 (11000110 00110000 00000000 00000010 01000000 00000000 00000000 00000000)
+
+State 32 file triplex_12B.c line 426 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[0] = 1 (00000000 00000000 00000000 00000001)
+
+State 33 file triplex_12B.c line 427 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[1] = 1 (00000000 00000000 00000000 00000001)
+
+State 34 file triplex_12B.c line 428 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[2] = 0 (00000000 00000000 00000000 00000000)
+
+State 35 file ert_main.c line 67 column 9 function main thread 0
+----------------------------------------------------
+  rtU.ia = 2.802597e-45 (00110110 10110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 36 file ert_main.c line 68 column 9 function main thread 0
+----------------------------------------------------
+  rtU.ib = 2.802597e-45 (00110110 10110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 37 file ert_main.c line 69 column 9 function main thread 0
+----------------------------------------------------
+  rtU.ic = 2.462906e+14 (01000010 11101100 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 41 file ert_main.c line 75 column 9 function main thread 0
+----------------------------------------------------
+  prev_sel_val = -1.267653e+30f (11110001 10000000 00000000 00010010)
+
+State 42 file ert_main.c line 76 column 9 function main thread 0
+----------------------------------------------------
+  prev_fc = 0 (00000000 00000000 00000000 00000000)
+
+State 43 file triplex_12B.c line 55 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_Delay1_idx_0 = 1 (00000000 00000000 00000000 00000001)
+
+State 44 file triplex_12B.c line 56 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_Delay1_idx_1 = 1 (00000000 00000000 00000000 00000001)
+
+State 45 file triplex_12B.c line 57 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_Delay1_idx_2 = 0 (00000000 00000000 00000000 00000000)
+
+State 46 file triplex_12B.c line 60 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator3 = 1 (00000001)
+
+State 47 file triplex_12B.c line 69 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator_o = 0 (00000000)
+
+State 48 file triplex_12B.c line 78 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator1 = 1 (00000001)
+
+State 49 file triplex_12B.c line 87 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator2 = 1 (00000001)
+
+State 50 file triplex_12B.c line 93 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp = 0 (00000000)
+
+State 51 file triplex_12B.c line 98 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 52 file triplex_12B.c line 103 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 1 (00000001)
+
+State 53 file triplex_12B.c line 110 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_2 = 0 (00000000)
+
+State 54 file triplex_12B.c line 117 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4 = 0 (00000000)
+
+State 55 file triplex_12B.c line 123 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_LogicalOperator6 = 0 (00000000)
+
+State 56 file triplex_12B.c line 126 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator3 = 0 (00000000)
+
+State 57 file triplex_12B.c line 131 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 58 file triplex_12B.c line 137 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 1 (00000001)
+
+State 59 file triplex_12B.c line 143 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4 = 1 (00000001)
+
+State 60 file triplex_12B.c line 213 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator3 = 0 (00000000)
+
+State 61 file triplex_12B.c line 218 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator_o = 0 (00000000)
+
+State 62 file triplex_12B.c line 225 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp = 0 (00000000)
+
+State 63 file triplex_12B.c line 231 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_0 = 0 (00000000)
+
+State 64 file triplex_12B.c line 237 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator4_tmp_1 = 1 (00000001)
+
+State 65 file triplex_12B.c line 293 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[0] = 0 (00000000 00000000 00000000 00000000)
+
+State 66 file triplex_12B.c line 294 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[1] = 1 (00000000 00000000 00000000 00000001)
+
+State 67 file triplex_12B.c line 295 column 7 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge_e[2] = 1 (00000000 00000000 00000000 00000001)
+
+State 68 file triplex_12B.c line 387 column 5 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Merge = 2.802597e-45 (00110110 10110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 69 file triplex_12B.c line 426 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[0] = 0 (00000000 00000000 00000000 00000000)
+
+State 70 file triplex_12B.c line 427 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[1] = 1 (00000000 00000000 00000000 00000001)
+
+State 71 file triplex_12B.c line 428 column 3 function triplex_12B_step thread 0
+----------------------------------------------------
+  rtDW.Delay1_DSTATE[2] = 1 (00000000 00000000 00000000 00000001)
+
+State 72 file ert_main.c line 146 column 17 function main thread 0
+----------------------------------------------------
+Violated property:
+  file ert_main.c line 146 column 17 function main
+  RM-004: Output should remain unchanged during second failure
+  (_Bool)((double)(abs((float)(IEEE_SUB(rtDW.Merge, (double)prev_sel_val)))) < 1.000000e-3)
+
+
+VERIFICATION FAILED
+
+Bug found (k = 2)

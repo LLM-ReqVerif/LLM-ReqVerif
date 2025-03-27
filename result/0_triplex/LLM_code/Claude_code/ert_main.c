@@ -8,18 +8,17 @@
 #define PCLIMIT 5
 
 // Global variables to track previous states
-float prev_sel_val;
+double prev_sel_val;
 int prev_fc;
 
 // Nondet inputs
-float nondet_float(void);
 _Bool nondet_bool(void);
 
 // Helper function to check if miscompare exists
-_Bool check_miscompare(float ia, float ib, float ic) {
-    return (fabsf(ia - ib) > TLEVEL) || 
-           (fabsf(ib - ic) > TLEVEL) || 
-           (fabsf(ia - ic) > TLEVEL);
+_Bool check_miscompare(double ia, double ib, double ic) {
+    return (fabs(ia - ib) > TLEVEL) || 
+           (fabs(ib - ic) > TLEVEL) || 
+           (fabs(ia - ic) > TLEVEL);
 }
 void rt_OneStep(void);
 void rt_OneStep(void)
@@ -61,14 +60,15 @@ int main(int argc, const char *argv[]) {
     _Bool first_failure_occurred = 0;
     _Bool second_failure_occurred = 0;
     
-    // Input variables
-    float ia, ib, ic;
     
     while(loop_count < MAX_LOOPS) {
         // Get nondeterministic inputs
-        ia = nondet_float();
-        ib = nondet_float();
-        ic = nondet_float();
+        rtU.ia = nondet_double();
+        rtU.ib = nondet_double();
+        rtU.ic = nondet_double();
+        __ESBMC_assume(!isnan(rtU.ia)&&!isinf(rtU.ia));
+        __ESBMC_assume(!isnan(rtU.ib)&&!isinf(rtU.ib));
+        __ESBMC_assume(!isnan(rtU.ic)&&!isinf(rtU.ic));
         
         // Store previous values
         prev_sel_val = rtDW.Merge;
@@ -83,7 +83,7 @@ int main(int argc, const char *argv[]) {
         
         // RM-001: First Failure Detection
         #ifdef VERIFY_PROPERTY_1
-        if (check_miscompare(ia, ib, ic) && !first_failure_occurred) {
+        if (check_miscompare(rtU.ia, rtU.ib, rtU.ic) && !first_failure_occurred) {
             __ESBMC_assert(rtDW.Delay1_DSTATE[0] > prev_fc || 
                           rtDW.Delay1_DSTATE[2] != 0,
                           "RM-001: PC should increment or fault should be detected");
@@ -95,50 +95,54 @@ int main(int argc, const char *argv[]) {
             }
         }
         #endif
-        
+
         // RM-002: No-Fail Selection
         #ifdef VERIFY_PROPERTY_2
         if (rtDW.Delay1_DSTATE[2] == 0) {
-            float mid_val;
-            if (ia <= ib && ib <= ic) mid_val = ib;
-            else if (ia <= ic && ic <= ib) mid_val = ic;
-            else if (ib <= ia && ia <= ic) mid_val = ia;
-            else if (ib <= ic && ic <= ia) mid_val = ic;
-            else if (ic <= ia && ia <= ib) mid_val = ia;
-            else mid_val = ib;
+            double a = rtU.ia;
+            double b = rtU.ib;
+            double c = rtU.ic;
+            double mid_val;
             
-            __ESBMC_assert(fabsf(rtDW.Merge - mid_val) < 0.001,
-                          "RM-002: Output should be mid-value in no-fail state");
+            if (a <= b && b <= c) mid_val = b;
+            else if (a <= c && c <= b) mid_val = c;
+            else if (b <= a && a <= c) mid_val = a;
+            else if (b <= c && c <= a) mid_val = c;
+            else if (c <= a && a <= b) mid_val = a;
+            else mid_val = b;
+            
+            __ESBMC_assert(fabs(rtDW.Merge - mid_val) < 0.001,
+                        "RM-002: Output should be mid-value in no-fail state");
         }
         #endif
         
         // RM-003: Single-Fail Selection
         #ifdef VERIFY_PROPERTY_3
         if (rtDW.Delay1_DSTATE[2] != 0 && !second_failure_occurred) {
-            float expected_val;
+            double expected_val;
             switch(rtDW.Delay1_DSTATE[2]) {
                 case 1: // Branch C failed
-                    expected_val = (ia + ib) / 2.0f;
+                    expected_val = (rtU.ia + rtU.ib) / 2.0;
                     break;
                 case 2: // Branch B failed
-                    expected_val = (ia + ic) / 2.0f;
+                    expected_val = (rtU.ia + rtU.ic) / 2.0;
                     break;
                 case 4: // Branch A failed
-                    expected_val = (ib + ic) / 2.0f;
+                    expected_val = (rtU.ib + rtU.ic) / 2.0;
                     break;
                 default:
                     expected_val = rtDW.Merge;
             }
-            __ESBMC_assert(fabsf(rtDW.Merge - expected_val) < 0.001,
+            __ESBMC_assert(rtDW.Merge == expected_val ,
                           "RM-003: Output should be average of remaining inputs");
         }
         #endif
         
         // RM-004: Second Failure Handling
         #ifdef VERIFY_PROPERTY_4
-        if (rtDW.Delay1_DSTATE[2] != 0 && check_miscompare(ia, ib, ic)) {
+        if (rtDW.Delay1_DSTATE[2] != 0 && check_miscompare(rtU.ia, rtU.ib, rtU.ic)) {
             if (!second_failure_occurred) {
-                __ESBMC_assert(fabsf(rtDW.Merge - prev_sel_val) < 0.001,
+                __ESBMC_assert(fabs(rtDW.Merge - prev_sel_val) < 0.001,
                               "RM-004: Output should remain unchanged during second failure");
                 __ESBMC_assert(rtDW.Delay1_DSTATE[0] >= prev_fc,
                               "RM-004: PC should increment during second failure");

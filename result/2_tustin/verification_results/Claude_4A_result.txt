@@ -1,0 +1,165 @@
+(base) lukeubun@lukeubun-G7-7590:~/Desktop/LLM-ReqVerif/LLM-ReqVerif/result/2_tustin/LLM_code/Claude_code$ esbmc ert_main.c integrator_12B.c  -I ./ -I ../../../../include/   --k-induction --memlimit 8g --timeout 300 -DVERIFY_PROPE
+RTY_4A
+ESBMC version 7.7.0 64-bit x86_64 linux
+Target: 64-bit little-endian x86_64-unknown-linux with esbmclibc
+Parsing ert_main.c
+Parsing integrator_12B.c
+Converting
+Generating GOTO Program
+GOTO program creation time: 0.196s
+GOTO program processing time: 0.007s
+Checking base case, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 71 column 5 function main
+Symex completed in: 0.004s (168 assignments)
+Slicing time: 0.002s (removed 134 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (34 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.008s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.072s
+BMC program time: 0.083s
+No bug has been found in the base case
+Checking forward condition, k = 1
+Starting Bounded Model Checking
+Not unwinding loop 6 iteration 1   file ert_main.c line 71 column 5 function main
+Symex completed in: 0.005s (167 assignments)
+Slicing time: 0.000s (removed 165 assignments)
+Generated 1 VCC(s), 1 remaining after simplification (2 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.000s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 0.000s
+The forward condition is unable to prove the property
+Checking base case, k = 2
+Starting Bounded Model Checking
+Unwinding loop 6 iteration 1   file ert_main.c line 71 column 5 function main
+Not unwinding loop 6 iteration 2   file ert_main.c line 71 column 5 function main
+Symex completed in: 0.005s (206 assignments)
+Slicing time: 0.000s (removed 145 assignments)
+Generated 2 VCC(s), 2 remaining after simplification (61 assignments)
+No solver specified; defaulting to Boolector
+Encoding remaining VCC(s) using bit-vector/floating-point arithmetic
+Encoding to solver time: 0.012s
+Solving with solver Boolector 3.2.3
+Runtime decision procedure: 10.427s
+Building error trace
+
+[Counterexample]
+
+
+State 1 file ert_main.c line 30 column 15 function main thread 0
+----------------------------------------------------
+  rtU.cmd = { .cmd=nondet_symbol(symex::nondet22), .reset=0, .anon_pad$2=0,
+    .T=0.000000, .ic=0.000000, .TL=0.000000,
+    .BL=0.000000 }
+
+State 2 file ert_main.c line 31 column 13 function main thread 0
+----------------------------------------------------
+  rtU.T = 1.000000e-1 (00111111 10111001 10011001 10011001 10011001 10011001 10011001 10011010)
+
+State 3 file ert_main.c line 32 column 14 function main thread 0
+----------------------------------------------------
+  rtU.TL = 3.325779e+299 (01111110 00011111 11001000 10000000 00000111 00110000 01001000 00101010)
+
+State 4 file ert_main.c line 33 column 14 function main thread 0
+----------------------------------------------------
+  rtU.BL = 3.411579e+106 (01010110 00001101 11000000 00000000 00000111 00100000 00001001 01011010)
+
+State 5 file ert_main.c line 34 column 5 function main thread 0
+----------------------------------------------------
+  rtU.reset = 0 (00000000)
+
+State 6 file ert_main.c line 35 column 14 function main thread 0
+----------------------------------------------------
+  rtU.ic = 3.415163e+106 (01010110 00001101 11001000 00000000 00000111 00010000 00001011 01111010)
+
+State 7 file ert_main.c line 77 column 19 function main thread 0
+----------------------------------------------------
+  rtU.cmd = 2.311872e-308 (00000000 00010000 10011111 11000111 11001111 11000111 11100111 01101011)
+
+State 8 file ert_main.c line 78 column 9 function main thread 0
+----------------------------------------------------
+  rtU.reset = 1 (00000001)
+
+State 9 file integrator_12B.c line 49 column 3 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator = 0 (00000000)
+
+State 10 file integrator_12B.c line 58 column 5 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch1 = 3.325779e+299 (01111110 00011111 11001000 10000000 00000111 00110000 01001000 00101010)
+
+State 11 file integrator_12B.c line 76 column 5 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch = 3.415163e+106 (01010110 00001101 11001000 00000000 00000111 00010000 00001011 01111010)
+
+State 12 file integrator_12B.c line 95 column 7 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch1 = 3.411579e+106 (01010110 00001101 11000000 00000000 00000111 00100000 00001001 01011010)
+
+State 13 file integrator_12B.c line 104 column 7 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch1 = 3.415163e+106 (01010110 00001101 11001000 00000000 00000111 00010000 00001011 01111010)
+
+State 14 file integrator_12B.c line 113 column 3 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtY.yout = { .yout=rtb_Switch1?1!0&0#12 }
+
+State 15 file integrator_12B.c line 116 column 3 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay1_DSTATE = { .UnitDelay1_DSTATE=rtb_Switch1?1!0&0#12, .UnitDelay_DSTATE=0.000000 }
+
+State 16 file integrator_12B.c line 121 column 3 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtDW.UnitDelay_DSTATE = 2.311872e-308 (00000000 00010000 10011111 11000111 11001111 11000111 11100111 01101011)
+
+State 17 file ert_main.c line 77 column 19 function main thread 0
+----------------------------------------------------
+  rtU.cmd = 1.000000 (00111111 11110000 00000000 00000000 00000000 00000000 00000000 00000000)
+
+State 18 file ert_main.c line 78 column 9 function main thread 0
+----------------------------------------------------
+  rtU.reset = 0 (00000000)
+
+State 19 file integrator_12B.c line 49 column 3 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_RelationalOperator = 0 (00000000)
+
+State 20 file integrator_12B.c line 58 column 5 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch1 = 3.325779e+299 (01111110 00011111 11001000 10000000 00000111 00110000 01001000 00101010)
+
+State 21 file integrator_12B.c line 78 column 5 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch = 3.415163e+106 (01010110 00001101 11001000 00000000 00000111 00010000 00001011 01111010)
+
+State 22 file integrator_12B.c line 95 column 7 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch1 = 3.411579e+106 (01010110 00001101 11000000 00000000 00000111 00100000 00001001 01011010)
+
+State 23 file integrator_12B.c line 104 column 7 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtb_Switch1 = 3.415163e+106 (01010110 00001101 11001000 00000000 00000111 00010000 00001011 01111010)
+
+State 24 file integrator_12B.c line 113 column 3 function integrator_12B_step thread 0
+----------------------------------------------------
+  rtY.yout = 3.415163e+106 (01010110 00001101 11001000 00000000 00000111 00010000 00001011 01111010)
+
+State 25 file ert_main.c line 110 column 17 function main thread 0
+----------------------------------------------------
+  expected = 1.000000e-1 (00111111 10111001 10011001 10011001 10011001 10011001 10011001 10011010)
+
+State 26 file ert_main.c line 111 column 17 function main thread 0
+----------------------------------------------------
+Violated property:
+  file ert_main.c line 111 column 17 function main
+  Constant input integration failed
+  (_Bool)(IEEE_SUB(rtY.yout, expected) <= 1.000000e-1 && IEEE_SUB(expected, rtY.yout) <= 1.000000e-1)
+
+
+VERIFICATION FAILED
+
+Bug found (k = 2)

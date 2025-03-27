@@ -21,7 +21,7 @@ void rt_OneStep(void) {
 
 int main(void) {
     unsigned int i = 0;
-    const unsigned int MAX_STEPS = 10;
+    const unsigned int MAX_STEPS = 1000;
     
     /* Initialize model */
     integrator_12B_initialize();
@@ -102,16 +102,15 @@ int main(void) {
                 }
             }
         #endif
-
-        /* Constant input integration verification */
+        
         #ifdef VERIFY_PROPERTY_4A
-            if (rtU.cmd == 1.0 && rtU.T == 0.1 && !rtU.reset &&
-                rtU.TL >= rtU.BL && rtY.yout > rtU.BL && rtY.yout < rtU.TL) {
-                double expected = i * rtU.T;
-                __ESBMC_assert(rtY.yout - expected <= 0.1 && 
-                              expected - rtY.yout <= 0.1,
-                              "Constant input integration failed");
-            }
+        /* Constant input integration verification */
+        if (i == 100 && rtU.cmd == 1.0 && rtU.T == 0.1 && !rtU.reset) {
+            double expected = 10.0;  
+            __ESBMC_assert(rtY.yout - expected <= 0.1 && 
+                        expected - rtY.yout <= 0.1,
+                        "Constant input integration failed after 10 seconds");
+        }
         #endif
 
         /* Cosine input integration verification */
