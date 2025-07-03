@@ -1,0 +1,35 @@
+1. Extract from the code:
+   - Key state variables and their meanings 
+   - State transitions and conditions
+   - Update sequences
+2. For each requirement, automatically identify:
+   - Relevant state variables
+   - Trigger conditions
+   - Expected state transitions
+   - Required verification timing (in cycles)
+Output format:
+1. State Variable Mapping
+   - Variable names
+   - Possible values
+   - Meanings
+2. For each requirement:
+   - Initial conditions
+   - Input triggers
+   - Expected state changes
+   - Output verification
+   - Timing requirements
+3. Timing Considerations
+   - Update sequences
+   - Critical dependencies
+   - Cycle requirements
+Notes:
+- Each global step call represents one cycle
+- All state checks should be performed at cycle end
+- Focus on actual code implementation details
+- Check point for each time step is after the global step call
+- generate for all the requirements with no general and do not summary multiply requirements in one property
+- and need to keep with the same number label
+Please provide a systematic analysis based purely on the provided code and requirements.
+- CLEARLY label if the UnitDelay is updated after  global_step() with what value VERY IMPORTANT!!
+- All input output or state need to be same with the representation way in code
+put in a new txt file
