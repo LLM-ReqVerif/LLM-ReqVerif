@@ -102,3 +102,5 @@ for compatibility with other verification tools.
 ### By the way, the simulink model is aviable from here:https://github.com/hbourbouh/lm_challenges
 
 this repo did not contain Lockheed Martin Model.
+
+### The prompts to reproduce is in the result folder.
