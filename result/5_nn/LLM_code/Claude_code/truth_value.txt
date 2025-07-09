@@ -1,3 +1,18 @@
+#include <stddef.h>
+#include <stdio.h>
+#include "nn_12B.h"
+#include <math.h>
+
+// Verification control macros
+//#define VERIFY_PROPERTY_1
+//#define VERIFY_PROPERTY_2
+//#define VERIFY_PROPERTY_3
+//#define VERIFY_PROPERTY_4
+
+// Constants for verification
+#define MAX_LOOP_COUNT 200  // Updated to match data size
+#define EPSILON 0.01
+
 // Truth data structure with your provided data
 double truth_data[200][3] = {
     {-0.88176467, -1.1041869, -0.13533456},
@@ -202,5 +217,86 @@ double truth_data[200][3] = {
     {-1.7646894, -1.0500736, -0.047434692}
 };
 
-We used nondet value which might help to lose the harness in assumption way, here is the truth value:
-but both of them would time out.
+// External variables (declared in nn_12B.h)
+extern ExternalInputs rtU;
+extern ExternalOutputs rtY;
+
+void rt_OneStep(void) {
+    nn_12B_step();
+}
+
+int main(int argc, const char *argv[]) {
+    (void)(argc);
+    (void)(argv);
+
+    // Initialize model
+    nn_12B_initialize();
+    
+    // Variables for derivative calculations
+    double prev_x = 0.0;
+    double prev_y = 0.0;
+    double prev_z = 0.0;
+    _Bool first_iteration = 1;
+    
+    int loop_count = 0;
+    int data_index = 0;
+    while(loop_count < MAX_LOOP_COUNT && data_index < 200) {
+        // Set inputs from truth data
+        rtU.x = truth_data[data_index][0];
+        rtU.y = truth_data[data_index][1];
+        
+        // Execute one step
+        rt_OneStep();
+        
+        // Requirement 1: Maximum Output Value
+        #ifdef VERIFY_PROPERTY_1
+        __ESBMC_assert(rtY.z <= 1.1, "Requirement 1: Output exceeds maximum value");
+        #endif
+        
+        // Requirement 2: Minimum Output Value
+        #ifdef VERIFY_PROPERTY_2
+        __ESBMC_assert(rtY.z >= -0.2, "Requirement 2: Output below minimum value");
+        #endif
+        
+        // Requirement 3: Spatial Derivatives Bounds
+        #ifdef VERIFY_PROPERTY_3
+        if (!first_iteration) {
+            double dx = rtU.x - prev_x;
+            double dy = rtU.y - prev_y;
+            
+            if (dx != 0) {
+                double dz_dx = (rtY.z - prev_z) / dx;
+                __ESBMC_assert(dz_dx >= -35.0 && dz_dx <= 10.0, 
+                              "Requirement 3: x-derivative out of bounds");
+            }
+            
+            if (dy != 0) {
+                double dz_dy = (rtY.z - prev_z) / dy;
+                __ESBMC_assert(dz_dy >= -35.0 && dz_dy <= 10.0, 
+                              "Requirement 3: y-derivative out of bounds");
+            }
+        }
+        #endif
+        
+        // Requirement 4: Truth Data Matching
+        #ifdef VERIFY_PROPERTY_4
+        // Since we're using the exact truth data, check if output matches expected z
+        __ESBMC_assert(fabs(rtY.z - truth_data[data_index][2]) <= 0.01,
+                      "Requirement 4: Output doesn't match truth data");
+        #endif
+        
+        // Update previous values for next iteration
+        prev_x = rtU.x;
+        prev_y = rtU.y;
+        prev_z = rtY.z;
+        first_iteration = 0;
+        
+        loop_count++;
+        data_index++;
+    }
+    
+    return 0;
+}
+
+//We used nondet value which might help to lose the harness in assumption way, here is the truth value:
+//but both of them would time out.
