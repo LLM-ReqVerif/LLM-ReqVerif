@@ -300,3 +300,4 @@ int main(int argc, const char *argv[]) {
 
 //We used nondet value which might help to lose the harness in assumption way, here is the truth value:
 //but both of them would time out.
+//The verification could be done if the input is passed one by one. But my current workflow does not support that since it take only C code and not taking the data part. It should be able to be implemented later, but maybe need a more complex prompt knowledge base to retreiver.
