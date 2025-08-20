@@ -1,0 +1,49 @@
+5) Neural Network
+
+[]Model: ‘nn_12B.mdl’
+
+Description: This example is a two-input single-output two hidden layer
+feed forward nonlinear 2x10x10x1 neural network. Neural networks of this
+form are common utilities in modeling and simulation for capturing
+complex numerical dependencies. In this example, a single dependent
+variable, z, is computed based on two independent parameters, x and y.
+
+  --------------------------------------------------------------------------
+  Input Scope   Name        #       Type     Description
+  ------------- ------ ------------ -------- -------------------------------
+  Global        x           1       Double   First Input Signal
+
+  Global        y           2       Double   Second Input Signal
+  --------------------------------------------------------------------------
+
+  --------------------------------------------------------------------------
+  Output Scope  Name        #       Type     Description
+  ------------- ------ ------------ -------- -------------------------------
+  Global        z           1       Double   Dependent Variable Output
+                                             Signal
+
+  --------------------------------------------------------------------------
+
+The truth data for this example is included in the matlab file,
+nn_12B_data.mat, in the matrix original_data ϵ ℝ^(200x3) . xt is the
+1^(st) column, yt is the 2^(nd) column, and zt is the 3^(rd) column of
+data for 200 indices.
+
+Requirements:
+
+1.  The maximum value of the NN output, z, shall always be less than or
+    equal to 1.1, regardless of the input values.
+
+2.  The minimum value of the NN output, z, shall always be greater than
+    or equal to -0.2, regardless of the input values.
+
+3.  Using a first order finite backward difference equation, the spatial
+    derivatives of Δz/ Δxt = (z(n,1)-z(n-1))/(xt(n,1)-xt(n-1,1) and Δz/
+    Δyt = (z(n,1)-z(n-1))/(yt(n,1)-yt(n-1,1) shall never exceed a top
+    bound of +10 or bottom bound of -35 (e.g. -35 <= Δz/ Δ(xt,yt) <=
+    10), where n denotes an index to the current values and n-1 denotes
+    the prior values in the included truth data for xt and yt.
+
+4.  The absolute error between the zt truth data and the output z shall
+    never exceed a tolerance of 0.01, for the equivalent input of (xt,
+    yt).

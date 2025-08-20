@@ -1,0 +1,93 @@
+6) Effector Blender
+
+Model: ‘eb_12B.mdl’
+
+[]Description: This example provides a subset of an algorithm commonly
+referred to as the control allocation method, which enables the
+calculation of the optimal effector (surface) configuration for a
+vehicle, given a problem type (typically desired acceleration error, or
+desired control minimization effort, or a combination of both). In this
+specific case, the problem type is control minimization of the form:
+
+[]
+
+where J represents the cost of the control effort, u is the control
+solution, up is the preferred control solution, Wp is a Weighting
+matrix, B is the linearized control effectivity matrix, and d is the
+desired acceleration error [1]. In this specific case for the
+over-determined solution, when there are more surface effectors than
+commanded axes (n<m) where n is the length of the d vector, and m is the
+length of the u vector, an analytic solution exists [1].
+
+[][]
+
+where
+
+[]
+
+[1] Bordignon, Ken, and John Bessolo. "Control Allocation for the
+X-35B." 2002 Biennial International Powered Lift Conference and Exhibit.
+2002.
+
+  --------------------------------------------------------------------------
+  Input Scope   Name    Subsystem   Type     Description
+                         Input #             
+  ------------- ------ ------------ -------- -------------------------------
+  Global        Wp          1       Double   The control weighting
+  (Specified)                                preference matrix of size 5x5
+
+  Global        B           2       Double   The control effectiveness
+                                             matrix of size 3x5
+
+  Global        d           3       Double   The desired acceleration error
+  (Specified)                                3x1
+
+  Global        up          4       Double   The preferred control solution
+  (Specified)                                5x1
+  --------------------------------------------------------------------------
+
+  -------------------------------------------------------------------------------
+  Output Scope  Name            #       Type      Description
+  ------------- ---------- ------------ --------- -------------------------------
+  Global        check           1       Double    Inversion Check Matrix of size
+                                                  3x3
+
+  Global        yinv            2       Double    Inverse of (B(inv(Wp’)B’ of
+                                                  size 3x3
+
+  Global        P               3       Double    Transformation Gain Matrix
+                                                  Solution of size 5x3
+
+  Global        u               4       Double    The control effector solution
+                                                  vector of size 5x1
+
+  Global        Buminusd        5       Double    Error vector of constraint of
+                                                  size 3x1
+
+  Global        J               6       Double    Total Cost of solution of size
+                                                  1x1
+
+  Global        ridge_on        7       Boolean   Ridge Regression
+                                                  Diagonalization Term Active
+  -------------------------------------------------------------------------------
+
+Requirements:
+
+1.  When the determinant of B(inv(Wp’)B’ is <= 1e-12 as indicated by
+    ridge_on set to True, the inversion of the B(inv(Wp’)B’ matrix
+    should be accurate to 6 digits precision in that each element in the
+    check output matrix is within a 1e-6 tolerance with respect to the
+    elements of a 3x3 identity matrix.
+
+2.  When the determinant of B(inv(Wp’)B’ is > 1e-12 as indicated by
+    ridge_on set to False, the inversion of the B(inv(Wp’)B’ matrix
+    should be accurate to 12 digits precision in that each element in
+    the check output matrix is within a 1e-12 tolerance with respect to
+    the elements of a 3x3 identity matrix.
+
+3.  The output u vector should be a 5x1 vector.
+
+4.  The 2-norm of the output Buminusd should be less than 0.01.
+
+5.  The output cost J shall be the minimum possible value given the set
+    of input conditions.

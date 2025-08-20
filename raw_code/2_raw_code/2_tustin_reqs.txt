@@ -1,0 +1,316 @@
+2) Tustin Integrator
+
+Model: ‘integrator_12B.mdl’
+
+[]Description: A common flight control utility for computing the Tustin
+Integration of a signal yout = T/2*(xin + xinpv)+ ypv. The algorithm
+bounds the allowable integration range with a position limiter, with TL
+as the Top Limit, and BL as the Bottom Limit. Other inputs are the
+signal to be integrated (xin), the time step (dt), a Boolean reset flag
+(reset), and the initial condition upon a reset condition (ic). A
+provision has been implemented for the limiter functionality in the
+algorithm. If the user plumbs a TL value that is less than BL, the
+algorithm will swap these numerical values to correctly bound the
+signal.
+
+  ----------------------------------------------------------------------------
+  Input Scope   Name         #       Type      Description
+  ------------- ------- ------------ --------- -------------------------------
+  Global        xin          1       Double    Input Signal to be integrated
+                                               with the Tustin method
+
+  Global        T            2       Double    Time step quantified by rate of
+                                               execution
+
+  Global        TL           3       Double    Top Limit bounding the output,
+                                               yout.
+
+  Global        BL           4       Double    Bottom Limit bounding the
+                                               output, yout.
+
+  Global        reset        5       Boolean   Reset control, initializes
+                                               output to ic value.
+
+  Global        ic           6       Double    Initial Condition for yout when
+                                               in reset mode.
+  ----------------------------------------------------------------------------
+
+  --------------------------------------------------------------------------
+  Output Scope  Name        #       Type     Description
+  ------------- ------ ------------ -------- -------------------------------
+  Global        yout        1       Double   Output Signal result of Tustin
+                                             integration method on xin
+
+  --------------------------------------------------------------------------
+
+Definitions:
+
+- Normal operation: the integrator is not in reset mode, and the output
+  is within the specified limits (TL and BL).
+
+- ypv: prior yout value
+
+- xinpv: prior xin input value
+
+- SP: Saturation Point
+
+Requirements:
+
+1.  When Reset is True and the Initial Condition (ic) is bounded by the
+    provided Top and Bottom Limits (BL <= ic <= TL), the Output (yout)
+    shall equal the Initial Condition (ic).
+
+2.  The Output (yout) shall be bounded by the provided Top and Bottom
+    limits (TL and BL)
+
+3.  When in normal operation, the output shall be the result of the
+    equation, yout = T/2*(xin + xinpv)+ ypv
+
+4.  The Output of this function shall approximate the integration of the
+    value of the input signal over time within a specified tolerance,
+    defined in subtests below:
+
+    a.  After 10 seconds of Computation at an execution frequency of 10
+        hz, the Output should equal 10 within a +/- 0.1 tolerance, for a
+        Constant Input (xin = 1.0), and the sample delta time T = 0.1
+        seconds when in normal mode of operation.
+
+  [] []
+
+  Left Depiction: Magenta Line is Output of Function, Yellow Line is
+  Perfect Integration
+
+  Right Depiction: Yellow Line is Error of Perfect Integration minus
+  Output of Function
+
+b.  Over a 10 second computational duration at an execution frequency of
+    10 hz, the Output should equal the sine of time t, sin(t), where
+    time is defined as a vector from 0 to 10 by increments of 0.1
+    seconds within a +/- 0.1 tolerance for an input equal to the cosine
+    of time t, cos(t), with the sample delta time T = 0.1 seconds when
+    in normal mode of operation.
+
+  [] []
+
+  Left Depiction: Magenta Line is Output of Function, Yellow Line is
+  Perfect Integration
+
+  Right Depiction: Yellow Line is Error of Perfect Integration minus
+  Output of Function
+
+Detailed Formal Property Derivation:
+
+# 1. When Reset is True and the Initial Condition (ic) is
+
+# bounded by the provided Top and Bottom Limits (BL<=ic<=TL),
+
+# the Output (yout) shall equal the Initial Condition (ic).
+
+# If the Initial Condition is not bound by the Limits
+
+# during a Reset, the Output shall equal the saturation
+
+# point (nominally with TL>=BL, ic>=TL impl SP==TL and ic<=BL impl
+SP==BL.
+
+# Off-nominally with TL<BL, ic, ic>=BL impl SP==BL and ic<=TL impl
+SP==TL.
+
+((reset and ic<=TL and ic>=BL) impl yout == ic); #1a
+
+((reset and ic>=TL and ic>=BL and TL>=BL) impl yout == TL); #1b
+
+((reset and ic<=BL and ic>=BL and TL>=BL) impl yout == BL); #1c
+
+((reset and ic>=BL and ic<=TL and TL<BL) impl yout == BL); #1d
+
+((reset and ic<=TL and ic>=BL and TL<BL) impl yout == TL); #1e
+
+# 2. The Output (yout) shall be bounded by the provided Top
+
+# and Bottom Limits (TL and BL).
+
+(TL>=BL) impl (BL<=yout and yout<=TL); #2a
+
+(TL<BL) impl (TL<=yout and yout<=BL); #2b
+
+# 3. When in normal operation (as defined in reqs document), the Output
+
+# (yout) shall be the result of the equation, yout = T/2*(xin +
+xinpv)+ypv.
+
+#(not reset and ((TL{all}==10 and BL{all}==-10) and yout{all} <= 1*TL
+and yout{all} >= 1*BL) and abs(xin{all})<10.0 and T{all}==0.1 and
+ic{all}==0.0) impl (yout==0.5*T*(xin{t}+xin{t-1})+yout{t-1});
+
+(not reset and (TL>=BL) and (0.5*T*(xin{t}+xin{t-1})+yout{t-1}>=BL) and
+(0.5*T*(xin{t}+xin{t-1})+yout{t-1}<=TL)) impl
+(yout==0.5*T*(xin{t}+xin{t-1})+yout{t-1});
+
+#?(not reset and (TL>=BL) and (yout>=BL) and (yout<=TL)) impl
+(yout==0.5*T*(xin{t}+xin{t-1})+yout{t-1});
+
+# 4. The Output (yout) of this function shall approximate the Tustin
+
+# integration of the value of the input signal (xin) over time within
+
+# a specified tolerance, defined in the following subtests:
+
+# a) After 10 seconds of normal operation, the function computation
+
+# at an execution frequency of 10 hz, yout should equal 10.0 within
+
+# a +/- 0.1 tolerance, for a constant xin equal to 1.0, and sample
+
+# delta time T equal to 0.1 seconds.
+
+(xin{all}==1.0 and T{all}==0.1 and reset{never} and (TL{all}>=BL{all})
+and (yout{all}>BL{all}) and (yout{all}<TL{all})) impl
+(abs(yout{0}-0*T)<=0.1 and abs(yout{1}-1*T)<=0.1 and
+abs(yout{2}-2*T)<=0.1 and abs(yout{3}-3*T)<=0.1 and
+abs(yout{4}-4*T)<=0.1 and abs(yout{5}-5*T)<=0.1 and
+abs(yout{6}-6*T)<=0.1 and abs(yout{7}-7*T)<=0.1 and
+abs(yout{8}-8*T)<=0.1 and abs(yout{9}-9*T)<=0.1 and
+abs(yout{10}-10*T)<=0.1 and abs(yout{11}-11*T)<=0.1 and
+abs(yout{12}-12*T)<=0.1 and abs(yout{13}-13*T)<=0.1 and
+abs(yout{14}-14*T)<=0.1 and abs(yout{15}-15*T)<=0.1 and
+abs(yout{16}-16*T)<=0.1 and abs(yout{17}-17*T)<=0.1 and
+abs(yout{18}-18*T)<=0.1 and abs(yout{19}-19*T)<=0.1 and
+abs(yout{20}-20*T)<=0.1 and abs(yout{21}-21*T)<=0.1 and
+abs(yout{22}-22*T)<=0.1 and abs(yout{23}-23*T)<=0.1 and
+abs(yout{24}-24*T)<=0.1 and abs(yout{25}-25*T)<=0.1 and
+abs(yout{26}-26*T)<=0.1 and abs(yout{27}-27*T)<=0.1 and
+abs(yout{28}-28*T)<=0.1 and abs(yout{29}-29*T)<=0.1 and
+abs(yout{30}-30*T)<=0.1 and abs(yout{31}-31*T)<=0.1 and
+abs(yout{32}-32*T)<=0.1 and abs(yout{33}-33*T)<=0.1 and
+abs(yout{34}-34*T)<=0.1 and abs(yout{35}-35*T)<=0.1 and
+abs(yout{36}-36*T)<=0.1 and abs(yout{37}-37*T)<=0.1 and
+abs(yout{38}-38*T)<=0.1 and abs(yout{39}-39*T)<=0.1 and
+abs(yout{40}-40*T)<=0.1 and abs(yout{41}-41*T)<=0.1 and
+abs(yout{42}-42*T)<=0.1 and abs(yout{43}-43*T)<=0.1 and
+abs(yout{44}-44*T)<=0.1 and abs(yout{45}-45*T)<=0.1 and
+abs(yout{46}-46*T)<=0.1 and abs(yout{47}-47*T)<=0.1 and
+abs(yout{48}-48*T)<=0.1 and abs(yout{49}-49*T)<=0.1 and
+abs(yout{50}-50*T)<=0.1 and abs(yout{51}-51*T)<=0.1 and
+abs(yout{52}-52*T)<=0.1 and abs(yout{53}-53*T)<=0.1 and
+abs(yout{54}-54*T)<=0.1 and abs(yout{55}-55*T)<=0.1 and
+abs(yout{56}-56*T)<=0.1 and abs(yout{57}-57*T)<=0.1 and
+abs(yout{58}-58*T)<=0.1 and abs(yout{59}-59*T)<=0.1 and
+abs(yout{60}-60*T)<=0.1 and abs(yout{61}-61*T)<=0.1 and
+abs(yout{62}-62*T)<=0.1 and abs(yout{63}-63*T)<=0.1 and
+abs(yout{64}-64*T)<=0.1 and abs(yout{65}-65*T)<=0.1 and
+abs(yout{66}-66*T)<=0.1 and abs(yout{67}-67*T)<=0.1 and
+abs(yout{68}-68*T)<=0.1 and abs(yout{69}-69*T)<=0.1 and
+abs(yout{70}-70*T)<=0.1 and abs(yout{71}-71*T)<=0.1 and
+abs(yout{72}-72*T)<=0.1 and abs(yout{73}-73*T)<=0.1 and
+abs(yout{74}-74*T)<=0.1 and abs(yout{75}-75*T)<=0.1 and
+abs(yout{76}-76*T)<=0.1 and abs(yout{77}-77*T)<=0.1 and
+abs(yout{78}-78*T)<=0.1 and abs(yout{79}-79*T)<=0.1 and
+abs(yout{80}-80*T)<=0.1 and abs(yout{81}-81*T)<=0.1 and
+abs(yout{82}-82*T)<=0.1 and abs(yout{83}-83*T)<=0.1 and
+abs(yout{84}-84*T)<=0.1 and abs(yout{85}-85*T)<=0.1 and
+abs(yout{86}-86*T)<=0.1 and abs(yout{87}-87*T)<=0.1 and
+abs(yout{88}-88*T)<=0.1 and abs(yout{89}-89*T)<=0.1 and
+abs(yout{90}-90*T)<=0.1 and abs(yout{91}-91*T)<=0.1 and
+abs(yout{92}-92*T)<=0.1 and abs(yout{93}-93*T)<=0.1 and
+abs(yout{94}-94*T)<=0.1 and abs(yout{95}-95*T)<=0.1 and
+abs(yout{96}-96*T)<=0.1 and abs(yout{97}-97*T)<=0.1 and
+abs(yout{98}-98*T)<=0.1 and abs(yout{99}-99*T)<=0.1 and
+abs(yout{100}-100*T)<=0.1);
+
+# b) After 10 seconds of normal operation, the function computation
+
+# at an execution frequency of 10 hz, yout should equal the sine
+
+# of time t, sin(t), within a +/- 0.1 tolerance, for an input xin
+
+# equal to the cosine of time t, cos(t), and sample
+
+# delta time T equal to 0.1 seconds.
+
+(xin{0}==1 and xin{1}==0.995 and xin{2}==0.98007 and xin{3}==0.95534 and
+xin{4}==0.92106 and xin{5}==0.87758 and xin{6}==0.82534 and
+xin{7}==0.76484 and xin{8}==0.69671 and xin{9}==0.62161 and
+xin{10}==0.5403 and xin{11}==0.4536 and xin{12}==0.36236 and
+xin{13}==0.2675 and xin{14}==0.16997 and xin{15}==0.070737 and
+xin{16}==-0.0292 and xin{17}==-0.12884 and xin{18}==-0.2272 and
+xin{19}==-0.32329 and xin{20}==-0.41615 and xin{21}==-0.50485 and
+xin{22}==-0.5885 and xin{23}==-0.66628 and xin{24}==-0.73739 and
+xin{25}==-0.80114 and xin{26}==-0.85689 and xin{27}==-0.90407 and
+xin{28}==-0.94222 and xin{29}==-0.97096 and xin{30}==-0.98999 and
+xin{31}==-0.99914 and xin{32}==-0.99829 and xin{33}==-0.98748 and
+xin{34}==-0.9668 and xin{35}==-0.93646 and xin{36}==-0.89676 and
+xin{37}==-0.8481 and xin{38}==-0.79097 and xin{39}==-0.72593 and
+xin{40}==-0.65364 and xin{41}==-0.57482 and xin{42}==-0.49026 and
+xin{43}==-0.4008 and xin{44}==-0.30733 and xin{45}==-0.2108 and
+xin{46}==-0.11215 and xin{47}==-0.012389 and xin{48}==0.087499 and
+xin{49}==0.18651 and xin{50}==0.28366 and xin{51}==0.37798 and
+xin{52}==0.46852 and xin{53}==0.55437 and xin{54}==0.63469 and
+xin{55}==0.70867 and xin{56}==0.77557 and xin{57}==0.83471 and
+xin{58}==0.88552 and xin{59}==0.92748 and xin{60}==0.96017 and
+xin{61}==0.98327 and xin{62}==0.99654 and xin{63}==0.99986 and
+xin{64}==0.99318 and xin{65}==0.97659 and xin{66}==0.95023 and
+xin{67}==0.91438 and xin{68}==0.8694 and xin{69}==0.81573 and
+xin{70}==0.7539 and xin{71}==0.68455 and xin{72}==0.60835 and
+xin{73}==0.52608 and xin{74}==0.43855 and xin{75}==0.34664 and
+xin{76}==0.25126 and xin{77}==0.15337 and xin{78}==0.053955 and
+xin{79}==-0.046002 and xin{80}==-0.1455 and xin{81}==-0.24354 and
+xin{82}==-0.33915 and xin{83}==-0.43138 and xin{84}==-0.51929 and
+xin{85}==-0.60201 and xin{86}==-0.67872 and xin{87}==-0.74865 and
+xin{88}==-0.81109 and xin{89}==-0.86544 and xin{90}==-0.91113 and
+xin{91}==-0.94772 and xin{92}==-0.97484 and xin{93}==-0.99223 and
+xin{94}==-0.99969 and xin{95}==-0.99717 and xin{96}==-0.98469 and
+xin{97}==-0.96236 and xin{98}==-0.93043 and xin{99}==-0.88919 and
+xin{100}==-0.83907 and T{all}==0.1 and reset{never} and
+(TL{all}>=BL{all}) and (yout{all}>BL{all}) and (yout{all}<TL{all})) impl
+(abs(yout{0}-0)<=0.1 and abs(yout{1}-0.099833)<=0.1 and
+abs(yout{2}-0.19867)<=0.1 and abs(yout{3}-0.29552)<=0.1 and
+abs(yout{4}-0.38942)<=0.1 and abs(yout{5}-0.47943)<=0.1 and
+abs(yout{6}-0.56464)<=0.1 and abs(yout{7}-0.64422)<=0.1 and
+abs(yout{8}-0.71736)<=0.1 and abs(yout{9}-0.78333)<=0.1 and
+abs(yout{10}-0.84147)<=0.1 and abs(yout{11}-0.89121)<=0.1 and
+abs(yout{12}-0.93204)<=0.1 and abs(yout{13}-0.96356)<=0.1 and
+abs(yout{14}-0.98545)<=0.1 and abs(yout{15}-0.99749)<=0.1 and
+abs(yout{16}-0.99957)<=0.1 and abs(yout{17}-0.99166)<=0.1 and
+abs(yout{18}-0.97385)<=0.1 and abs(yout{19}-0.9463)<=0.1 and
+abs(yout{20}-0.9093)<=0.1 and abs(yout{21}-0.86321)<=0.1 and
+abs(yout{22}-0.8085)<=0.1 and abs(yout{23}-0.74571)<=0.1 and
+abs(yout{24}-0.67546)<=0.1 and abs(yout{25}-0.59847)<=0.1 and
+abs(yout{26}-0.5155)<=0.1 and abs(yout{27}-0.42738)<=0.1 and
+abs(yout{28}-0.33499)<=0.1 and abs(yout{29}-0.23925)<=0.1 and
+abs(yout{30}-0.14112)<=0.1 and abs(yout{31}-0.041581)<=0.1 and
+abs(yout{32}--0.058374)<=0.1 and abs(yout{33}--0.15775)<=0.1 and
+abs(yout{34}--0.25554)<=0.1 and abs(yout{35}--0.35078)<=0.1 and
+abs(yout{36}--0.44252)<=0.1 and abs(yout{37}--0.52984)<=0.1 and
+abs(yout{38}--0.61186)<=0.1 and abs(yout{39}--0.68777)<=0.1 and
+abs(yout{40}--0.7568)<=0.1 and abs(yout{41}--0.81828)<=0.1 and
+abs(yout{42}--0.87158)<=0.1 and abs(yout{43}--0.91617)<=0.1 and
+abs(yout{44}--0.9516)<=0.1 and abs(yout{45}--0.97753)<=0.1 and
+abs(yout{46}--0.99369)<=0.1 and abs(yout{47}--0.99992)<=0.1 and
+abs(yout{48}--0.99616)<=0.1 and abs(yout{49}--0.98245)<=0.1 and
+abs(yout{50}--0.95892)<=0.1 and abs(yout{51}--0.92581)<=0.1 and
+abs(yout{52}--0.88345)<=0.1 and abs(yout{53}--0.83227)<=0.1 and
+abs(yout{54}--0.77276)<=0.1 and abs(yout{55}--0.70554)<=0.1 and
+abs(yout{56}--0.63127)<=0.1 and abs(yout{57}--0.55069)<=0.1 and
+abs(yout{58}--0.4646)<=0.1 and abs(yout{59}--0.37388)<=0.1 and
+abs(yout{60}--0.27942)<=0.1 and abs(yout{61}--0.18216)<=0.1 and
+abs(yout{62}--0.083089)<=0.1 and abs(yout{63}-0.016814)<=0.1 and
+abs(yout{64}-0.11655)<=0.1 and abs(yout{65}-0.21512)<=0.1 and
+abs(yout{66}-0.31154)<=0.1 and abs(yout{67}-0.40485)<=0.1 and
+abs(yout{68}-0.49411)<=0.1 and abs(yout{69}-0.57844)<=0.1 and
+abs(yout{70}-0.65699)<=0.1 and abs(yout{71}-0.72897)<=0.1 and
+abs(yout{72}-0.79367)<=0.1 and abs(yout{73}-0.85044)<=0.1 and
+abs(yout{74}-0.89871)<=0.1 and abs(yout{75}-0.938)<=0.1 and
+abs(yout{76}-0.96792)<=0.1 and abs(yout{77}-0.98817)<=0.1 and
+abs(yout{78}-0.99854)<=0.1 and abs(yout{79}-0.99894)<=0.1 and
+abs(yout{80}-0.98936)<=0.1 and abs(yout{81}-0.96989)<=0.1 and
+abs(yout{82}-0.94073)<=0.1 and abs(yout{83}-0.90217)<=0.1 and
+abs(yout{84}-0.8546)<=0.1 and abs(yout{85}-0.79849)<=0.1 and
+abs(yout{86}-0.7344)<=0.1 and abs(yout{87}-0.66297)<=0.1 and
+abs(yout{88}-0.58492)<=0.1 and abs(yout{89}-0.50102)<=0.1 and
+abs(yout{90}-0.41212)<=0.1 and abs(yout{91}-0.3191)<=0.1 and
+abs(yout{92}-0.22289)<=0.1 and abs(yout{93}-0.12445)<=0.1 and
+abs(yout{94}-0.024775)<=0.1 and abs(yout{95}--0.075151)<=0.1 and
+abs(yout{96}--0.17433)<=0.1 and abs(yout{97}--0.27176)<=0.1 and
+abs(yout{98}--0.36648)<=0.1 and abs(yout{99}--0.45754)<=0.1 and
+abs(yout{100}--0.54402)<=0.1);

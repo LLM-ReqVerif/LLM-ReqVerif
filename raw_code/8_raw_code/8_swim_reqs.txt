@@ -1,0 +1,113 @@
+8) SWIM Airspeed
+
+[] Model: ‘swim_12B.mdl’
+
+Description: This example provides a safety algorithm for monitoring
+airspeed in the SWIM (System Wide Integrity Monitor) suite in order to
+provide warning to an operator when the vehicle speed is approaching a
+boundary where an evasive flyup maneuver cannot be achieved.
+
+  ----------------------------------------------------------------------------------------------
+  Input      Name                                    Subsystem  Type      Description
+  Scope                                               Input #             
+  ---------- -------------------------------------- ----------- --------- ----------------------
+  Global     muxGet_T_Mux_AircraftGrossWeight_lbs        1      Double    Aircraft gross weight
+
+  Global     diGet_S_CatSwitchPosition                   2      Integer   Store Category of
+                                                                          vehicle (I or III)
+
+  Global     E_AI_IMPACT_PRESSURE                        3      Double    Air Data Impact
+                                                                          Pressure
+
+  Global     diGet_S_LandingGearAltFlap                  4      Boolean   Powered Approach
+                                                                          Discrete
+
+  Global     muxGet_T_Mux_AirspeedMonitorEnable          5      Boolean   Indicates the aircraft
+                                                                          is at an altitude when
+                                                                          the airspeed monitor
+                                                                          can be enabled
+
+  Global     cvGet_V_AgcasLowSpeedWarn                   6      Boolean   Low speed warning
+                                                                          indication from the
+                                                                          automated ground
+                                                                          collision avoidance
+                                                                          system
+
+  Global     olcGet_AgcasInterlocks                      7      Boolean   Indicates state of
+                                                                          automated ground
+                                                                          collision avoidance
+                                                                          system (Notfailed or
+                                                                          Failed)
+  ----------------------------------------------------------------------------------------------
+
+  ------------------------------------------------------------------------------------------
+  Output      Name                               #      Type      Description
+  Scope                                                           
+  ----------- ------------------------------ ---------- --------- --------------------------
+  Global      swimGet_AgcasLowSpeedWarn          1      Boolean   Low speed warning
+                                                                  detection
+
+  Global      swimGet_QcMinDisable_lbspft2       2      Double    Impact pressure value
+                                                                  corresponding to 20 knots
+                                                                  slower than warning
+                                                                  airspeed threshold in
+                                                                  order to disable ongoing
+                                                                  warnings.
+
+  Global      SWIM_Qcmin_lbspft2                 3      Double    Warning trigger of minimum
+                                                                  impact pressure in which a
+                                                                  safe AGCAS evasive
+                                                                  maneuver can be
+                                                                  accomplished
+
+  Global      SWIM_CalAirspeedmin_kts            4      Double    Warning trigger
+                                                                  corresponding minimum
+                                                                  airspeed in which a safe
+                                                                  AGCAS evasive maneuver can
+                                                                  be accomplished
+
+  Global      SWIM_ASWarningAllowed              5      Boolean   Low speed warning allowed
+  ------------------------------------------------------------------------------------------
+
+Requirements:
+
+1.  The SWIM Airspeed algorithm shall output the minimum AGCAS airspeed
+    required to perform a 2g flyup as follows:
+
+  Auto GCAS Minimum Vcas (knots) =
+
+  SQRT{[2*Load Factor*Gross Weight]/[Air Density at sea level *
+
+  Coefficient of Lift Max*Wing Area]} / 1.6891 (ft/s/knots)
+
+  where
+
+  Load Factor = 2 gs
+
+  Gross weight of the aircraft
+
+  Air Density at sea level = 0.0023769 slugs/ft^3
+
+  Coefficient of Lift Max = 1.24 (CAT I) and 1.10 (CAT III)
+
+  Wing Area of the F-16 = 300 ft^2
+
+  Thus,
+
+  IF CAT I, Auto GCAS Minimum Vcas (knots) = 1.25921 * SQRT(Gross
+  Weight) + 10.0
+
+  IF CAT III, Auto GCAS Minimum Vcas (knots) = 1.33694 * SQRT(Gross
+  Weight) + 10.0
+
+2.  When a low speed warning is allowed, as computed by the SWIM
+    Airspeed algorithm, a low speed warning shall be true when the
+    vehicle air data impact pressure is less than the warning trigger
+    for minimum impact pressure in which a safe AGCAS evasive maneuver
+    can be accomplished where:
+
+  The warning trigger for minimum impact pressure in which a safe AGCAS
+  evasive maneuver can be accomplished is computed as
+
+  SWIM_Qcmin_lbspft2 = [(-2.0906 + 0.020306*Auto GCAS Minimum Vcas) +
+  0.1] * (70.7184 (lbspft2/in Hg))
