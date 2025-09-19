@@ -105,4 +105,4 @@ this repo did not contain Lockheed Martin Model.
 
 ### The prompts to reproduce is in the result folder.
 
-Please use Claude-3.5-Sonnet-06-20 to reproduce the result. Sorry for not providing a scripts to automate it, this research was done with Claude Chatbox at that time. Prompts should be working after refined for Claude 4. Hopefully, I would provide a scripts after work on another research
+Please use Claude-3.5-Sonnet-06-20 to reproduce the result. Sorry for not providing a scripts to automate it, this research was done on Claude interface at that time. Prompts should be working after refined for Claude 4. Hopefully, I would provide a scripts after work on another research
